@@ -1,5 +1,4 @@
 # Generated from Physics.g4 by ANTLR 4.13.1
-# Generated from Physics.g4 by ANTLR 4.13.1
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -283,7 +282,6 @@ class PhysicsParser ( Parser ):
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
         self.checkVersion("4.13.1")
-        self.checkVersion("4.13.1")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -317,12 +315,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitProg" ):
                 listener.exitProg(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitProg" ):
-                return visitor.visitProg(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -410,18 +402,6 @@ class PhysicsParser ( Parser ):
             return self.getTypedRuleContext(PhysicsParser.EmptyLineContext,0)
 
 
-        def printStmt(self):
-            return self.getTypedRuleContext(PhysicsParser.PrintStmtContext,0)
-
-
-        def returnStmt(self):
-            return self.getTypedRuleContext(PhysicsParser.ReturnStmtContext,0)
-
-
-        def emptyLine(self):
-            return self.getTypedRuleContext(PhysicsParser.EmptyLineContext,0)
-
-
         def getRuleIndex(self):
             return PhysicsParser.RULE_statement
 
@@ -432,12 +412,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStatement" ):
                 listener.exitStatement(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitStatement" ):
-                return visitor.visitStatement(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -541,15 +515,10 @@ class PhysicsParser ( Parser ):
 
         def type_(self):
             return self.getTypedRuleContext(PhysicsParser.TypeContext,0)
-        def type_(self):
-            return self.getTypedRuleContext(PhysicsParser.TypeContext,0)
 
 
         def ID(self):
             return self.getToken(PhysicsParser.ID, 0)
-
-        def NL(self):
-            return self.getToken(PhysicsParser.NL, 0)
 
         def NL(self):
             return self.getToken(PhysicsParser.NL, 0)
@@ -568,12 +537,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDeclStmt" ):
                 listener.exitDeclStmt(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitDeclStmt" ):
-                return visitor.visitDeclStmt(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -627,8 +590,6 @@ class PhysicsParser ( Parser ):
 
         def NL(self):
             return self.getToken(PhysicsParser.NL, 0)
-        def NL(self):
-            return self.getToken(PhysicsParser.NL, 0)
 
         def getRuleIndex(self):
             return PhysicsParser.RULE_assignStmt
@@ -640,12 +601,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAssignStmt" ):
                 listener.exitAssignStmt(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAssignStmt" ):
-                return visitor.visitAssignStmt(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -713,12 +668,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitAttrTarget" ):
                 listener.exitAttrTarget(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAttrTarget" ):
-                return visitor.visitAttrTarget(self)
-            else:
-                return visitor.visitChildren(self)
-
 
     class VarTargetContext(TargetContext):
 
@@ -738,19 +687,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitVarTarget" ):
                 listener.exitVarTarget(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitVarTarget" ):
-                return visitor.visitVarTarget(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
     def target(self):
 
         localctx = PhysicsParser.TargetContext(self, self._ctx, self.state)
         self.enterRule(localctx, 8, self.RULE_target)
-        self._la = 0 # Token type
         self._la = 0 # Token type
         try:
             self.state = 117
@@ -825,12 +767,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitLawDecl" ):
                 listener.exitLawDecl(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLawDecl" ):
-                return visitor.visitLawDecl(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -898,12 +834,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitLawAssignStmt" ):
                 listener.exitLawAssignStmt(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLawAssignStmt" ):
-                return visitor.visitLawAssignStmt(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -961,12 +891,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSystemAddStmt" ):
                 listener.exitSystemAddStmt(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSystemAddStmt" ):
-                return visitor.visitSystemAddStmt(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1034,12 +958,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitCall" ):
                 listener.exitCall(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCall" ):
-                return visitor.visitCall(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
     def callStmt(self):
@@ -1100,12 +1018,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitSystemDecl" ):
                 listener.exitSystemDecl(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSystemDecl" ):
-                return visitor.visitSystemDecl(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -1149,9 +1061,6 @@ class PhysicsParser ( Parser ):
         def NL(self):
             return self.getToken(PhysicsParser.NL, 0)
 
-        def NL(self):
-            return self.getToken(PhysicsParser.NL, 0)
-
         def block(self):
             return self.getTypedRuleContext(PhysicsParser.BlockContext,0)
 
@@ -1170,12 +1079,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitFuncDecl" ):
                 listener.exitFuncDecl(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFuncDecl" ):
-                return visitor.visitFuncDecl(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1257,12 +1160,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitParamList" ):
                 listener.exitParamList(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParamList" ):
-                return visitor.visitParamList(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -1321,12 +1218,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitParam" ):
                 listener.exitParam(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParam" ):
-                return visitor.visitParam(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -1383,12 +1274,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitControlStmt" ):
                 listener.exitControlStmt(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitControlStmt" ):
-                return visitor.visitControlStmt(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -1400,22 +1285,22 @@ class PhysicsParser ( Parser ):
             self.state = 184
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [13]:
+            if token in [17]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 180
                 self.ifStmt()
                 pass
-            elif token in [16]:
+            elif token in [20]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 181
                 self.whileStmt()
                 pass
-            elif token in [17]:
+            elif token in [21]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 182
                 self.forStmt()
                 pass
-            elif token in [18]:
+            elif token in [22]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 183
                 self.foreachStmt()
@@ -1452,12 +1337,6 @@ class PhysicsParser ( Parser ):
             else:
                 return self.getToken(PhysicsParser.NL, i)
 
-        def NL(self, i:int=None):
-            if i is None:
-                return self.getTokens(PhysicsParser.NL)
-            else:
-                return self.getToken(PhysicsParser.NL, i)
-
         def block(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(PhysicsParser.BlockContext)
@@ -1475,12 +1354,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIfStmt" ):
                 listener.exitIfStmt(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIfStmt" ):
-                return visitor.visitIfStmt(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1555,7 +1428,6 @@ class PhysicsParser ( Parser ):
                 self.state = 214
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                _la = self._input.LA(1)
 
             self.state = 224
             self._errHandler.sync(self)
@@ -1619,12 +1491,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitWhileStmt" ):
                 listener.exitWhileStmt(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitWhileStmt" ):
-                return visitor.visitWhileStmt(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1691,12 +1557,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitForStmt" ):
                 listener.exitForStmt(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitForStmt" ):
-                return visitor.visitForStmt(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1779,12 +1639,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitForeachStmt" ):
                 listener.exitForeachStmt(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitForeachStmt" ):
-                return visitor.visitForeachStmt(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -1827,7 +1681,6 @@ class PhysicsParser ( Parser ):
 
 
     class PrintStmtContext(ParserRuleContext):
-    class PrintStmtContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -1851,12 +1704,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitPrintStmt" ):
                 listener.exitPrintStmt(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitPrintStmt" ):
-                return visitor.visitPrintStmt(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -1911,12 +1758,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitReturnStmt" ):
                 listener.exitReturnStmt(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitReturnStmt" ):
-                return visitor.visitReturnStmt(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -1962,12 +1803,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitEmptyLine" ):
                 listener.exitEmptyLine(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitEmptyLine" ):
-                return visitor.visitEmptyLine(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -2000,21 +1835,15 @@ class PhysicsParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return PhysicsParser.RULE_mulDiv
+            return PhysicsParser.RULE_expr
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMulDiv" ):
-                listener.enterMulDiv(self)
+            if hasattr( listener, "enterExpr" ):
+                listener.enterExpr(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMulDiv" ):
-                listener.exitMulDiv(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitExpr" ):
-                return visitor.visitExpr(self)
-            else:
-                return visitor.visitChildren(self)
+            if hasattr( listener, "exitExpr" ):
+                listener.exitExpr(self)
 
 
 
@@ -2060,12 +1889,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitLogicOr" ):
                 listener.exitLogicOr(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLogicOr" ):
-                return visitor.visitLogicOr(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -2125,12 +1948,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitLogicAnd" ):
                 listener.exitLogicAnd(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLogicAnd" ):
-                return visitor.visitLogicAnd(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -2188,12 +2005,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitEquality" ):
                 listener.exitEquality(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitEquality" ):
-                return visitor.visitEquality(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -2255,12 +2066,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitCompare" ):
                 listener.exitCompare(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCompare" ):
-                return visitor.visitCompare(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -2305,12 +2110,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAddSub" ):
                 listener.exitAddSub(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAddSub" ):
-                return visitor.visitAddSub(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -2375,12 +2174,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitMulDiv" ):
                 listener.exitMulDiv(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitMulDiv" ):
-                return visitor.visitMulDiv(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -2443,12 +2236,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitPower" ):
                 listener.exitPower(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitPower" ):
-                return visitor.visitPower(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -2515,12 +2302,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitUnary" ):
                 listener.exitUnary(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitUnary" ):
-                return visitor.visitUnary(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -2598,12 +2379,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitVector" ):
                 listener.exitVector(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitVector" ):
-                return visitor.visitVector(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -2641,152 +2416,6 @@ class PhysicsParser ( Parser ):
         return localctx
 
 
-    class UnaryContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def dottedID(self):
-            return self.getTypedRuleContext(PhysicsParser.DottedIDContext,0)
-
-
-        def ID(self):
-            return self.getToken(PhysicsParser.ID, 0)
-
-        def unary(self):
-            return self.getTypedRuleContext(PhysicsParser.UnaryContext,0)
-
-
-        def atom(self):
-            return self.getTypedRuleContext(PhysicsParser.AtomContext,0)
-
-
-        def getRuleIndex(self):
-            return PhysicsParser.RULE_unary
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUnary" ):
-                listener.enterUnary(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUnary" ):
-                listener.exitUnary(self)
-
-
-
-
-    def unary(self):
-
-        localctx = PhysicsParser.UnaryContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 50, self.RULE_unary)
-        self._la = 0 # Token type
-        try:
-            self.state = 296
-            self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,23,self._ctx)
-            if la_ == 1:
-                self.enterOuterAlt(localctx, 1)
-                self.state = 289
-                self.dottedID()
-                self.state = 290
-                self.match(PhysicsParser.T__32)
-                self.state = 291
-                self.match(PhysicsParser.ID)
-                pass
-
-            elif la_ == 2:
-                self.enterOuterAlt(localctx, 2)
-                self.state = 293
-                _la = self._input.LA(1)
-                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 17985175552) != 0)):
-                    self._errHandler.recoverInline(self)
-                else:
-                    self._errHandler.reportMatch(self)
-                    self.consume()
-                self.state = 294
-                self.unary()
-                pass
-
-            elif la_ == 3:
-                self.enterOuterAlt(localctx, 3)
-                self.state = 295
-                self.atom()
-                pass
-
-
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class VectorContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def expr(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(PhysicsParser.ExprContext)
-            else:
-                return self.getTypedRuleContext(PhysicsParser.ExprContext,i)
-
-
-        def getRuleIndex(self):
-            return PhysicsParser.RULE_vector
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterVector" ):
-                listener.enterVector(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitVector" ):
-                listener.exitVector(self)
-
-
-
-
-    def vector(self):
-
-        localctx = PhysicsParser.VectorContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 52, self.RULE_vector)
-        self._la = 0 # Token type
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 298
-            self.match(PhysicsParser.T__2)
-            self.state = 299
-            self.expr()
-            self.state = 304
-            self._errHandler.sync(self)
-            _la = self._input.LA(1)
-            while _la==12:
-                self.state = 300
-                self.match(PhysicsParser.T__11)
-                self.state = 301
-                self.expr()
-                self.state = 306
-                self._errHandler.sync(self)
-                _la = self._input.LA(1)
-
-            self.state = 307
-            self.match(PhysicsParser.T__3)
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
     class AtomContext(ParserRuleContext):
         __slots__ = 'parser'
 
@@ -2804,10 +2433,6 @@ class PhysicsParser ( Parser ):
             return self.getTypedRuleContext(PhysicsParser.DottedIDContext,0)
 
 
-        def dottedID(self):
-            return self.getTypedRuleContext(PhysicsParser.DottedIDContext,0)
-
-
         def ID(self):
             return self.getToken(PhysicsParser.ID, 0)
 
@@ -2817,12 +2442,8 @@ class PhysicsParser ( Parser ):
 
         def expr(self):
             return self.getTypedRuleContext(PhysicsParser.ExprContext,0)
-        def expr(self):
-            return self.getTypedRuleContext(PhysicsParser.ExprContext,0)
 
 
-        def vector(self):
-            return self.getTypedRuleContext(PhysicsParser.VectorContext,0)
         def vector(self):
             return self.getTypedRuleContext(PhysicsParser.VectorContext,0)
 
@@ -2837,12 +2458,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAtom" ):
                 listener.exitAtom(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAtom" ):
-                return visitor.visitAtom(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -2912,7 +2527,6 @@ class PhysicsParser ( Parser ):
 
                 pass
             elif token in [3]:
-            elif token in [3]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 363
                 self.vector()
@@ -2963,12 +2577,6 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitArgList" ):
                 listener.exitArgList(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitArgList" ):
-                return visitor.visitArgList(self)
-            else:
-                return visitor.visitChildren(self)
-
 
 
 
@@ -3003,7 +2611,6 @@ class PhysicsParser ( Parser ):
 
 
     class TypeContext(ParserRuleContext):
-    class TypeContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -3013,23 +2620,14 @@ class PhysicsParser ( Parser ):
 
         def getRuleIndex(self):
             return PhysicsParser.RULE_type
-            return PhysicsParser.RULE_type
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterType" ):
-                listener.enterType(self)
             if hasattr( listener, "enterType" ):
                 listener.enterType(self)
 
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitType" ):
                 listener.exitType(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitType" ):
-                return visitor.visitType(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -3087,12 +2685,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitBlock" ):
                 listener.exitBlock(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitBlock" ):
-                return visitor.visitBlock(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 
@@ -3152,12 +2744,6 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDottedID" ):
                 listener.exitDottedID(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitDottedID" ):
-                return visitor.visitDottedID(self)
-            else:
-                return visitor.visitChildren(self)
 
 
 

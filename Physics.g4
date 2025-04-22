@@ -136,7 +136,7 @@ INT         : [0-9]+ ;
 FLOAT       : [0-9]+ '.' [0-9]* ;
 
 COMMENT         : '%' ~[\r\n]* -> skip ;
-WS              : [ \t\f]+ -> channel(HIDDEN);
+WS              : [ \t\f]+ -> skip;
 
 NL: ('\r'? '\n' ' '*);
 
