@@ -2,7 +2,14 @@ from antlr4 import *
 from PhysicsLexer import PhysicsLexer
 from PhysicsParser import PhysicsParser
 
-input_stream = InputStream("Particle p = 5")
+input_stream = InputStream("""
+for int xd(0,10,2):
+    for int xd2(0,10,2):
+        int i = 4
+
+Particle P = 5
+
+""")
 
 lexer = PhysicsLexer(input_stream)
 token_stream = CommonTokenStream(lexer)
