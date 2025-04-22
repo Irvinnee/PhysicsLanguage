@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, Optional, Union
 import pygame
 from OpenGL.GL import *
 
-from running_simulation.grph2 import Graphics
+from running_simulation.visualisation_engine import Graphics
 
 
 class Simulation:
@@ -13,29 +13,29 @@ class Simulation:
     system: System
     graphics_engine: Graphics
 
-    particles_data: Dict[str, Particle]
-    time = 0.0
+    # particles_data: Dict[str, Particle]
+    # time = 0.0
     max_time = 0.0
-
-    # Lock do odbioru/zapisu danych
-    data_lock = threading.Lock()
-    time_lock = threading.Lock()
+    #
+    # # Lock do odbioru/zapisu danych
+    # data_lock = threading.Lock()
+    # time_lock = threading.Lock()
 
     # Silnik symulacji
     def simulation_engine(self):
         while True:
-            with self.time_lock:
-                while abs(self.time*self.max_time - self.system.time) > 1:
-                    if self.time*self.max_time - self.system.time > 0:
+            with self.graphics_engine.time_lock:
+                while abs(self.graphics_engine.sim_time*self.max_time - self.system.time) > 1:
+                    if self.graphics_engine.sim_time*self.max_time - self.system.time > 0:
                         self.system.step(1)
                     else:
                         self.system.step(-1)
 
-                    with self.data_lock:
-                        self.particles_data = self.system.particles
+                    with self.graphics_engine.data_lock:
+                        self.graphics_engine.particles = self.system.particles
 
 
-                print(self.time*self.max_time)
+                print(self.graphics_engine.sim_time*self.max_time)
 
 
     # Program graficzny
@@ -49,8 +49,8 @@ class Simulation:
         self.particles_data = system.particles
         self.max_time = max_time
 
-        self.graphics_engine = Graphics(self.particles_data, self.data_lock, self.time, self.time_lock)
-
+        # self.graphics_engine = Graphics(self.particles_data, self.data_lock, self.time, self.time_lock)
+        self.graphics_engine = Graphics(self.particles_data)
 
         engine_thread = threading.Thread(target=self.simulation_engine)
 
