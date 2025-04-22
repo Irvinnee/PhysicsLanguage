@@ -7,7 +7,7 @@ for int xd(0,10,2):
     for int xd2(0,10,2):
         int i = 4
 
-Particle P = 5
+particle P = 5
 
 """)
 

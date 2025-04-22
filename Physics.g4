@@ -25,34 +25,98 @@ def nextToken(self):
 }
 
 
-prog            : statement* EOF ;
-statement       : declStmt | assignStmt | lawDecl | funcDecl | controlStmt | NL;
-declStmt        : particleType ID ('=' expr)? NL;
-assignStmt      : target ARROW? expr NL;
-target          : ID ('->' ID ( '[' INT ']' )? | '<-' ID ) ;
-lawDecl         : 'law' ID '(' paramList? ')' block ;
-funcDecl        : 'func' ID '(' paramList? ')' ( '=>' expr | block ) ;
-paramList       : param (',' param)* ;
-param           : type ID ;
-type            : 'particle' | 'field' | 'float' | 'int' | 'bool' ;
-controlStmt     : ifStmt | whileStmt | forStmt | foreachStmt ;
-ifStmt          : 'if' '(' expr ')' block ( 'elsif' '(' expr ')' block )* ( 'else' block )? ;
-whileStmt       : 'while' '(' expr ')' block ;
-forStmt         : 'for' type? ID '(' expr ',' expr ',' expr '):'  block ;
-foreachStmt     : 'foreach' type? ID '(' ID ')' block ;
+prog        : statement* EOF ;
+
+statement
+    : declStmt
+    | assignStmt
+    | lawDecl
+    | funcDecl
+    | controlStmt
+    | printStmt
+    | returnStmt
+    | emptyLine
+    ;
+
+declStmt    : type ID ('=' expr)? NL ;
+assignStmt  : target '=' expr NL ;
+
+target      : dottedID '->' ID ('[' expr ']')?
+            | dottedID '<-' ID ;
+
+lawDecl     : 'law' ID '(' paramList? ')' ':'
+               block;
+
+funcDecl
+    : 'func' ID '(' paramList? ')' (
+          '=>' expr NL
+        | ':' block
+      ) ;
+
+paramList   : param (',' param)* ;
+param       : type ID ;
+
+controlStmt : ifStmt | whileStmt | forStmt | foreachStmt ;
+
+ifStmt
+    : 'if' '(' expr ')' ('=>' expr NL | ':' block)
+      ( 'elsif' '(' expr ')' ('=>' expr NL | ':' block) )*
+      ( 'else' ('=>' expr NL | ':' block) )? ;
+
+whileStmt   : 'while' '(' expr ')' ':' block ;
+
+forStmt
+    : 'for' type? ID '(' expr ',' expr ',' expr ')' ':'
+        block ;
+
+foreachStmt
+    : 'foreach' type? ID '(' ID ')' ':'
+     block;
+
+printStmt   : 'print' '(' expr ')' NL ;
+returnStmt  : '=>' expr NL ;
+emptyLine   : NL ;
+
+expr        : logicOr ;
+
+logicOr     : logicAnd ( 'Or'  logicAnd )* ;
+logicAnd    : equality ( 'And' equality )* ;
+equality    : compare  ( ('=='|'!='|'>='|'<='|'>'|'<') compare )* ;
+compare     : addSub ;
+addSub      : mulDiv  ( ('+'|'-') mulDiv)* ;
+mulDiv      : power   ( ('*'|'/') power)* ;
+power       : unary   ( '^' unary )* ;
+
+unary
+    : dottedID '?' ID
+    | ('Not'|'-'|'+') unary
+    | atom
+    ;
+
+vector      : '[' expr (',' expr)* ']' ;
+
+atom
+    : INT
+    | FLOAT
+    | (dottedID ('->' ID ('[' expr ']')?)?) ('(' argList? ')')?
+    | vector
+    | '(' expr ')' ;
+
+argList     : expr (',' expr)* ;
+
+type        : 'particle' | 'field' | 'system'
+            | 'float' | 'int' | 'bool' ;
+
 block           : INDENT statement+ DEDENT ;
-expr            : atom (('+'|'-'|'*'|'/'|'^'|'Not'|'And'|'Or'|'=='|'>='|'<='|'>'|'<') expr)? ;
-atom            : INT | FLOAT | ID ( '(' argList? ')' )? | target | '[' expr (',' expr)* ']' ;
-argList         : expr (',' expr)* ;
+
+ID          : [\p{L}_] [\p{L}\p{N}_]* ;
+INT         : [0-9]+ ;
+FLOAT       : [0-9]+ '.' [0-9]* ;
+
+COMMENT         : '%' ~[\r\n]* -> skip ;
+WS              : [ \t\f]+ -> channel(HIDDEN);
 
 NL: ('\r'? '\n' ' '*);
-ARROW           : '->' | '<-' ;
-ID              : [a-zA-Z_]+[a-zA-Z0-9]* ;
-INT             : [0-9]+ ;
-FLOAT           : [0-9]+'.'[0-9]* ;
-WS              : [ \t\f]+                             -> channel(HIDDEN);
-COMMENT         : '%' ~[\r\n]* -> skip ;
 
-//NEWLINE : '\n' -> skip ;
 
-particleType    : 'Particle' | 'Field' | 'System' | 'int' | 'float' | 'bool' ;
+dottedID    : ID ('.' ID)* ;
