@@ -35,6 +35,7 @@ null
 '/'
 '^'
 '?'
+'?'
 'Not'
 'particle'
 'field'
@@ -99,6 +100,8 @@ FLOAT
 COMMENT
 WS
 NL
+WS
+NL
 
 rule names:
 T__0
@@ -147,6 +150,8 @@ ID
 INT
 FLOAT
 COMMENT
+WS
+NL
 WS
 NL
 
