@@ -53,6 +53,7 @@ class Interpreter(PhysicsVisitor):
         if ctx.expr():
             self.variables[name] = self.visit(ctx.expr())
 
+
         # dodaj do systemu jeśli jesteśmy w zagnieżdżonym scope
         if "$SYSTEM" in self.variables and isinstance(self.variables["$SYSTEM"], System):
             system = self.variables["$SYSTEM"]
@@ -61,6 +62,9 @@ class Interpreter(PhysicsVisitor):
             elif typ == "field":
                 system.add_field(name, self.variables[name])
 
+        
+        print(f"Zmienna zadeklarowana: {name} = {self.variables[name]}")
+        print(f"Stan zmiennych: {self.variables}")
         return None
 
 
@@ -336,7 +340,7 @@ class Interpreter(PhysicsVisitor):
             return self.visit(ctx.vector())
 
         if ctx.getChild(0).getText() == "(":
-            return self.visit(ctx.expr(0))
+            return self.visit(ctx.expr())
 
         text = ctx.getText()
 

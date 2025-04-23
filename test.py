@@ -45,3 +45,7 @@ if "cz1" in interpreter.variables and isinstance(interpreter.variables["cz1"], P
     dummy = System("global")
     cz1 = interpreter.variables["cz1"]
     dummy.add_particle("cz1", cz1)
+
+print("\nFinalny stan zmiennych:")
+for k, v in interpreter.variables.items():
+    print(f"   {k} = {v}")
