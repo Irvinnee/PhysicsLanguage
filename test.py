@@ -49,22 +49,16 @@ interpreter.visit(tree)
 #     sim = Simulation()
 #     sim.run(dummy, 30)
 
-dummy = System("global")
-dummy.add_particle("cz1", Particle(4, [1,1,1]))
-dummy.add_particle("cz2", Particle(4, [0,0,0]))
-dummy.add_particle("cz3", Particle(4, [1,1,0]))
-dummy.add_particle("cz4", Particle(4, [0,1,1]))
-dummy.add_particle("cz5", Particle(4, [0,0,1]))
-dummy.add_particle("cz6", Particle(4, [1,0,1]))
-dummy.add_particle("cz7", Particle(4, [0,1,0]))
-dummy.add_particle("cz8", Particle(4, [1,0,0]))
 
 sim = Simulation()
+dummy = System("global")
+
+for name, value in interpreter.variables.items():
+    if isinstance(value, Particle):
+        dummy.add_particle(name, value)
+
+
 sim.run(dummy, 30)
-if "cz1" in interpreter.variables and isinstance(interpreter.variables["cz1"], Particle):
-    dummy = System("global")
-    cz1 = interpreter.variables["cz1"]
-    dummy.add_particle("cz1", cz1)
 
 print("\nFinalny stan zmiennych:")
 for k, v in interpreter.variables.items():
