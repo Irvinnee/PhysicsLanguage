@@ -72,7 +72,7 @@ class Graphics:
             radius = max(int(p.mass * 5), 5)  # Zwiększenie rozmiaru cząsteczek
             if p not in self.colors.keys():
                 self.colors[p] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            pygame.draw.circle(self.screen, (0,0,255), (int(x), int(y)), radius)
+            pygame.draw.circle(self.screen, self.colors[p], (int(x), int(y)), radius)
 
     def handle_camera_movement(self):
         keys = pygame.key.get_pressed()
