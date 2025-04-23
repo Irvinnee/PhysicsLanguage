@@ -1,9 +1,7 @@
 import threading
-from running_simulation.engine import System, Particle
-# from running_simulation.graphics import GraphicsEngine
-from typing import Callable, Dict, List, Optional, Union
-import pygame
-from OpenGL.GL import *
+from time import sleep
+
+from running_simulation.engine import System
 
 from running_simulation.visualisation_engine import Graphics
 
@@ -35,7 +33,9 @@ class Simulation:
                         self.graphics_engine.particles = self.system.particles
 
 
-                print(self.graphics_engine.sim_time*self.max_time)
+                # print(self.graphics_engine.sim_time*self.max_time)
+
+            sleep(0.01)
 
 
     # Program graficzny
