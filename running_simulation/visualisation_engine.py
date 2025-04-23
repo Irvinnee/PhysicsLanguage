@@ -1,5 +1,6 @@
 import threading
-
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import math
 from running_simulation.engine import System, Particle
