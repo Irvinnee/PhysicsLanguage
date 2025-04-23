@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from PhysicsVisitor import PhysicsVisitor
 from PhysicsParser import PhysicsParser
-from engine import Particle, Field, System, Law
+from running_simulation.engine import Particle, Field, System, Law
 
 
 class Interpreter(PhysicsVisitor):
