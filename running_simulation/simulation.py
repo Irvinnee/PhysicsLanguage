@@ -33,7 +33,7 @@ class Simulation:
                         self.graphics_engine.particles = self.system.particles
 
 
-                # print(self.graphics_engine.sim_time*self.max_time)
+                print(self.graphics_engine.sim_time*self.max_time)
 
             sleep(0.01)
 
