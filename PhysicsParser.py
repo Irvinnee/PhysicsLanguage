@@ -1286,24 +1286,20 @@ class PhysicsParser ( Parser ):
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [17]:
-            if token in [17]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 180
                 self.ifStmt()
                 pass
-            elif token in [20]:
             elif token in [20]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 181
                 self.whileStmt()
                 pass
             elif token in [21]:
-            elif token in [21]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 182
                 self.forStmt()
                 pass
-            elif token in [22]:
             elif token in [22]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 183
