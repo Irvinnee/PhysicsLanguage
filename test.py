@@ -53,9 +53,13 @@ interpreter.visit(tree)
 sim = Simulation()
 dummy = System("global")
 
+
 for name, value in interpreter.variables.items():
+    print("Zmienna:", name, "Typ:", type(value))
     if isinstance(value, Particle):
         dummy.add_particle(name, value)
+
+
 
 
 sim.run(dummy, 30)

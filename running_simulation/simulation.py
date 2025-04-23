@@ -21,7 +21,7 @@ class Simulation:
 
     # Silnik symulacji
     def simulation_engine(self):
-        while True:
+        while not self.stop_event.is_set():
             with self.graphics_engine.time_lock:
                 while abs(self.graphics_engine.sim_time*self.max_time - self.system.time) > 1:
                     if self.graphics_engine.sim_time*self.max_time - self.system.time > 0:
@@ -48,9 +48,10 @@ class Simulation:
         self.system = system
         self.particles_data = system.particles
         self.max_time = max_time
+        self.stop_event = threading.Event()
 
         # self.graphics_engine = Graphics(self.particles_data, self.data_lock, self.time, self.time_lock)
-        self.graphics_engine = Graphics(self.particles_data)
+        self.graphics_engine = Graphics(self.particles_data, self.stop_event)
 
         engine_thread = threading.Thread(target=self.simulation_engine)
 
@@ -59,6 +60,7 @@ class Simulation:
         engine_thread.start()
         # graphics_thread.start()
         self.graphics()
+        self.stop_event.set()
 
         # # Czekanie na zakończenie wątków
         engine_thread.join(5)

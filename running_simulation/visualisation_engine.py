@@ -19,6 +19,7 @@ class Graphics:
     data_lock = threading.Lock()
     time_lock = threading.Lock()
     sim_time = 0.0
+    stop_event: threading.Event
 
     camera_angle = [0, 0]
     camera_pos = [0, 0, -5]
@@ -26,9 +27,10 @@ class Graphics:
     screen = None
 
 
-    def __init__(self, particles):
+    def __init__(self, particles, stop_event: threading.Event):
         # self.data_lock = data_lock
         self.particles = particles
+        self.stop_event = stop_event
         # self.sim_time = sim_time
         # self.time_lock = time_lock
 
@@ -135,10 +137,11 @@ class Graphics:
         prev_time = start_time
 
         # Pętla główna
-        while running:
+        while running and not self.stop_event.is_set():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    self.stop_event.set()
                 if event.type == pygame.MOUSEMOTION:
                     if slider_rect.collidepoint(event.pos):
                         slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
