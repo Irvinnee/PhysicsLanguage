@@ -1,0 +1,13 @@
+law move(particle p):
+    p->position = p->position + p->velocity
+
+
+system sys1:
+    particle p
+    p->velocity = [1,1,0]
+    <p & move>
+
+run(sys1, 3)
+
+foreach particle p(sys1):
+    print(p->position[0])

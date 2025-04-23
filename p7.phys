@@ -1,0 +1,4 @@
+bool a = Not (1 == 2)
+bool b = (1 < 2) And (2 < 3) Or False
+print(a)
+print(b)

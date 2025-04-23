@@ -1,0 +1,8 @@
+float x = 0
+int i
+
+while (x < 10):
+    x = x + 1
+
+for i(0, 10, 1):
+    print(i)

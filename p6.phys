@@ -1,0 +1,4 @@
+system outer:
+    system inner:
+        particle p
+        p->position = [0, 0, 0]

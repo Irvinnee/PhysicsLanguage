@@ -1,0 +1,5 @@
+system sys1:
+    particle p
+
+foreach particle p(sys1):
+    print(p->position[0])

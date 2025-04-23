@@ -1,0 +1,6 @@
+system lab:
+    particle a
+    particle b
+
+foreach particle p(lab):
+    print(p->velocity[0])

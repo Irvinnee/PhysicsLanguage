@@ -1,0 +1,10 @@
+float a = 1.5
+int b
+b = 3
+
+func double(float x):
+    => x * 2
+print(double(a + b))
+
+print (2 * (3 + 4^2))
+print (2 * 3 + 4^2)

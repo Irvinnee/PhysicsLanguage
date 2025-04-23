@@ -170,6 +170,8 @@ class Interpreter(PhysicsVisitor):
         self.variables = saved_vars.copy()
         for p, v in zip(sig["params"], args):
             self.variables[p] = v
+            self.symbol_table[p] = True
+
 
         self.in_function, self.return_value = True, None
         try:
@@ -238,6 +240,7 @@ class Interpreter(PhysicsVisitor):
         cmp = (lambda a, b: a <= b) if step_val >= 0 else (lambda a, b: a >= b)
         while cmp(i, end_val):
             self.variables[var_name] = i
+            self.symbol_table[var_name] = True
             self.visit(ctx.block())
             self.variables["$TIME"] += 1
             i += step_val

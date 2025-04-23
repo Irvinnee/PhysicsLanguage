@@ -1,0 +1,2 @@
+func mix(float x, float y) => (x + y) / 2
+print(mix(3.0, 7.0))

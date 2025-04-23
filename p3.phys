@@ -1,0 +1,5 @@
+func pow2(int x):
+    int y = x ^ 2
+    => y
+
+print(pow2(5))

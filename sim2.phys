@@ -1,0 +1,21 @@
+system cube:
+    particle p1
+    particle p2
+    particle p3
+    particle p4
+    particle p5
+    particle p6
+    particle p7
+    particle p8
+
+    p1->position = [0, 0, 0]
+    p2->position = [1, 0, 0]
+    p3->position = [0, 1, 0]
+    p4->position = [1, 1, 0]
+    p5->position = [0, 0, 1]
+    p6->position = [1, 0, 1]
+    p7->position = [0, 1, 1]
+    p8->position = [1, 1, 1]
+
+
+
