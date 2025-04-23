@@ -1,13 +1,3 @@
-from __future__ import annotations
-
-"""Minimal Physics Engine (mass + position only)
---------------------------------------------------
-* Particle: mass, position, optional velocity
-* Field stub kept for future extensions
-* Laws (callables) may modify position / velocity directly – brak pojęcia siły
-* System.step(dt) = wywołaj prawa ➜ przesuń p = p + v·dt
-"""
-
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Union
 
@@ -15,9 +5,8 @@ Vector = List[float]
 LawFn  = Callable[["SimObject", "System", float], None]
 
 
-# ---------------------------------------------------------------------------
+
 #  Base class for objects living in a system
-# ---------------------------------------------------------------------------
 class SimObject:
     def __getitem__(self, key):
         attr, idx = key
@@ -28,9 +17,9 @@ class SimObject:
         getattr(self, attr)[idx] = value
 
 
-# ---------------------------------------------------------------------------
-#  Particle = mass + position (+ optional velocity)
-# ---------------------------------------------------------------------------
+
+#  Particle 
+
 class Particle(SimObject):
     def __init__(
         self,
@@ -44,9 +33,9 @@ class Particle(SimObject):
         self.velocity: Vector = velocity or [0.0, 0.0, 0.0]
 
 
-# ---------------------------------------------------------------------------
-#  Field (placeholder – na przyszłość)
-# ---------------------------------------------------------------------------
+
+#  Field (placeholder)
+
 class Field(SimObject):
     def __init__(self) -> None:
         self.radius: float = 1.0
@@ -54,14 +43,12 @@ class Field(SimObject):
         self.source_position: Vector = [0.0, 0.0, 0.0]
 
 
-# ---------------------------------------------------------------------------
-#  DSL‑style Law wrapper: fn(obj, system, dt)
-# ---------------------------------------------------------------------------
+#  Law wrapper: 
 @dataclass
 class Law:
     fn: LawFn
-    scope: str = "global"      # "global" | "system" | obj‑name
-    target: str = "particle"   # "particle" | "field"
+    scope: str = "global"     
+    target: str = "particle"
 
     def applies(self, name: str, obj: SimObject) -> bool:
         if self.target == "particle" and not isinstance(obj, Particle):
@@ -79,9 +66,8 @@ class Law:
 
 
 
-# ---------------------------------------------------------------------------
-#  System = container + time integrator (position += velocity·dt)
-# ---------------------------------------------------------------------------
+
+#  System
 class System:
     def __init__(self, name: str = "root") -> None:
         self.name = name
@@ -112,9 +98,7 @@ class System:
 
         self.laws.append(law)
 
-    # ------------------------------------------------------------------
     #  Main step(dt): run laws ➜ update positions ➜ recurse into subs
-    # ------------------------------------------------------------------
     def step(self, dt: float = 1.0):
         
 

@@ -1,2 +1,12 @@
-func mix(float x, float y) => (x + y) / 2
-print(mix(3.0, 7.0))
+system układ
+particle cz1
+układ <- cz1          %  ← teraz OK, bo to osobna reguła
+
+law test (particle p):
+    if (p?mass):
+        p->mass = p->mass + 1.0
+
+foreach particle p (układ):
+    test(p)
+
+print(cz1->mass)

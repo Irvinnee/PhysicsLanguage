@@ -7,7 +7,7 @@ from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
 
-with open("sim2.phys", encoding="utf-8") as f:
+with open("program.phys", encoding="utf-8") as f:
     code = f.read()
 
 input_stream = InputStream(code)
@@ -16,15 +16,25 @@ tokens = CommonTokenStream(lexer)
 parser = PhysicsParser(tokens)
 
 listener = ThrowingErrorListener()
+
+lexer.removeErrorListeners()
 parser.removeErrorListeners()
+lexer.addErrorListener(listener)
 parser.addErrorListener(listener)
 
 tree = parser.prog()
 
-if listener.errors:
-    print("Program zawiera błędy składniowe:")
-    for err in listener.errors:
-        print("   ", err)
+if listener.has_errors():
+    if listener.lexer_errors:
+        print("Błędy leksykalne:")
+        for err in listener.lexer_errors:
+            print("   ", err)
+
+    if listener.parser_errors:
+        print("Błędy składniowe:")
+        for err in listener.parser_errors:
+            print("   ", err)
+
     exit(1)
 
 collector = SymbolCollector()

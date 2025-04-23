@@ -3,3 +3,5 @@ system sys1:
 
 foreach particle p(sys1):
     print(p->position[0])
+
+field a

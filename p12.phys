@@ -1,0 +1,7 @@
+func f(int n):
+    if (n < 2):
+        => 1
+    else:
+        => n * f(n - 1)
+
+print(f(5))
