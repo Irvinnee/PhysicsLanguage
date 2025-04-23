@@ -35,7 +35,6 @@ null
 '/'
 '^'
 '?'
-'?'
 'Not'
 'particle'
 'field'
@@ -104,10 +103,6 @@ WS
 NL
 INDENT
 DEDENT
-WS
-NL
-INDENT
-DEDENT
 
 rule names:
 prog
@@ -141,24 +136,8 @@ mulDiv
 power
 unary
 vector
-printStmt
-returnStmt
-emptyLine
-expr
-logicOr
-logicAnd
-equality
-compare
-addSub
-mulDiv
-power
-unary
-vector
 atom
 argList
-type
-block
-dottedID
 type
 block
 dottedID

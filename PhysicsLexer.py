@@ -1,5 +1,4 @@
 # Generated from Physics.g4 by ANTLR 4.13.1
-# Generated from Physics.g4 by ANTLR 4.13.1
 from antlr4 import *
 from io import StringIO
 import sys
@@ -7,10 +6,6 @@ if sys.version_info[1] > 5:
     from typing import TextIO
 else:
     from typing.io import TextIO
-
-
-from antlr_denter.DenterHelper import DenterHelper
-from PhysicsParser import PhysicsParser
 
 
 from antlr_denter.DenterHelper import DenterHelper
@@ -438,7 +433,6 @@ class PhysicsLexer(Lexer):
 
     symbolicNames = [ "<INVALID>",
             "ID", "INT", "FLOAT", "COMMENT", "WS", "NL" ]
-            "ID", "INT", "FLOAT", "COMMENT", "WS", "NL" ]
 
     ruleNames = [ "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6", 
                   "T__7", "T__8", "T__9", "T__10", "T__11", "T__12", "T__13", 
@@ -454,27 +448,9 @@ class PhysicsLexer(Lexer):
     def __init__(self, input=None, output:TextIO = sys.stdout):
         super().__init__(input, output)
         self.checkVersion("4.13.1")
-        self.checkVersion("4.13.1")
         self._interp = LexerATNSimulator(self, self.atn, self.decisionsToDFA, PredictionContextCache())
         self._actions = None
         self._predicates = None
-
-
-    class MyCoolDenter(DenterHelper):
-        def __init__(self, lexer, nl_token, indent_token, dedent_token, ignore_eof):
-            super().__init__(nl_token, indent_token, dedent_token, ignore_eof)
-            self.lexer: PhysicsLexer = lexer
-
-        def pull_token(self):
-            return super(PhysicsLexer, self.lexer).nextToken()
-
-    denter = None
-
-    def nextToken(self):
-        if not self.denter:
-            self.denter = self.MyCoolDenter(self, self.NL, PhysicsParser.INDENT, PhysicsParser.DEDENT, False)
-        return self.denter.next_token()
-
 
 
     class MyCoolDenter(DenterHelper):

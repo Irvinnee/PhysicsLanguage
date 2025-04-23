@@ -1,5 +1,4 @@
 # Generated from Physics.g4 by ANTLR 4.13.1
-# Generated from Physics.g4 by ANTLR 4.13.1
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -283,7 +282,6 @@ class PhysicsParser ( Parser ):
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
         self.checkVersion("4.13.1")
-        self.checkVersion("4.13.1")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -396,18 +394,6 @@ class PhysicsParser ( Parser ):
 
         def controlStmt(self):
             return self.getTypedRuleContext(PhysicsParser.ControlStmtContext,0)
-
-
-        def printStmt(self):
-            return self.getTypedRuleContext(PhysicsParser.PrintStmtContext,0)
-
-
-        def returnStmt(self):
-            return self.getTypedRuleContext(PhysicsParser.ReturnStmtContext,0)
-
-
-        def emptyLine(self):
-            return self.getTypedRuleContext(PhysicsParser.EmptyLineContext,0)
 
 
         def printStmt(self):
@@ -541,15 +527,10 @@ class PhysicsParser ( Parser ):
 
         def type_(self):
             return self.getTypedRuleContext(PhysicsParser.TypeContext,0)
-        def type_(self):
-            return self.getTypedRuleContext(PhysicsParser.TypeContext,0)
 
 
         def ID(self):
             return self.getToken(PhysicsParser.ID, 0)
-
-        def NL(self):
-            return self.getToken(PhysicsParser.NL, 0)
 
         def NL(self):
             return self.getToken(PhysicsParser.NL, 0)
@@ -625,8 +606,6 @@ class PhysicsParser ( Parser ):
             return self.getTypedRuleContext(PhysicsParser.ExprContext,0)
 
 
-        def NL(self):
-            return self.getToken(PhysicsParser.NL, 0)
         def NL(self):
             return self.getToken(PhysicsParser.NL, 0)
 
@@ -750,7 +729,6 @@ class PhysicsParser ( Parser ):
 
         localctx = PhysicsParser.TargetContext(self, self._ctx, self.state)
         self.enterRule(localctx, 8, self.RULE_target)
-        self._la = 0 # Token type
         self._la = 0 # Token type
         try:
             self.state = 117
@@ -1149,9 +1127,6 @@ class PhysicsParser ( Parser ):
         def NL(self):
             return self.getToken(PhysicsParser.NL, 0)
 
-        def NL(self):
-            return self.getToken(PhysicsParser.NL, 0)
-
         def block(self):
             return self.getTypedRuleContext(PhysicsParser.BlockContext,0)
 
@@ -1400,22 +1375,22 @@ class PhysicsParser ( Parser ):
             self.state = 184
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [13]:
+            if token in [17]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 180
                 self.ifStmt()
                 pass
-            elif token in [16]:
+            elif token in [20]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 181
                 self.whileStmt()
                 pass
-            elif token in [17]:
+            elif token in [21]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 182
                 self.forStmt()
                 pass
-            elif token in [18]:
+            elif token in [22]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 183
                 self.foreachStmt()
@@ -1445,12 +1420,6 @@ class PhysicsParser ( Parser ):
             else:
                 return self.getTypedRuleContext(PhysicsParser.ExprContext,i)
 
-
-        def NL(self, i:int=None):
-            if i is None:
-                return self.getTokens(PhysicsParser.NL)
-            else:
-                return self.getToken(PhysicsParser.NL, i)
 
         def NL(self, i:int=None):
             if i is None:
@@ -1554,7 +1523,6 @@ class PhysicsParser ( Parser ):
 
                 self.state = 214
                 self._errHandler.sync(self)
-                _la = self._input.LA(1)
                 _la = self._input.LA(1)
 
             self.state = 224
@@ -1827,7 +1795,6 @@ class PhysicsParser ( Parser ):
 
 
     class PrintStmtContext(ParserRuleContext):
-    class PrintStmtContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -2000,15 +1967,15 @@ class PhysicsParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return PhysicsParser.RULE_mulDiv
+            return PhysicsParser.RULE_expr
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMulDiv" ):
-                listener.enterMulDiv(self)
+            if hasattr( listener, "enterExpr" ):
+                listener.enterExpr(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMulDiv" ):
-                listener.exitMulDiv(self)
+            if hasattr( listener, "exitExpr" ):
+                listener.exitExpr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitExpr" ):
@@ -2641,152 +2608,6 @@ class PhysicsParser ( Parser ):
         return localctx
 
 
-    class UnaryContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def dottedID(self):
-            return self.getTypedRuleContext(PhysicsParser.DottedIDContext,0)
-
-
-        def ID(self):
-            return self.getToken(PhysicsParser.ID, 0)
-
-        def unary(self):
-            return self.getTypedRuleContext(PhysicsParser.UnaryContext,0)
-
-
-        def atom(self):
-            return self.getTypedRuleContext(PhysicsParser.AtomContext,0)
-
-
-        def getRuleIndex(self):
-            return PhysicsParser.RULE_unary
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUnary" ):
-                listener.enterUnary(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUnary" ):
-                listener.exitUnary(self)
-
-
-
-
-    def unary(self):
-
-        localctx = PhysicsParser.UnaryContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 50, self.RULE_unary)
-        self._la = 0 # Token type
-        try:
-            self.state = 296
-            self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,23,self._ctx)
-            if la_ == 1:
-                self.enterOuterAlt(localctx, 1)
-                self.state = 289
-                self.dottedID()
-                self.state = 290
-                self.match(PhysicsParser.T__32)
-                self.state = 291
-                self.match(PhysicsParser.ID)
-                pass
-
-            elif la_ == 2:
-                self.enterOuterAlt(localctx, 2)
-                self.state = 293
-                _la = self._input.LA(1)
-                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 17985175552) != 0)):
-                    self._errHandler.recoverInline(self)
-                else:
-                    self._errHandler.reportMatch(self)
-                    self.consume()
-                self.state = 294
-                self.unary()
-                pass
-
-            elif la_ == 3:
-                self.enterOuterAlt(localctx, 3)
-                self.state = 295
-                self.atom()
-                pass
-
-
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
-    class VectorContext(ParserRuleContext):
-        __slots__ = 'parser'
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def expr(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(PhysicsParser.ExprContext)
-            else:
-                return self.getTypedRuleContext(PhysicsParser.ExprContext,i)
-
-
-        def getRuleIndex(self):
-            return PhysicsParser.RULE_vector
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterVector" ):
-                listener.enterVector(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitVector" ):
-                listener.exitVector(self)
-
-
-
-
-    def vector(self):
-
-        localctx = PhysicsParser.VectorContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 52, self.RULE_vector)
-        self._la = 0 # Token type
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 298
-            self.match(PhysicsParser.T__2)
-            self.state = 299
-            self.expr()
-            self.state = 304
-            self._errHandler.sync(self)
-            _la = self._input.LA(1)
-            while _la==12:
-                self.state = 300
-                self.match(PhysicsParser.T__11)
-                self.state = 301
-                self.expr()
-                self.state = 306
-                self._errHandler.sync(self)
-                _la = self._input.LA(1)
-
-            self.state = 307
-            self.match(PhysicsParser.T__3)
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-
     class AtomContext(ParserRuleContext):
         __slots__ = 'parser'
 
@@ -2804,10 +2625,6 @@ class PhysicsParser ( Parser ):
             return self.getTypedRuleContext(PhysicsParser.DottedIDContext,0)
 
 
-        def dottedID(self):
-            return self.getTypedRuleContext(PhysicsParser.DottedIDContext,0)
-
-
         def ID(self):
             return self.getToken(PhysicsParser.ID, 0)
 
@@ -2817,12 +2634,8 @@ class PhysicsParser ( Parser ):
 
         def expr(self):
             return self.getTypedRuleContext(PhysicsParser.ExprContext,0)
-        def expr(self):
-            return self.getTypedRuleContext(PhysicsParser.ExprContext,0)
 
 
-        def vector(self):
-            return self.getTypedRuleContext(PhysicsParser.VectorContext,0)
         def vector(self):
             return self.getTypedRuleContext(PhysicsParser.VectorContext,0)
 
@@ -2911,7 +2724,6 @@ class PhysicsParser ( Parser ):
 
 
                 pass
-            elif token in [3]:
             elif token in [3]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 363
@@ -3003,7 +2815,6 @@ class PhysicsParser ( Parser ):
 
 
     class TypeContext(ParserRuleContext):
-    class TypeContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -3013,11 +2824,8 @@ class PhysicsParser ( Parser ):
 
         def getRuleIndex(self):
             return PhysicsParser.RULE_type
-            return PhysicsParser.RULE_type
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterType" ):
-                listener.enterType(self)
             if hasattr( listener, "enterType" ):
                 listener.enterType(self)
 
