@@ -80,12 +80,12 @@ class PhysicsListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by PhysicsParser#systemAddStmt.
-    def enterSystemAddStmt(self, ctx:PhysicsParser.SystemAddStmtContext):
+    # Enter a parse tree produced by PhysicsParser#attrAssignStmt.
+    def enterAttrAssignStmt(self, ctx:PhysicsParser.AttrAssignStmtContext):
         pass
 
-    # Exit a parse tree produced by PhysicsParser#systemAddStmt.
-    def exitSystemAddStmt(self, ctx:PhysicsParser.SystemAddStmtContext):
+    # Exit a parse tree produced by PhysicsParser#attrAssignStmt.
+    def exitAttrAssignStmt(self, ctx:PhysicsParser.AttrAssignStmtContext):
         pass
 
 

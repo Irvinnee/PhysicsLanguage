@@ -49,8 +49,8 @@ class PhysicsVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by PhysicsParser#systemAddStmt.
-    def visitSystemAddStmt(self, ctx:PhysicsParser.SystemAddStmtContext):
+    # Visit a parse tree produced by PhysicsParser#attrAssignStmt.
+    def visitAttrAssignStmt(self, ctx:PhysicsParser.AttrAssignStmtContext):
         return self.visitChildren(ctx)
 
 

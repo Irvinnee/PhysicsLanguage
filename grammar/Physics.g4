@@ -30,7 +30,7 @@ prog        : statement* EOF ;
 statement
     : declStmt
     | assignStmt
-    | systemAddStmt
+    | attrAssignStmt
     | callStmt
     | lawDecl
     | systemDecl
@@ -55,8 +55,8 @@ lawDecl     : 'law' ID '(' paramList? ')' ':'
                block;
 
 lawAssignStmt : '<' dottedID '&' ID '>' NL ;
-systemAddStmt
-    : dottedID '<-' ID NL
+attrAssignStmt
+    : dottedID '<-' ID ('=' expr)? NL
     ;
 callStmt
     : dottedID '(' argList? ')' NL      #call

@@ -1,6 +1,5 @@
-system układ
-particle cz1
-układ <- cz1          %  ← teraz OK, bo to osobna reguła
+system układ:
+    particle cz1
 
 law test (particle p):
     if (p?mass):
@@ -10,3 +9,4 @@ foreach particle p (układ):
     test(p)
 
 print(cz1->mass)
+

@@ -378,21 +378,17 @@ class Interpreter(PhysicsVisitor):
         raise Exception(f"Use of undeclared variable '{text}'")
 
 
-    def visitSystemAddStmt(self, ctx):
-        system_name = ctx.dottedID().getText()
-        particle_name = ctx.ID().getText()
+    def visitAttrAssignStmt(self, ctx):
+        obj_name = ctx.dottedID().getText()
+        attr_name = ctx.ID().getText()
+        obj = self.variables[obj_name]
 
-        system = self.variables.get(system_name)
-        particle = self.variables.get(particle_name)
+        # domyślna wartość: 0.0 jeśli brak przypisania
+        value = self.visit(ctx.expr()) if ctx.expr() else 0.0
 
-        if not isinstance(system, System):
-            raise Exception(f"'{system_name}' nie jest Systemem")
-        if not isinstance(particle, Particle):
-            raise Exception(f"'{particle_name}' nie jest Particle")
-
-        system.add_particle(particle_name, particle)
-
+        setattr(obj, attr_name, value)
         return None
+
 
     def visitCall(self, ctx):
         func_name = ctx.dottedID().getText()
