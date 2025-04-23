@@ -316,6 +316,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitProg" ):
                 listener.exitProg(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitProg" ):
+                return visitor.visitProg(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -412,6 +418,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStatement" ):
                 listener.exitStatement(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitStatement" ):
+                return visitor.visitStatement(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -538,6 +550,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitDeclStmt" ):
                 listener.exitDeclStmt(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDeclStmt" ):
+                return visitor.visitDeclStmt(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -601,6 +619,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAssignStmt" ):
                 listener.exitAssignStmt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignStmt" ):
+                return visitor.visitAssignStmt(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -668,6 +692,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitAttrTarget" ):
                 listener.exitAttrTarget(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAttrTarget" ):
+                return visitor.visitAttrTarget(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class VarTargetContext(TargetContext):
 
@@ -686,6 +716,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitVarTarget" ):
                 listener.exitVarTarget(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitVarTarget" ):
+                return visitor.visitVarTarget(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -767,6 +803,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitLawDecl" ):
                 listener.exitLawDecl(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLawDecl" ):
+                return visitor.visitLawDecl(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -834,6 +876,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitLawAssignStmt" ):
                 listener.exitLawAssignStmt(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLawAssignStmt" ):
+                return visitor.visitLawAssignStmt(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -891,6 +939,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSystemAddStmt" ):
                 listener.exitSystemAddStmt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSystemAddStmt" ):
+                return visitor.visitSystemAddStmt(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -958,6 +1012,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitCall" ):
                 listener.exitCall(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCall" ):
+                return visitor.visitCall(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
     def callStmt(self):
@@ -1017,6 +1077,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSystemDecl" ):
                 listener.exitSystemDecl(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSystemDecl" ):
+                return visitor.visitSystemDecl(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1079,6 +1145,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitFuncDecl" ):
                 listener.exitFuncDecl(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitFuncDecl" ):
+                return visitor.visitFuncDecl(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1160,6 +1232,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitParamList" ):
                 listener.exitParamList(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitParamList" ):
+                return visitor.visitParamList(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1218,6 +1296,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitParam" ):
                 listener.exitParam(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitParam" ):
+                return visitor.visitParam(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1273,6 +1357,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitControlStmt" ):
                 listener.exitControlStmt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitControlStmt" ):
+                return visitor.visitControlStmt(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1354,6 +1444,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIfStmt" ):
                 listener.exitIfStmt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIfStmt" ):
+                return visitor.visitIfStmt(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1492,6 +1588,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitWhileStmt" ):
                 listener.exitWhileStmt(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhileStmt" ):
+                return visitor.visitWhileStmt(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1557,6 +1659,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitForStmt" ):
                 listener.exitForStmt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitForStmt" ):
+                return visitor.visitForStmt(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1639,6 +1747,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitForeachStmt" ):
                 listener.exitForeachStmt(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitForeachStmt" ):
+                return visitor.visitForeachStmt(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1705,6 +1819,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitPrintStmt" ):
                 listener.exitPrintStmt(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPrintStmt" ):
+                return visitor.visitPrintStmt(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1758,6 +1878,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitReturnStmt" ):
                 listener.exitReturnStmt(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitReturnStmt" ):
+                return visitor.visitReturnStmt(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1802,6 +1928,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitEmptyLine" ):
                 listener.exitEmptyLine(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitEmptyLine" ):
+                return visitor.visitEmptyLine(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1896,6 +2028,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitLogicOr" ):
                 listener.exitLogicOr(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLogicOr" ):
+                return visitor.visitLogicOr(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1954,6 +2092,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitLogicAnd" ):
                 listener.exitLogicAnd(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLogicAnd" ):
+                return visitor.visitLogicAnd(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2011,6 +2155,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitEquality" ):
                 listener.exitEquality(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitEquality" ):
+                return visitor.visitEquality(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2072,6 +2222,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitCompare" ):
                 listener.exitCompare(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCompare" ):
+                return visitor.visitCompare(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2116,6 +2272,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAddSub" ):
                 listener.exitAddSub(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAddSub" ):
+                return visitor.visitAddSub(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2180,6 +2342,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitMulDiv" ):
                 listener.exitMulDiv(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMulDiv" ):
+                return visitor.visitMulDiv(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2242,6 +2410,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitPower" ):
                 listener.exitPower(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPower" ):
+                return visitor.visitPower(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2308,6 +2482,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitUnary" ):
                 listener.exitUnary(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitUnary" ):
+                return visitor.visitUnary(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2384,6 +2564,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitVector" ):
                 listener.exitVector(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitVector" ):
+                return visitor.visitVector(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2464,6 +2650,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAtom" ):
                 listener.exitAtom(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAtom" ):
+                return visitor.visitAtom(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2583,6 +2775,12 @@ class PhysicsParser ( Parser ):
             if hasattr( listener, "exitArgList" ):
                 listener.exitArgList(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitArgList" ):
+                return visitor.visitArgList(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2634,6 +2832,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitType" ):
                 listener.exitType(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitType" ):
+                return visitor.visitType(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2691,6 +2895,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitBlock" ):
                 listener.exitBlock(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitBlock" ):
+                return visitor.visitBlock(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2750,6 +2960,12 @@ class PhysicsParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDottedID" ):
                 listener.exitDottedID(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDottedID" ):
+                return visitor.visitDottedID(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 

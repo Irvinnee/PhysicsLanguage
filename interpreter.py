@@ -14,6 +14,10 @@ class Interpreter(PhysicsVisitor):
         self.in_function: bool = False
         self.return_value = None
 
+    def visitProg(self, ctx):
+        return self.visitChildren(ctx)
+
+
     
 
     def visitAssignStmt(self, ctx):
