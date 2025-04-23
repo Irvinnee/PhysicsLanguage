@@ -74,26 +74,47 @@ class Graphics:
 
     def handle_camera_movement(self):
         keys = pygame.key.get_pressed()
+        move_speed = 0.1
+        angle_speed = 1.5
+
         if keys[pygame.K_UP]:
-            self.camera_pos[2] += 0.1
+            self.camera_pos[2] += move_speed
         if keys[pygame.K_DOWN]:
-            self.camera_pos[2] -= 0.1
+            self.camera_pos[2] -= move_speed
         if keys[pygame.K_LEFT]:
-            self.camera_pos[0] += 0.1
+            self.camera_pos[0] += move_speed
         if keys[pygame.K_RIGHT]:
-            self.camera_pos[0] -= 0.1
+            self.camera_pos[0] -= move_speed
+        if keys[pygame.K_SPACE]:
+            self.camera_pos[1] += move_speed
+        if keys[pygame.K_LSHIFT]:
+            self.camera_pos[1] -= move_speed
+
+        if keys[pygame.K_w]:
+            self.camera_angle[0] += angle_speed
+        if keys[pygame.K_s]:
+            self.camera_angle[0] -= angle_speed
+        if keys[pygame.K_a]:
+            self. camera_angle[1] -= angle_speed
+        if keys[pygame.K_d]:
+            self.camera_angle[1] += angle_speed
 
 
 
     # Funkcja do rysowania estetycznego suwaka
     def draw_slider(self, slider_rect, value):
-        # Gradient dla suwaka
-        start_color = (0, 0, 255)  # Niebieski
-        end_color = (255, 0, 0)    # Czerwony
-        color = tuple([min(255, max(0, int(start_color[i] + (end_color[i] - start_color[i]) * value))) for i in range(3)])
+        start_color = (0, 0, 255)
+        end_color = (255, 0, 0)
+        color = tuple([
+            min(255, max(0, int(start_color[i] + (end_color[i] - start_color[i]) * (value / slider_rect.width))))
+            for i in range(3)
+        ])
 
-        pygame.draw.rect(self.screen, (150, 150, 150), slider_rect)  # Tło suwaka
-        pygame.draw.rect(self.screen, color, pygame.Rect(slider_rect.left + value - 5, slider_rect.top - 5, 10, slider_rect.height + 10))  # Suwak
+        pygame.draw.rect(self.screen, (150, 150, 150), slider_rect)
+        handle_width = 20
+        handle_x = int(slider_rect.left + value - handle_width / 2)
+        handle_rect = pygame.Rect(handle_x, slider_rect.top - 5, handle_width, slider_rect.height + 10)
+        pygame.draw.rect(self.screen, color, handle_rect, border_radius=4)
 
     # Inicjalizacja Pygame
     def run_simulation(self):
