@@ -1,9 +1,9 @@
 from antlr4 import *
-from PhysicsLexer import PhysicsLexer
-from PhysicsParser import PhysicsParser
-from error_listener import ThrowingErrorListener
-from SymbolCollector import SymbolCollector
-from interpreter import Interpreter
+from grammar.PhysicsLexer import PhysicsLexer
+from grammar.PhysicsParser import PhysicsParser
+from interpreting.error_listener import ThrowingErrorListener
+from interpreting.SymbolCollector import SymbolCollector
+from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
 

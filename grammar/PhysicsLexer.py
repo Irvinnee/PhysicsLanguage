@@ -9,7 +9,7 @@ else:
 
 
 from antlr_denter.DenterHelper import DenterHelper
-from PhysicsParser import PhysicsParser
+from grammar.PhysicsParser import PhysicsParser
 
 
 def serializedATN():

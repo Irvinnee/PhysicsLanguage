@@ -1,4 +1,4 @@
-from PhysicsListener import PhysicsListener
+from grammar.PhysicsListener import PhysicsListener
 
 class SymbolCollector(PhysicsListener):
     def __init__(self):

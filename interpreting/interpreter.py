@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from PhysicsVisitor import PhysicsVisitor
-from PhysicsParser import PhysicsParser
+from grammar.PhysicsVisitor import PhysicsVisitor
+from grammar.PhysicsParser import PhysicsParser
 from running_simulation.engine import Particle, Field, System, Law
 
 
