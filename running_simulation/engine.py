@@ -6,7 +6,6 @@ LawFn  = Callable[["SimObject", "System", float], None]
 
 
 
-#  Base class for objects living in a system
 class SimObject:
     def __getitem__(self, key):
         attr, idx = key
@@ -83,7 +82,6 @@ class System:
         sys.parent = self
         self.subsystems[name] = sys
 
-    # --- object management
     def add_particle(self, name: str, p: Particle):
         self.particles[name] = p
         p.system = self
@@ -98,14 +96,11 @@ class System:
 
         self.laws.append(law)
 
-    #  Main step(dt): run laws ➜ update positions ➜ recurse into subs
     def step(self, dt: float = 1.0):
         
 
-        # (1) gather applicable laws (inherit from parent)
         active = self._collect_laws()
 
-        # (2) execute laws – may alter position/velocity directly
         for law in active:
             for name, obj in sorted(self.particles.items()):
                 if law.applies(name, obj):
@@ -115,21 +110,18 @@ class System:
                 if law.applies(name, obj):
                     law.fn(obj, self, dt)
 
-        # (3) integrate: position = position + velocity * dt
         for p in self.particles.values():
             p.position[0] += p.velocity[0] * dt
             p.position[1] += p.velocity[1] * dt
             p.position[2] += p.velocity[2] * dt
             # print(f" krok {self.time:.1f}, pozycja: {p.position}, prędkość: {p.velocity}")
 
-        # (4) subsystems
         for sub in self.subsystems.values():
             sub.step(dt)
         
 
         self.time += dt
 
-    # ------------------------------------------------------------------
     def _collect_laws(self) -> List[Law]:
         if self.parent is None:
             return self.laws.copy()

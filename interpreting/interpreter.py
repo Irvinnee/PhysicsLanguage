@@ -17,9 +17,6 @@ class Interpreter(PhysicsVisitor):
     def visitProg(self, ctx):
         return self.visitChildren(ctx)
 
-
-    
-
     def visitAssignStmt(self, ctx):
         value = self.visit(ctx.expr())
         target_ctx = ctx.target()
@@ -58,7 +55,6 @@ class Interpreter(PhysicsVisitor):
             self.variables[name] = self.visit(ctx.expr())
 
 
-        # dodaj do systemu jeśli jesteśmy w zagnieżdżonym scope
         if "$SYSTEM" in self.variables and isinstance(self.variables["$SYSTEM"], System):
             system = self.variables["$SYSTEM"]
             if typ == "particle":
@@ -67,8 +63,8 @@ class Interpreter(PhysicsVisitor):
                 system.add_field(name, self.variables[name])
 
         
-        print(f"Zmienna zadeklarowana: {name} = {self.variables[name]}")
-        print(f"Stan zmiennych: {self.variables}")
+        # print(f"Zmienna zadeklarowana: {name} = {self.variables[name]}")
+        # print(f"Stan zmiennych: {self.variables}")
         return None
 
 
@@ -99,28 +95,26 @@ class Interpreter(PhysicsVisitor):
         target_obj = self.variables.get(target_name)
 
         if isinstance(target_obj, System):
-            # przypisujemy do całego układu – działa na wszystkie particle
             target_obj.register_law(Law(fn=fn, scope=target_name, target="particle"))
 
         elif isinstance(target_obj, Particle):
-            # przypisujemy globalnie – tylko do tej cząstki
             self.global_laws.append(Law(fn=fn, scope=target_name, target="particle"))
 
         else:
-            raise Exception(f"Obiekt '{target_name}' nie jest systemem ani cząstką")
+            exit()
+            #Obiekt nie jest systemem ani cząstką
 
     def visitSystemDecl(self, ctx):
         name = ctx.ID().getText()
         system = System(name)
         self.variables[name] = system
 
-        #  ustaw jako "aktywny system" na czas jego bloku
         prev_active = self.variables.get("$SYSTEM")
         self.variables["$SYSTEM"] = system
 
         self.visit(ctx.block())
 
-        # przywróć poprzedni system (jeśli był zagnieżdżony)
+        # przywróć poprzedni system - zagnieżdżenia
         self.variables["$SYSTEM"] = prev_active
         return None
 
@@ -132,7 +126,7 @@ class Interpreter(PhysicsVisitor):
             else []
         )
 
-        # Zapamiętaj prawo dla późniejszych przypisań <x & prawo>
+        # prawo dla przypisań
         self.functions[name] = {
             "params": params,
             "expr": None,
@@ -162,9 +156,8 @@ class Interpreter(PhysicsVisitor):
 
         sig = self.functions[name]
         if len(args) != len(sig["params"]):
-            raise Exception(
-                f"{name}: oczekiwano {len(sig['params'])} argumentów, otrzymano {len(args)}"
-            )
+            exit()
+            # oczekiwano innej liczby argumentów
 
         saved_vars = self.variables
         self.variables = saved_vars.copy()
@@ -197,7 +190,7 @@ class Interpreter(PhysicsVisitor):
         attr_name = ctx.ID().getText()
         obj = self.variables[obj_name]
 
-        if ctx.expr():  # czyli np. velocity[0]
+        if ctx.expr():
             index = self.visit(ctx.expr())
             return (obj, attr_name, index)
         else:
@@ -252,7 +245,8 @@ class Interpreter(PhysicsVisitor):
 
         system_obj = self.variables.get(system_name)
         if not isinstance(system_obj, System):
-            raise Exception(f"'{system_name}' nie jest Systemem")
+            exit()
+            #sym_obj nie jest systemem
 
         for _, particle in system_obj.particles.items():
             self.variables[var_name] = particle
@@ -352,13 +346,11 @@ class Interpreter(PhysicsVisitor):
 
         text = ctx.getText()
 
-        # --- Funkcja z nawiasami np. f(x)
         if "(" in text:
             func_name = ctx.dottedID().getText()
             args = [self.visit(a) for a in ctx.argList().expr()] if ctx.argList() else []
             return self._call(func_name, args)
 
-        # --- Atrybut: obiekt->pole lub obiekt->pole[i]
         if "->" in text:
             obj_name, rest = text.split("->", 1)
             obj = self.variables[obj_name]
@@ -367,11 +359,9 @@ class Interpreter(PhysicsVisitor):
                 return getattr(obj, attr)[int(idx_txt)]
             return getattr(obj, rest)
 
-        # --- Użycie zmiennej: sprawdzamy symbol_table
         if text in self.symbol_table:
             return self.variables[text]
 
-        # --- wyjątek dla specjalnych zmiennych
         if text.startswith("$") and text in self.variables:
             return self.variables[text]
 
@@ -383,7 +373,6 @@ class Interpreter(PhysicsVisitor):
         attr_name = ctx.ID().getText()
         obj = self.variables[obj_name]
 
-        # domyślna wartość: 0.0 jeśli brak przypisania
         value = self.visit(ctx.expr()) if ctx.expr() else 0.0
 
         setattr(obj, attr_name, value)
@@ -396,7 +385,8 @@ class Interpreter(PhysicsVisitor):
 
         if func_name == "run":
             if len(args) not in (2, 3):
-                raise Exception("run(system/particle, steps [, dt])")
+                exit()
+                #zła liczba argumentów funckcji run
 
             dt = float(args[2]) if len(args) == 3 else 1.0
             steps = int(args[1])
@@ -417,7 +407,8 @@ class Interpreter(PhysicsVisitor):
                         name = var_name
                         break
                 if name is None:
-                    raise Exception("Nie udało się ustalić nazwy cząstki")
+                    exit()
+                    #błąd z nazwą cząstki
 
                 for _ in range(steps):
                     for law in self.global_laws:
@@ -430,8 +421,9 @@ class Interpreter(PhysicsVisitor):
 
 
             else:
-                raise Exception("pierwszy argument run() musi być Systemem albo Particle")
+                exit()
+                #pierwszy argument nie jest systemem/field/particle
 
-        # pozostałe wywołania
+
         self._call(func_name, args)
         return None
