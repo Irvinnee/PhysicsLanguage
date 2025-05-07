@@ -7,7 +7,7 @@ from running_simulation.engine import Particle, Field, System, Law
 
 class Interpreter(PhysicsVisitor):
     def __init__(self) -> None:
-        self.variables: dict[str, object] = {"$TIME": 0}
+        self.variables: dict[str, object] = {"$TIME": 10, "$DELTA": 1}
         self.symbol_table = {}
         self.global_laws: list[Law] = []
         self.functions: dict[str, dict] = {}
@@ -25,6 +25,8 @@ class Interpreter(PhysicsVisitor):
             name = target_ctx.getText()
             if name == "$TIME":
                 self.variables["$TIME"] = value
+            elif name == "$DELTA":
+                self.variables["$DELTA"] = value
             else:
                 self.variables[name] = value
 

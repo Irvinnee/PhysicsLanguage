@@ -7,7 +7,7 @@ from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
 
-with open("sim2.phys", encoding="utf-8") as f:
+with open("sim1.phys", encoding="utf-8") as f:
     code = f.read()
 
 input_stream = InputStream(code)
@@ -68,6 +68,6 @@ for name, value in interpreter.variables.items():
         dummy.add_particle(name, value)
 
 
-sim.run(dummy, 30)
+sim.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
 
 
