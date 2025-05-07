@@ -367,7 +367,10 @@ class Interpreter(PhysicsVisitor):
         if text.startswith("$") and text in self.variables:
             return self.variables[text]
 
-        raise Exception(f"Use of undeclared variable '{text}'")
+        # raise Exception(f"Use of undeclared variable '{text}'")
+        print("Interpreter error:")
+        print("   " + f"Use of undeclared variable '{text}'")
+        exit(0)
 
 
     def visitAttrAssignStmt(self, ctx):
