@@ -1,0 +1,15 @@
+particle moving
+particle still
+
+moving->position = [0, 0, 0]
+moving->velocity = [1, 0, 0]
+
+still->position = [0, 1, 0]
+
+law move(particle p):
+    p->position = p->position + p->velocity
+
+<moving & move>
+
+$TIME = 30
+$DELTA = 0.05

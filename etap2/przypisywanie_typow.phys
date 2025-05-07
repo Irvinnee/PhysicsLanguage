@@ -1,0 +1,10 @@
+float a = 7.5
+float  b = a
+
+print(b)
+print(a-2)
+
+print(a/2)
+int c = a
+
+print(c)

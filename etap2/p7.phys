@@ -1,0 +1,7 @@
+% bool a = Not (1 == 2)
+% bool b = (1 < 2) And (2 < 3) Or False
+
+bool a = Not (False)
+bool b = False And True Or True
+print(a)
+print(b)

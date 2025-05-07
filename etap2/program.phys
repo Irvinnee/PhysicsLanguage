@@ -1,0 +1,27 @@
+system układ1:
+    particle cz1
+    cz1->position = [0.0, 0.0, 0.0]
+    cz1<-prędkość = [1.0, 0.0, 0.0]
+ 
+$TIME = 0                % zegar
+ 
+law ruch_prostoliniowy (particle p):
+    p->position[0] = p->position[0] + p->prędkość[0]
+    p->position[1] = p->position[1] + p->prędkość[1]
+    p->position[2] = p->position[2] + p->prędkość[2]
+
+
+law zwiększ_prędkość (particle p):
+    if ($TIME < 5):
+        p->prędkość[0] = p->prędkość[0] + 0.5
+ 
+law hamulec (particle p):
+    if ($TIME >= 8):
+        p->prędkość[0] = 0.0
+ 
+<układ1 & ruch_prostoliniowy>
+<układ1 & zwiększ_prędkość>
+<układ1 & hamulec>
+ 
+run(układ1, 10)
+print(cz1->position[0])

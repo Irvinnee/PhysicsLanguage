@@ -1,0 +1,4 @@
+float i = 1.5
+int i = 2
+
+print(i)

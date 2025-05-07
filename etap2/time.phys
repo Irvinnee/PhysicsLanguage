@@ -1,0 +1,7 @@
+$TIME = True
+
+$TIME = 3
+print($TIME)
+$TIME = 3.5
+print($TIME)
+

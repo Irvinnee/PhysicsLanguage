@@ -1,0 +1,15 @@
+print ((3 * 4^2) + (3 * (4+2)))  % 48 + 18 = 66
+print (2 * (3 + 4^2))   % 2 * 19 = 38
+
+bool a = Not (1 == 2)
+print(a)
+
+bool b = (1 == 2 Or (1 != 2 And (1 == 2 Or 1 != 2)))
+% bool b = False Or (True And (False Or True))
+print(b)
+print(3>2)
+print(3<2)
+print(1<=1)
+print(2<=1)
+print(a==b)
+print(a!=b)

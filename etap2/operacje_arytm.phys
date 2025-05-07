@@ -1,0 +1,15 @@
+int x = 3
+int i = 2
+float x2 = 1.5
+
+print(x) % 3
+print(i) % 2
+
+print(2*(i+x)) % 10
+print((2*i)+x) % 7
+
+x=x
+%x=x2
+print(x/i)
+
+print(i^x)
