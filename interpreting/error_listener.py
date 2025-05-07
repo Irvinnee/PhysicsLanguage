@@ -7,7 +7,7 @@ class ThrowingErrorListener(ErrorListener):
 
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         src_name = recognizer.__class__.__name__
-        error_msg = f"[{src_name}] Linia {line}, kolumna {column}: {msg}"
+        error_msg = f"[{src_name}] Line {line}, column {column}: {msg}"
         if "Lexer" in src_name:
             self.lexer_errors.append(error_msg)
         else:
