@@ -7,7 +7,7 @@ from running_simulation.engine import Particle, Field, System, Law
 
 class Interpreter(PhysicsVisitor):
     def __init__(self) -> None:
-        self.variables: dict[str, object] = {"$TIME": 0}
+        self.variables: dict[str, object] = {"$TIME": 10, "$DELTA": 1}
         self.symbol_table = {}
         self.global_laws: list[Law] = []
         self.functions: dict[str, dict] = {}
@@ -25,6 +25,8 @@ class Interpreter(PhysicsVisitor):
             name = target_ctx.getText()
             if name == "$TIME":
                 self.variables["$TIME"] = value
+            elif name == "$DELTA":
+                self.variables["$DELTA"] = value
             else:
                 self.variables[name] = value
 
@@ -365,7 +367,10 @@ class Interpreter(PhysicsVisitor):
         if text.startswith("$") and text in self.variables:
             return self.variables[text]
 
-        raise Exception(f"Use of undeclared variable '{text}'")
+        # raise Exception(f"Use of undeclared variable '{text}'")
+        print("Interpreter error:")
+        print("   " + f"Use of undeclared variable '{text}'")
+        exit(0)
 
 
     def visitAttrAssignStmt(self, ctx):

@@ -70,3 +70,4 @@ for name, value in interpreter.variables.items():
 
 sim.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
 # print()
+

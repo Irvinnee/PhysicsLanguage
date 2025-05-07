@@ -14,6 +14,7 @@ class Simulation:
     # particles_data: Dict[str, Particle]
     # time = 0.0
     max_time = 0.0
+    delta = 1
     #
     # # Lock do odbioru/zapisu danych
     # data_lock = threading.Lock()
@@ -23,11 +24,11 @@ class Simulation:
     def simulation_engine(self):
         while not self.stop_event.is_set():
             with self.graphics_engine.time_lock:
-                while abs(self.graphics_engine.sim_time*self.max_time - self.system.time) > 1:
+                while abs(self.graphics_engine.sim_time*self.max_time - self.system.time) > self.delta:
                     if self.graphics_engine.sim_time*self.max_time - self.system.time > 0:
-                        self.system.step(1)
+                        self.system.step(self.delta)
                     else:
-                        self.system.step(-1)
+                        self.system.step(-self.delta)
 
                     with self.graphics_engine.data_lock:
                         self.graphics_engine.particles = self.system.particles
@@ -42,12 +43,13 @@ class Simulation:
     def graphics(self):
         self.graphics_engine.run_simulation()
 
-    def run(self, system:System, max_time):
+    def run(self, system:System, max_time, delta):
         # Tworzenie wątków
 
         self.system = system
         self.particles_data = system.particles
         self.max_time = max_time
+        self.delta = delta
         self.stop_event = threading.Event()
 
         # self.graphics_engine = Graphics(self.particles_data, self.data_lock, self.time, self.time_lock)
