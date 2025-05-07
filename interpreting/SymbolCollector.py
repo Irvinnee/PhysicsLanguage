@@ -2,7 +2,7 @@ from grammar.PhysicsListener import PhysicsListener
 
 class SymbolCollector(PhysicsListener):
     def __init__(self):
-        self.symbol_table = {"$TIME": "float"}
+        self.symbol_table = {"$TIME": "float", "$DELTA": "float"}
         self.errors = []
 
     def enterDeclStmt(self, ctx):
