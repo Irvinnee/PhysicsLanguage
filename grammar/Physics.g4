@@ -129,10 +129,10 @@ type        : 'particle' | 'field' | 'system'
 
 block           : INDENT statement+ DEDENT ;
 
+BOOLEAN     : 'True'|'False';
 ID : ('$'? [\p{L}_]) [\p{L}\p{N}_]* ;
 
 
-BOOLEAN     : 'True'|'False';
 INT         : [0-9]+ ;
 FLOAT       : [0-9]+ '.' [0-9]* ;
 
