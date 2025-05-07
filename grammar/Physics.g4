@@ -117,6 +117,7 @@ vector      : '[' expr (',' expr)* ']' ;
 atom
     : INT
     | FLOAT
+    | BOOLEAN
     | (dottedID ('->' ID ('[' expr ']')?)?) ('(' argList? ')')?
     | vector
     | '(' expr ')' ;
@@ -131,7 +132,7 @@ block           : INDENT statement+ DEDENT ;
 ID : ('$'? [\p{L}_]) [\p{L}\p{N}_]* ;
 
 
-
+BOOLEAN     : 'True'|'False';
 INT         : [0-9]+ ;
 FLOAT       : [0-9]+ '.' [0-9]* ;
 
