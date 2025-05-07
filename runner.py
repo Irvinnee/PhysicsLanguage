@@ -7,7 +7,7 @@ from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
 
-with open("sim2.phys", encoding="utf-8") as f:
+with open("sim1.phys", encoding="utf-8") as f:
     code = f.read()
 
 input_stream = InputStream(code)
@@ -26,12 +26,12 @@ tree = parser.prog()
 
 if listener.has_errors():
     if listener.lexer_errors:
-        print("Błędy leksykalne:")
+        print("Lexer errors:")
         for err in listener.lexer_errors:
             print("   ", err)
 
     if listener.parser_errors:
-        print("Błędy składniowe:")
+        print("Syntax errors:")
         for err in listener.parser_errors:
             print("   ", err)
 
@@ -42,7 +42,7 @@ walker = ParseTreeWalker()
 walker.walk(collector, tree)
 
 if collector.errors:
-    print("Błędy semantyczne:")
+    print("Semantic errors:")
     for err in collector.errors:
         print("   ", err)
     exit(1)
@@ -68,6 +68,5 @@ for name, value in interpreter.variables.items():
         dummy.add_particle(name, value)
 
 
-sim.run(dummy, 30)
-
-
+sim.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
+# print()
