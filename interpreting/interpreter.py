@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import builtins
+
 from grammar.PhysicsVisitor import PhysicsVisitor
 from grammar.PhysicsParser import PhysicsParser
 from running_simulation.engine import Particle, Field, System, Law
@@ -24,11 +26,21 @@ class Interpreter(PhysicsVisitor):
         if isinstance(target_ctx, PhysicsParser.VarTargetContext):
             name = target_ctx.getText()
             if name == "$TIME":
-                self.variables["$TIME"] = value
+                if type(value) in (float, int):
+                    self.variables["$TIME"] = value
+                else:
+                    self.errorWrongType(type(value), (float, int), "$TIME", ctx)
             elif name == "$DELTA":
-                self.variables["$DELTA"] = value
+                if type(value) in (float, int):
+                    self.variables["$DELTA"] = value
+                else:
+                    self.errorWrongType(type(value), (float, int), "$DELTA", ctx)
             else:
-                self.variables[name] = value
+                # if type(value) == self.symbol_table[name]:
+                if isinstance(value, getattr(builtins, self.symbol_table[name])):
+                    self.variables[name] = value
+                else:
+                    self.errorWrongType(type(value), self.symbol_table[name], name, ctx)
 
         elif isinstance(target_ctx, PhysicsParser.AttrTargetContext):
             obj, attr, index = self.visit(target_ctx)
@@ -54,7 +66,12 @@ class Interpreter(PhysicsVisitor):
             self.variables[name] = None
 
         if ctx.expr():
-            self.variables[name] = self.visit(ctx.expr())
+            val = self.visit(ctx.expr())
+            if isinstance(val, getattr(builtins, self.symbol_table[name])):
+                self.variables[name] = val
+            else:
+                self.errorWrongType(type(val), self.symbol_table[name], name, ctx)
+            # self.variables[name] = self.visit(ctx.expr())
 
 
         if "$SYSTEM" in self.variables and isinstance(self.variables["$SYSTEM"], System):
@@ -310,7 +327,15 @@ class Interpreter(PhysicsVisitor):
         for i in range(1, len(ctx.power())):
             op = ctx.getChild(2 * i - 1).getText()
             val = self.visit(ctx.power(i))
-            res = res * val if op == "*" else res / val
+            if op == "*":
+                res = res * val
+            elif val ==0:
+                print("Interpreter error:")
+                print(
+                    "   " + f"Line {ctx.start.line}: Division by zero")
+                exit(0)
+            else:
+                res = res / val
         return res
 
     def visitPower(self, ctx):
@@ -342,11 +367,14 @@ class Interpreter(PhysicsVisitor):
             return float(ctx.FLOAT().getText())
         if ctx.vector():
             return self.visit(ctx.vector())
-
         if ctx.getChild(0).getText() == "(":
             return self.visit(ctx.expr())
 
         text = ctx.getText()
+        if text == "True":
+            return True
+        if text == "False":
+            return False
 
         if "(" in text:
             func_name = ctx.dottedID().getText()
@@ -368,8 +396,9 @@ class Interpreter(PhysicsVisitor):
             return self.variables[text]
 
         # raise Exception(f"Use of undeclared variable '{text}'")
+
         print("Interpreter error:")
-        print("   " + f"Use of undeclared variable '{text}'")
+        print("   " + f"Line {ctx.start.line}: Use of undeclared variable '{text}'")
         exit(0)
 
 
@@ -432,3 +461,8 @@ class Interpreter(PhysicsVisitor):
 
         self._call(func_name, args)
         return None
+
+    def errorWrongType(self, wrong_type, right_type, variable, ctx):
+        print("Interpreter error:")
+        print("   " + f"Line {ctx.start.line}: Assigned type {wrong_type} to variable '{variable}', should be {right_type}")
+        exit(0)
