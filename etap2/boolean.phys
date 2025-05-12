@@ -1,7 +1,2 @@
-bool a = False
-print(a)
-
-bool b = True
-
-bool c = a + True
+bool c = False - True
 print(c)

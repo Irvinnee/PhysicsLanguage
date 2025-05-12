@@ -103,7 +103,7 @@ logicAnd    : equality ( 'And' equality )* ;
 equality    : compare  ( ('=='|'!='|'>='|'<='|'>'|'<') compare )* ;
 compare     : addSub ;
 addSub      : mulDiv  ( ('+'|'-') mulDiv)* ;
-mulDiv      : power   ( ('*'|'/') power)* ;
+mulDiv      : power   ( ('*'|'/'|'//') power)* ;
 power       : unary   ( '^' unary )* ;
 
 unary

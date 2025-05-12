@@ -329,6 +329,10 @@ class Interpreter(PhysicsVisitor):
         for i in range(1, len(ctx.mulDiv())):
             op = ctx.getChild(2 * i - 1).getText()
             val = self.visit(ctx.mulDiv(i))
+
+            if isinstance(res, bool) or isinstance(val, bool):
+                self.errorWrongAction(op, (type(res), type(val)), res, val, ctx)
+
             res = res + val if op == "+" else res - val
         return res
 
@@ -337,6 +341,10 @@ class Interpreter(PhysicsVisitor):
         for i in range(1, len(ctx.power())):
             op = ctx.getChild(2 * i - 1).getText()
             val = self.visit(ctx.power(i))
+
+            if isinstance(res, bool) or isinstance(val, bool):
+                self.errorWrongAction(op, (type(res), type(val)), res, val, ctx)
+
             if op == "*":
                 res = res * val
             elif val ==0:
@@ -344,6 +352,13 @@ class Interpreter(PhysicsVisitor):
                 print(
                     "   " + f"Line {ctx.start.line}: Division by zero")
                 exit(0)
+            elif op == "//":
+                if val == 0:
+                    print("Interpreter error:")
+                    print(f"   Line {ctx.start.line}: Integer division by zero")
+                    exit(0)
+                else:
+                    res = res // val
             else:
                 res = res / val
         return res
@@ -351,6 +366,11 @@ class Interpreter(PhysicsVisitor):
     def visitPower(self, ctx):
         res = self.visit(ctx.unary(0))
         for i in range(1, len(ctx.unary())):
+            val = self.visit(ctx.unary(i))
+
+            if isinstance(res, bool) or isinstance(val, bool):
+                self.errorWrongAction("^", (type(res), type(val)), res, val, ctx)
+
             res **= self.visit(ctx.unary(i))
         return res
 
@@ -481,8 +501,9 @@ class Interpreter(PhysicsVisitor):
         print("   " + f"Line {ctx.start.line}: Assigned type {wrong_type} to variable '{variable}', should be {right_type}")
         exit(0)
 
-
     def errorWrongAction(self, wrong_action, type_of_variable, variable_1, variable_2, ctx):
         print("Interpreter error:")
-        print( "   " + f"Line {ctx.start.line}: Action {wrong_action} to variable '{variable_1}' and variable '{variable_2}', cannot be done on this type {type_of_variable} of variables")
+        print(
+            f"   Line {ctx.start.line}: Action {wrong_action} to variable '{variable_1}' and variable '{variable_2}', cannot be done on this type {type_of_variable} of variables")
         exit(0)
+
