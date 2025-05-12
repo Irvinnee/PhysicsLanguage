@@ -7,7 +7,7 @@ from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
 
-with open("etap2/przypisywanie_typow.phys", encoding="utf-8") as f:
+with open("etap2/blad_przy_deklaracji.phys", encoding="utf-8") as f:
     code = f.read()
 
 input_stream = InputStream(code)

@@ -67,12 +67,22 @@ class Interpreter(PhysicsVisitor):
 
         if ctx.expr():
             val = self.visit(ctx.expr())
-            if isinstance(val, getattr(builtins, self.symbol_table[name])):
-                self.variables[name] = val
-            else:
-                self.errorWrongType(type(val), self.symbol_table[name], name, ctx)
-            # self.variables[name] = self.visit(ctx.expr())
+            try:
+                if typ == "int" and isinstance(val, float):
+                    casted_val = round(val)
+                else:
+                    casted_val = getattr(builtins, typ)(val)
+                self.variables[name] = casted_val
+            except (ValueError, TypeError):
+                self.errorWrongType(type(val), typ, name, ctx)
 
+        # if typ == "int":
+        #     casted_val = int(val)
+        # elif typ == "float":
+        #     casted_val = float(val)
+        # elif typ == "bool":
+        #     casted_val = bool(val)
+        #
 
         if "$SYSTEM" in self.variables and isinstance(self.variables["$SYSTEM"], System):
             system = self.variables["$SYSTEM"]
@@ -390,6 +400,10 @@ class Interpreter(PhysicsVisitor):
             return getattr(obj, rest)
 
         if text in self.symbol_table:
+            if text not in self.variables or self.variables[text] is None:
+                print("Interpreter error:")
+                print(f"   Line {ctx.start.line}: Use of uninitialized variable '{text}'")
+                exit(0)
             return self.variables[text]
 
         if text.startswith("$") and text in self.variables:
@@ -465,4 +479,10 @@ class Interpreter(PhysicsVisitor):
     def errorWrongType(self, wrong_type, right_type, variable, ctx):
         print("Interpreter error:")
         print("   " + f"Line {ctx.start.line}: Assigned type {wrong_type} to variable '{variable}', should be {right_type}")
+        exit(0)
+
+
+    def errorWrongAction(self, wrong_action, type_of_variable, variable_1, variable_2, ctx):
+        print("Interpreter error:")
+        print( "   " + f"Line {ctx.start.line}: Action {wrong_action} to variable '{variable_1}' and variable '{variable_2}', cannot be done on this type {type_of_variable} of variables")
         exit(0)

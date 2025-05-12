@@ -7,4 +7,9 @@ print(a-2)
 print(a/2)
 int c = a
 
-print(c)
+float d = 25
+
+print(d/2)
+
+int e = 7
+print(e/3)

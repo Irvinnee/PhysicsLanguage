@@ -1,2 +1,7 @@
 bool a = False
 print(a)
+
+bool b = True
+
+bool c = a + True
+print(c)
