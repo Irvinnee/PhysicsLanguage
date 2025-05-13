@@ -264,7 +264,7 @@ class Interpreter(PhysicsVisitor):
             self.variables[var_name] = i
             if var_name not in self.symbol_table:
                 print("Interpreter error:")
-                print(f"   Line {ctx.start.line}: Variable '{var_name}' used without declaration")
+                print(f"   Line {ctx.start.line}: Variable '{var_name}' was used without declaration")
                 exit(0)
             self.visit(ctx.block())
             self.variables["$TIME"] += 1
