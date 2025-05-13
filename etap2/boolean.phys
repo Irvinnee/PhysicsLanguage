@@ -1,2 +1,2 @@
-bool c = False - True
-print(c)
+bool a = False And (True Or False)
+print(a)

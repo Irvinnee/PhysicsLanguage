@@ -13,3 +13,5 @@ x=x
 print(x/i)
 
 print(i^x)
+
+print(5//2)

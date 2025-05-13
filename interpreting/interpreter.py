@@ -262,7 +262,10 @@ class Interpreter(PhysicsVisitor):
         cmp = (lambda a, b: a <= b) if step_val >= 0 else (lambda a, b: a >= b)
         while cmp(i, end_val):
             self.variables[var_name] = i
-            self.symbol_table[var_name] = True
+            if var_name not in self.symbol_table:
+                print("Interpreter error:")
+                print(f"   Line {ctx.start.line}: Variable '{var_name}' used without declaration")
+                exit(0)
             self.visit(ctx.block())
             self.variables["$TIME"] += 1
             i += step_val
