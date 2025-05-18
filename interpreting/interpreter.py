@@ -114,6 +114,10 @@ class Interpreter(PhysicsVisitor):
         # Inicjalizacja ekspresją, jeśli podana.
         if ctx.expr():
             val = self.visit(ctx.expr())
+            if typ == "bool" and not isinstance(val, bool):
+                self._error(ctx,
+                    f"Assigned type {type(val).__name__} to variable '{name}', "
+                    "should be bool")
 
             # Zabroń rzutowania bool → float / int.
             if isinstance(val, bool) and typ in ("float", "int"):
@@ -126,7 +130,8 @@ class Interpreter(PhysicsVisitor):
                 elif typ == "float" and isinstance(val, int):
                     casted_val = float(val)
                 else:
-                    casted_val = getattr(builtins, typ)(val) if typ else val
+                    casted_val = val
+                
                 self.variables[name] = casted_val
             except (ValueError, TypeError):
                 self.errorWrongType(type(val), typ, name, ctx)
@@ -168,6 +173,9 @@ class Interpreter(PhysicsVisitor):
             if declared_type in ("float", "int") and isinstance(value, bool):
                 self.errorWrongType(type(value), declared_type, name, ctx)
 
+            if declared_type == "bool" and not isinstance(value, bool):
+                self.errorWrongType(type(value).__name__, "bool", name, ctx)
+
             # Sprawdź typ przez isinstance (typ prymitywny) lub dowolny dla True.
             if declared_type is True or isinstance(value, getattr(builtins, declared_type, object)):
                 self.variables[name] = value
@@ -187,8 +195,8 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def visitFuncDecl(self, ctx):
-        name = ctx.ID().getText()
-
+        name      = ctx.ID().getText()
+        ret_type  = ctx.returnType().getText() if ctx.returnType() else "void"   # ◆
         # 1. zbierz (nazwa, typ)
         params = []
         if ctx.paramList():
@@ -209,11 +217,12 @@ class Interpreter(PhysicsVisitor):
 
         # 4. zapisz metadane
         self.functions[name] = {
-            "params": params,                           # ← lista krotek
-            "expr"  : ctx.expr()  if ctx.expr()  else None,
-            "block" : ctx.block() if ctx.block() else None,
-            "defined": True,
-        }
+        "ret"   : ret_type,          # ◆  NOWE POLE
+        "params": params,
+        "expr"  : ctx.expr()  if ctx.expr()  else None,
+        "block" : ctx.block() if ctx.block() else None,
+        "defined": True,
+    }
         return None
 
 
@@ -341,46 +350,60 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def _call(self, name: str, args: list, call_ctx):
-        # obsługa typów prymitywnych i własnych
-        
-
-        # 1. czy funkcja istnieje?
+        # ───────────────────────────────────────────────
+        # 0.  czy funkcja istnieje?
+        # ───────────────────────────────────────────────
         if name not in self.functions:
             self._error(call_ctx, f"Unknown function '{name}'")
 
-        sig = self.functions[name]
-        expected_params = sig["params"]          # lista (param_name, param_type)
+        sig              = self.functions[name]
+        expected_params  = sig["params"]        # [(nazwa, typ), …]
+        ret_type         = sig.get("ret", "void")   # ◀─ NOWE
 
+        # Użyjemy też przy sprawdzaniu wyników
         TYPE_MAP = {
-            "int": int,
-            "float": float,
-            "bool": bool,
-            "particle": Particle,
-            "field": Field,
-            "system": System,
+            "int"      : int,
+            "float"    : float,
+            "bool"     : bool,
+            "particle" : Particle,
+            "field"    : Field,
+            "system"   : System,
+            "void"     : type(None)
         }
 
-        # 2. liczba argumentów
+        # ───────────────────────────────────────────────
+        # 1.  liczba argumentów
+        # ───────────────────────────────────────────────
         if len(args) != len(expected_params):
-            self._error(
-                call_ctx,
-                f"Function '{name}' expects {len(expected_params)} arguments, got {len(args)}"
-            )
+            self._error(call_ctx,
+                f"Function '{name}' expects {len(expected_params)} arguments, got {len(args)}")
 
-        # 3. typy argumentów
+        # ───────────────────────────────────────────────
+        # 2.  typy argumentów
+        # ───────────────────────────────────────────────
+        args_casted: list[Any] = []                          # ❶
         for (p_name, p_type), arg in zip(expected_params, args):
-            expected_cls = TYPE_MAP.get(p_type)
-            ok = expected_cls is None or isinstance(arg, expected_cls)
 
-            # auto-rzutowanie int → float (zostaje tak, jak było)
-            if not ok and p_type == "float" and isinstance(arg, int):
-                arg = float(arg)
-                ok = True
+            exp_cls = TYPE_MAP[p_type]
 
-            # auto-rzutowanie int→float (jeśli chcesz je dopuścić)
-            if p_type == "float" and isinstance(arg, int):
+            # ─── ❶ blokada bool-a dla parametrów liczbowych ───
+            if p_type in ("int", "float") and isinstance(arg, bool):
+                self._error(
+                    call_ctx,
+                    f"In function '{name}' parameter '{p_name}' expects {p_type}, "
+                    "got bool"
+                )
+
+            ok = isinstance(arg, exp_cls)
+
+            # auto-rzutowanie  int → float  (ale NIE bool!)
+            if (not ok
+                and p_type == "float"
+                and isinstance(arg, int)
+                and not isinstance(arg, bool)):     # <── zapobiega bool→float
                 arg = float(arg)
-                ok = True
+                ok  = True
+
             if not ok:
                 self._error(
                     call_ctx,
@@ -388,26 +411,58 @@ class Interpreter(PhysicsVisitor):
                     f"got {type(arg).__name__}"
                 )
 
-        # 4. przygotuj rekord aktywacji (lokalną kopię zmiennych)
+            args_casted.append(arg)  
+
+        # ───────────────────────────────────────────────
+        # 3.  rekord aktywacji
+        # ───────────────────────────────────────────────
         saved_vars = self.variables
         self.variables = saved_vars.copy()
-        for (p_name, p_type), arg in zip(expected_params, args):
-            self.variables[p_name] = arg
-            self.symbol_table[p_name] = p_type          # informacja o typie parametru
+        for (p_name, p_type), arg in zip(expected_params, args_casted):   # ➍
+            self.variables[p_name]    = arg
+            self.symbol_table[p_name] = p_type
 
-        # 5. wykonanie ciała funkcji
-        self.in_function, self.return_value = True, None
+        # ───────────────────────────────────────────────
+        # 4.  wykonaj ciało
+        # ───────────────────────────────────────────────
+        self.in_function = True
+        self.return_value = None                   # <-- reset
+
         try:
-            res = (
-                self.visit(sig["expr"])
-                if sig["expr"] else
-                (self.visit(sig["block"]) or self.return_value)
-            )
+            if sig["expr"]:                        # forma „=> expr”
+                value = self.visit(sig["expr"])    # ①
+            else:                                  # blok z 'return'-ami
+                self.visit(sig["block"])
+                value = self.return_value
         finally:
-            # przywróć poprzedni kontekst zmiennych
             self.variables = saved_vars
-            self.in_function, self.return_value = False, None
-        return res
+            self.in_function = False
+            self.return_value = None
+
+        # ───────────────────────────────────────────────
+        # 5.  WALIDACJA  wyniku  (typ + obowiązek)
+        # ───────────────────────────────────────────────
+        if ret_type == "void":
+            if value is not None:
+                self._error(call_ctx,
+                    f"Function '{name}' declared void but returns a value")
+            return None                     # wszystko OK
+
+        # Funkcja z typem zwracanym MUSI zwracać wartość
+        if value is None:
+            self._error(call_ctx,
+                f"Function '{name}' must return {ret_type} but reached end without return")
+
+        # auto-rzutowanie int → float przy zwracaniu
+        if ret_type == "float" and isinstance(value, int):
+            value = float(value)
+
+        if not isinstance(value, TYPE_MAP[ret_type]):
+            self._error(call_ctx,
+                f"Function '{name}' should return {ret_type}, got {type(value).__name__}")
+
+        return value
+
     # ————————————————————————————————————————————————————————————————
     # Bloki, instrukcje sterujące, pętle
     # ————————————————————————————————————————————————————————————————

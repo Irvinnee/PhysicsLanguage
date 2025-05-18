@@ -50,11 +50,14 @@ if collector.errors:
     exit(1)
 
 predeclared_funcs = {
-    name: {"params": params,      # ← lista (nazwa, typ)
-           "expr": None,
-           "block": None,
-           "defined": False}
-    for name, params in collector.functions.items()
+    name: {
+        "ret":  meta["ret"],          # ← nowy klucz
+        "params": meta["params"],
+        "expr": None,
+        "block": None,
+        "defined": False
+    }
+    for name, meta in collector.functions.items()
 }
 predeclared_laws = {
     name: {"params": params,

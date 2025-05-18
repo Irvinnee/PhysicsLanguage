@@ -184,6 +184,11 @@ class PhysicsVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by PhysicsParser#returnType.
+    def visitReturnType(self, ctx:PhysicsParser.ReturnTypeContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by PhysicsParser#block.
     def visitBlock(self, ctx:PhysicsParser.BlockContext):
         return self.visitChildren(ctx)

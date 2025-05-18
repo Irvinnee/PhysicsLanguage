@@ -323,6 +323,15 @@ class PhysicsListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by PhysicsParser#returnType.
+    def enterReturnType(self, ctx:PhysicsParser.ReturnTypeContext):
+        pass
+
+    # Exit a parse tree produced by PhysicsParser#returnType.
+    def exitReturnType(self, ctx:PhysicsParser.ReturnTypeContext):
+        pass
+
+
     # Enter a parse tree produced by PhysicsParser#block.
     def enterBlock(self, ctx:PhysicsParser.BlockContext):
         pass
