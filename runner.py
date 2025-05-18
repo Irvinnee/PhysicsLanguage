@@ -7,7 +7,7 @@ from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
 
-with open("etap2/blad_przy_deklaracji.phys", encoding="utf-8") as f:
+with open("program.phys", encoding="utf-8") as f:
     code = f.read()
 
 input_stream = InputStream(code)
@@ -41,14 +41,33 @@ collector = SymbolCollector()
 walker = ParseTreeWalker()
 walker.walk(collector, tree)
 
+
+
 if collector.errors:
     print("Semantic errors:")
     for err in collector.errors:
         print("   ", err)
     exit(1)
 
-interpreter = Interpreter()
-interpreter.symbol_table = collector.symbol_table
+predeclared_funcs = {
+    name: {"params": params,      # ← lista (nazwa, typ)
+           "expr": None,
+           "block": None,
+           "defined": False}
+    for name, params in collector.functions.items()
+}
+predeclared_laws = {
+    name: {"params": params,
+           "expr": None,
+           "block": None,
+           "defined": False}
+    for name, params in collector.laws.items()
+}
+
+interpreter = Interpreter(
+    symbol_table=collector.symbol_table,
+    functions={**predeclared_funcs, **predeclared_laws}
+)
 interpreter.visit(tree)
 
 # if "cz1" in interpreter.variables and isinstance(interpreter.variables["cz1"], Particle):

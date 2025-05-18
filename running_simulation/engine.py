@@ -25,11 +25,26 @@ class Particle(SimObject):
         mass: float = 1.0,
         position: Optional[Vector] = None,
         velocity: Optional[Vector] = None,
+        electric_charge: float = 0.0,          # ← nowy parametr
     ) -> None:
-        self.mass: float      = mass
+        self.mass: float      = float(mass)
         self.system: Optional[System] = None
         self.position: Vector = position or [0.0, 0.0, 0.0]
         self.velocity: Vector = velocity or [0.0, 0.0, 0.0]
+        self.electric_charge: float = float(electric_charge)
+
+class Field(SimObject):
+    def __init__(
+        self,
+        center: Optional[Vector] = None,
+        function: Optional[Callable[["Particle", "Field"], float]] = None,
+        radius: float = 1.0,
+        intensity: float = 1.0,
+    ) -> None:
+        self.center: Vector   = center or [0.0, 0.0, 0.0]   # punkt_początkowy
+        self.function = function                            # będzie można przypisać square, linear…
+        self.radius: float     = float(radius)
+        self.intensity: float  = float(intensity)
 
 
 
