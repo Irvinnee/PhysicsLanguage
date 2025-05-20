@@ -11,7 +11,7 @@ from running_simulation.simulation import Simulation
 from grammar.ScopeAndVisitor import PhysicsVisitor2
 
 
-def run_phys_file(path):
+def run_phys_file(path, sim=False):
     with open(path, encoding="utf-8") as f:
         code = f.read()
 
@@ -19,7 +19,6 @@ def run_phys_file(path):
     lexer = PhysicsLexer(input_stream)
     tokens = CommonTokenStream(lexer)
     parser = PhysicsParser(tokens)
-
 
 
     listener = ThrowingErrorListener()
@@ -55,18 +54,21 @@ def run_phys_file(path):
     interpreter.symbol_table = collector.symbol_table
     interpreter.visit(tree)
 
-    sim = Simulation()
+    simulate = Simulation()
     dummy = System("global")
 
     for name, value in interpreter.variables.items():
         if isinstance(value, Particle):
             dummy.add_particle(name, value)
 
-    # sim.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
+    if sim:
+        simulate.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         run_phys_file(sys.argv[1])
+        sim = "sim" in sys.argv
+        run_phys_file(sys.argv[1], sim)
     else:
 
         this_file = os.path.abspath(__file__)
