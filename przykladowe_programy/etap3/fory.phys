@@ -1,12 +1,30 @@
-int i = 0
+int i
 %for i(0, 10, 1):
 %while(i<10):
 %    print(i)
 %   i =i + 1
 
 int a = 2
-int b = 3
+float b = 3.49
 bool x = True
 
 print(11111111111111111111)
-print(a+++x)
+print(b^a)
+print(11111111111111111111)
+a= b
+print(a)
+print(b)
+float z = 5^2 + 0
+print(z)
+print(11111111111111111111)
+float x2 = 1.5
+int i2 = 2
+
+print(x2)
+print(i2)
+
+i2 = x2
+print(11111111111111111111)
+
+for s(0, 10, 1):
+    print(s)

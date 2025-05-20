@@ -1,96 +1,44 @@
-float x = 1.5
-int i = 2
+int func factorial(int x):
+    int i = 1
+    while(x>0):
+        i = i*x
+        x = x-1
+        print(i)
+        print(x)
 
-print(x)
-print(i)
+    => x
 
-i = x
+int a = 5
+factorial(a)
+print(a)
 
-działa przypisanie a powinno się zaokrągląć
+zmienne nie miały się nadpisywać?? miało wyjść 0?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+int func factorial(float x):
+    int i = 1
+    while(x>0):
+        i = i*x
+        x = x-1
+        print(i)
+        print(x)
 
-for i(0, 10, 1):
-    print(i)
+    => x
 
-dziala bez int!!
+print(factorial(5.5))
+
+tak to się miało wykonywać czy od razu znaleźć że zwraca zły typ i wywalić przy deklaracji?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 $TIME >= 8  -jako licznik, delta jako delta + max time
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-zaokrąglanie przy przypisaniu float do int
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-operatory matematyczne mają brać tylko liczby
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-fory i while zmienic na to co chciał
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 SPRAWDZIC::::
 
-podstawowe operacje arytmetyczne (dodawanie, odejmowanie, mnożenie, dzielenie, nawiasowanie) na zmiennych typu numerycznego.
-podstawowe operacje logiczne (and, or, not, nawiasowanie) na zmiennych logicznych oraz porównywanie zmiennych typu numerycznego (<, > , ==, !=) co w wyniku powinno dawać typ logiczny
-Odpowiednik instrukcji warunkowej if/else
-odpowiednik pętli for/while
-porównania (==, !=) dla typu logicznego
 obsługę definiowania i wywoływania funkcji. Funkcja powinna pozwalać na zwracanie rezultatu (powinna istnieć też możliwość definiowania funkcji zwracającej void) i przyjmować zadeklarowaną liczbę oraz typy argumentów.
 
-z czwartek zapisałam:
 
-silnia iteracyjna i silnia rekurencyjna
-function factorial (x: number): number <
 
-var i: number = 1;
 
-while x> 0 <
-
-i *=x;
-
-x -=1;   ←—- mamy użyć ten ze zmiennych przekazanych do funkcji od razu
-
->
-
-return x;
-
->
-
-print(factorial(5))  ←— przypadek z 5.5 przekazanym
-
-function factorial(x: number): number <
-
-if x== 0 or x ==1 <
-
-return 1;
-
->
-
-return x * factorial(x-1);
-
->
-
-print(factorial(6) ←- kazał dać na początku 5 a potem zmienić na 6
-
-function foo(c: number) <
-
-var n: number = x;
-
-if(x>0) <
-
-foo(x-1);
-
->
-
-print(”<n>”);
-
->
-
-foo(6)
-
-błąd wywalać jak zwraca coś co nie ma zwracać
 
 function test (a: real, b:real):real <
 
@@ -157,9 +105,9 @@ funkcja co ma dwa argumenty wywołujemy bez argumentó - ma mieć błąd także 
 
 pisać gdzie pierwszy raz zadklarowana funkcja/zmienna
 
-odwoływanie do globalnej zmiennej w scopie
-
 funkcja w funkcji, wywoływanie, ale też zmiany na x (zadeklarowana poza, i wypisuje potem zmiany po wowoływaniu funkcji)
+
+odwoływanie do globalnej zmiennej w scopie
 
 deklarujemy x w funkcji, która jest w innej funkcji gdzie jest x
 

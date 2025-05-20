@@ -1,0 +1,30 @@
+int func factorial(int x):
+    int i = 1
+    while(x>0):
+        i = i*x
+        x = x-1
+        print(i)
+        print(x)
+
+    => x
+
+%print(factorial(5))
+
+int func factorial2(int x):
+    if(x==0 Or x==1):
+        => 1
+
+    => x*factorial2(x-1)
+
+%print(factorial2(6))
+%print(11111111111111111111)
+
+func foo(int x):
+    int n = x
+
+    if(x>0):
+        foo(x-1)
+
+    print(n)
+
+foo(6)

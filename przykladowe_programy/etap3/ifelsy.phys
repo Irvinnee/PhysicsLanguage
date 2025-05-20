@@ -1,0 +1,21 @@
+print(3<2)
+print(2<3)
+bool a = True
+bool b = False
+print(a == a)
+
+print(7777777777777777777777777777777777777777)
+if (False):
+    print(True)
+elsif (False):
+    print(True)
+    print(True)
+else:
+    print(False)
+print(7777777777777777777777777777777777777777)
+int i
+for i(0, 10, 1):
+    print(i)
+    i = i + 1
+
+

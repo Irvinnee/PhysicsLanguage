@@ -1,0 +1,10 @@
+int a = (((2 + 2))) * 3 /a
+%int a = b
+% print(a)
+
+%bool y = True
+%bool x = y Or False And y*y
+
+bool x = 5 >= 5
+float z = 5^2 + 0
+print(z)
