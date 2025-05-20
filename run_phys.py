@@ -8,6 +8,8 @@ from interpreting.SymbolCollector import SymbolCollector
 from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
+from grammar.ScopeAndVisitor import PhysicsVisitor2
+
 
 def run_phys_file(path):
     with open(path, encoding="utf-8") as f:
@@ -18,6 +20,8 @@ def run_phys_file(path):
     tokens = CommonTokenStream(lexer)
     parser = PhysicsParser(tokens)
 
+
+
     listener = ThrowingErrorListener()
     lexer.removeErrorListeners()
     parser.removeErrorListeners()
@@ -25,7 +29,6 @@ def run_phys_file(path):
     parser.addErrorListener(listener)
 
     tree = parser.prog()
-
     if listener.has_errors():
         if listener.lexer_errors:
             print("Lexer errors:")

@@ -763,6 +763,19 @@ class Interpreter(PhysicsVisitor):
         return None
 
     # ————————————————————————————————————————————————————————————————
+    # Scope - parenty
+    # ————————————————————————————————————————————————————————————————
+
+    def visitParentAccess(self, ctx):
+        var_name = ctx.ID().getText()
+        parent_scope = self.current_scope.parent
+        if parent_scope is None:
+            raise RuntimeError(f"No parent scope for 'parent::{var_name}'")
+        if var_name not in parent_scope.symbols:
+            raise RuntimeError(f"'{var_name}' not found in parent scope")
+        return parent_scope.symbols[var_name]
+
+    # ————————————————————————————————————————————————————————————————
     # Specjalna funkcja run – symulacje w czasie
     # ————————————————————————————————————————————————————————————————
 
