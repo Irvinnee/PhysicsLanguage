@@ -170,17 +170,33 @@ class Interpreter(PhysicsVisitor):
 
             # Zabroń rzutowania bool → float / int.
             declared_type = self.symbol_table[name]
-            if declared_type in ("float", "int") and isinstance(value, bool):
-                self.errorWrongType(type(value), declared_type, name, ctx)
-
+            # if declared_type in ("float", "int") and isinstance(value, bool):
+            #     self.errorWrongType(type(value), declared_type, name, ctx)
+            #
             if declared_type == "bool" and not isinstance(value, bool):
                 self.errorWrongType(type(value).__name__, "bool", name, ctx)
 
-            # Sprawdź typ przez isinstance (typ prymitywny) lub dowolny dla True.
-            if declared_type is True or isinstance(value, getattr(builtins, declared_type, object)):
-                self.variables[name] = value
-            else:
+            # Zabroń rzutowania bool → float / int.
+            if isinstance(value, bool) and declared_type in ("float", "int"):
                 self.errorWrongType(type(value), declared_type, name, ctx)
+
+            # Automatyczne int → float
+            try:
+                if declared_type == "int" and isinstance(value, float):
+                   casted_val = round(value)
+                elif declared_type == "float" and isinstance(value, int):
+                    casted_val = float(value)
+                else:
+                    casted_val = value
+
+                self.variables[name] = casted_val
+            except (ValueError, TypeError):
+               self.errorWrongType(type(value), declared_type, name, ctx)
+            # Sprawdź typ przez isinstance (typ prymitywny) lub dowolny dla True.
+            # if declared_type is True or isinstance(value, getattr(builtins, declared_type, object)):
+            #     self.variables[name] = value
+            # else:
+            #     self.errorWrongType(type(value), declared_type, name, ctx)
 
         elif isinstance(target_ctx, PhysicsParser.AttrTargetContext):
             obj, attr, index = self.visit(target_ctx)
@@ -545,6 +561,7 @@ class Interpreter(PhysicsVisitor):
         while cmp(i, end_val):
             self.variables[var_name] = i
             self.visit(ctx.block())
+            i = self.variables[var_name]
             # czemu czas się zwiększa??
             self.variables["$TIME"] += 1
             i += step_val
