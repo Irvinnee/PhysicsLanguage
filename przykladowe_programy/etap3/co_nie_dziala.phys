@@ -1,0 +1,168 @@
+float x = 1.5
+int i = 2
+
+print(x)
+print(i)
+
+i = x
+
+działa przypisanie a powinno się zaokrągląć
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for i(0, 10, 1):
+    print(i)
+
+dziala bez int!!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+$TIME >= 8  -jako licznik, delta jako delta + max time
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+zaokrąglanie przy przypisaniu float do int
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+operatory matematyczne mają brać tylko liczby
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+fory i while zmienic na to co chciał
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+SPRAWDZIC::::
+
+podstawowe operacje arytmetyczne (dodawanie, odejmowanie, mnożenie, dzielenie, nawiasowanie) na zmiennych typu numerycznego.
+podstawowe operacje logiczne (and, or, not, nawiasowanie) na zmiennych logicznych oraz porównywanie zmiennych typu numerycznego (<, > , ==, !=) co w wyniku powinno dawać typ logiczny
+Odpowiednik instrukcji warunkowej if/else
+odpowiednik pętli for/while
+porównania (==, !=) dla typu logicznego
+obsługę definiowania i wywoływania funkcji. Funkcja powinna pozwalać na zwracanie rezultatu (powinna istnieć też możliwość definiowania funkcji zwracającej void) i przyjmować zadeklarowaną liczbę oraz typy argumentów.
+
+z czwartek zapisałam:
+
+silnia iteracyjna i silnia rekurencyjna
+function factorial (x: number): number <
+
+var i: number = 1;
+
+while x> 0 <
+
+i *=x;
+
+x -=1;   ←—- mamy użyć ten ze zmiennych przekazanych do funkcji od razu
+
+>
+
+return x;
+
+>
+
+print(factorial(5))  ←— przypadek z 5.5 przekazanym
+
+function factorial(x: number): number <
+
+if x== 0 or x ==1 <
+
+return 1;
+
+>
+
+return x * factorial(x-1);
+
+>
+
+print(factorial(6) ←- kazał dać na początku 5 a potem zmienić na 6
+
+function foo(c: number) <
+
+var n: number = x;
+
+if(x>0) <
+
+foo(x-1);
+
+>
+
+print(”<n>”);
+
+>
+
+foo(6)
+
+błąd wywalać jak zwraca coś co nie ma zwracać
+
+function test (a: real, b:real):real <
+
+return a + b;
+
+>
+
+kazał zmienić na a:real, a: real i dać a+a
+
+print(”<test(5.0, 10.0)>”);
+
+boole nie castowane na floaty
+
+operatory castowania?
+
+automatyczne castowanie z int na real
+
+jeśli dwie takie same nazwy argumentów to to sprawdzać, że źle (a:real, a:real)
+
+pętla
+
+repeat as_number(a) <
+
+print(.);
+
+nie robić return zawsze
+
+sprawdzanie kolejności wywołań rekurencji przez print w ciągu fibonacciego (co wywołało dla czego
+
+funkcja1 - wywołujemy funkcje 2 w funkcji1 ale funkcja 2 jest zadeklarowana po funkcji1
+deklaracja wstępna? - słownik zapisujący nazwy wszystkich funkcji
+
+sprawdzić wywoływanie funkcji1 w funkcji2, dekularujemy funkcje1 na poczatku funkcji2?
+
+syntax error
+
+zachwoanie pamięci zmiennych w rekurencji
+
+każde wywłoanie funkcji ma swój rekord aktywacji i każde wywołanie zmiennych????
+
+rekurencja dokładnie trzeba zrobić!!
+
+działanie ze stosem
+
+fun (num a, num, a) - podwójna deklaracja
+
+repetere i ex 5 ad 1: od 5 do 1 - ma być błąd
+
+rekurencja niebezpośrdnia i pośrednia (od razu w funkcji tej i w funkcji innej)
+
+nihil mumus test 5(bumerus i):
+
+numerus x esto i.
+
+si x maior quam 0:
+
+test5(i minue 1).
+
+aaa
+
+jak towarzymy nowy rekord aktywacji - tworzą się nowe zmienne
+
+funkcja co ma dwa argumenty wywołujemy bez argumentó - ma mieć błąd także podczas wywołanie innej funkcji, nie tylko w przestrzeni globalnej
+
+pisać gdzie pierwszy raz zadklarowana funkcja/zmienna
+
+odwoływanie do globalnej zmiennej w scopie
+
+funkcja w funkcji, wywoływanie, ale też zmiany na x (zadeklarowana poza, i wypisuje potem zmiany po wowoływaniu funkcji)
+
+deklarujemy x w funkcji, która jest w innej funkcji gdzie jest x
+
+lokalny scope - czy rekordy aktywacji odpowiednio się wyowułują
+
+dostęp do zmiennych globalnych - w rekordzie katywacji tylko zmienne lokalne

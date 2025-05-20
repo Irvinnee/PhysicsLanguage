@@ -1,0 +1,12 @@
+int i = 0
+%for i(0, 10, 1):
+%while(i<10):
+%    print(i)
+%   i =i + 1
+
+int a = 2
+int b = 3
+bool x = True
+
+print(11111111111111111111)
+print(a+++x)
