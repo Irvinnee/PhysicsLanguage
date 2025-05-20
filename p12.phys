@@ -1,7 +1,29 @@
-func f(int n):
-    if (n < 2):
-        => 1
-    else:
-        => n * f(n - 1)
+% =============================================================
+%  REKURENCJA – TEST STOSU  (bez stringów)
+% =============================================================
 
-print(f(5))
+int start = 3         % możesz zmienić wartość, by pogłębić rekursję
+
+% ───────────────  funkcja A  ─────────────────────────────────
+func A(int k):
+    print( 100 + k )          % A enter
+    if (k > 0):
+        B(k - 1)              % wywołanie pośrednie
+    print( 400 + k )          % A exit
+
+% ───────────────  funkcja B  ─────────────────────────────────
+func B(int k):
+    print( 200 + k )          % B enter
+    if (k > 0):
+        C(k - 1)
+    print( 500 + k )          % B exit
+
+% ───────────────  funkcja C  ─────────────────────────────────
+func C(int k):
+    print( 300 + k )          % C enter
+    if (k > 0):
+        A(k - 1)
+    print( 600 + k )          % C exit
+
+% ───────────────  start programu  ────────────────────────────
+A(start)

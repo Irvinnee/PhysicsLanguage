@@ -67,10 +67,11 @@ systemDecl
     ;
 
 funcDecl
-    : 'func' ID '(' paramList? ')' (
-          '=>' expr NL
+    : returnType? 'func' ID '(' paramList? ')'
+        ( '=>' expr NL
         | ':' block
-      ) ;
+        )
+    ;
 
 paramList   : param (',' param)* ;
 param       : type ID ;
@@ -126,6 +127,10 @@ argList     : expr (',' expr)* ;
 
 type        : 'particle' | 'field' | 'system'
             | 'float' | 'int' | 'bool' ;
+
+returnType
+    : type                                             
+    ;
 
 block           : INDENT statement+ DEDENT ;
 
