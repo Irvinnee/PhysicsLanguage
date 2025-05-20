@@ -4,7 +4,7 @@ from grammar.PhysicsParser import PhysicsParser
 from interpreting.error_listener import ThrowingErrorListener
 from textwrap import indent
 
-with open("program.phys", encoding="utf-8") as f:
+with open("przykladowe_programy/etap1/program.phys", encoding="utf-8") as f:
     code = f.read()
 
 input_stream = InputStream(code)
