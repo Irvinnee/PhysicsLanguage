@@ -74,7 +74,7 @@ if __name__ == "__main__":
         cwd = os.path.dirname(this_file)
 
         import glob
-        phys_files = sorted(glob.glob(os.path.join(cwd, "etap2", "*.phys")), key=os.path.getmtime, reverse=True)
+        phys_files = sorted(glob.glob(os.path.join(cwd, "przykladowe_programy/etap3", "*.phys")), key=os.path.getmtime, reverse=True)
 
         if not phys_files:
             print("Nie znaleziono pliku .phys.")
