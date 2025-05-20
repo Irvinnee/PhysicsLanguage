@@ -65,21 +65,27 @@ def run_phys_file(path, sim=False):
         simulate.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        run_phys_file(sys.argv[1])
-        sim = "sim" in sys.argv
-        run_phys_file(sys.argv[1], sim)
+    import glob
+    import os
+
+    args = sys.argv[1:]
+    simulation = "True" in args
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    phys_file = next((arg for arg in args if arg.endswith(".phys")), None)
+
+    if phys_file:
+        full_path = os.path.join(base_dir, phys_file) if not os.path.isabs(phys_file) else phys_file
+        run_phys_file(full_path, sim=simulation)
     else:
-
-        this_file = os.path.abspath(__file__)
-        cwd = os.path.dirname(this_file)
-
-        import glob
-        phys_files = sorted(glob.glob(os.path.join(cwd, "etap2", "*.phys")), key=os.path.getmtime, reverse=True)
-
-        if not phys_files:
-            print("Nie znaleziono pliku .phys.")
+        files = glob.glob(os.path.join(base_dir, "**", "*.phys"), recursive=True)
+        if not files:
+            print("Nie znaleziono plików .phys.")
             exit(1)
 
-        latest = phys_files[0]
-        run_phys_file(latest)
+        for file in sorted(files):
+            try:
+                run_phys_file(file, sim=simulation)
+            except Exception as e:
+                print(f"Błąd w {file}:\n   {e}")
+
