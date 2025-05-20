@@ -83,9 +83,4 @@ if __name__ == "__main__":
             print("Nie znaleziono plików .phys.")
             exit(1)
 
-        # run_phys_file(files[0], sim=simulation)
-        for file in files:
-            try:
-                run_phys_file(file, sim=simulation)
-            except Exception as e:
-                print(f"Błąd w {file}:\n   {e}")
+        run_phys_file(files[0], sim=simulation)
