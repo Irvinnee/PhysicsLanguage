@@ -65,8 +65,7 @@ def run_phys_file(path, sim=False):
         simulate.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        run_phys_file(sys.argv[1])
+    if len(sys.argv) == 3:
         sim = "sim" in sys.argv
         run_phys_file(sys.argv[1], sim)
     else:
