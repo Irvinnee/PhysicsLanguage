@@ -118,6 +118,7 @@ atom
     : INT
     | FLOAT
     | BOOLEAN
+    | 'parent' '::' ID
     | (dottedID ('->' ID ('[' expr ']')?)?) ('(' argList? ')')?
     | vector
     | '(' expr ')' ;
