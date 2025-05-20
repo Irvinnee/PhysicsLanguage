@@ -494,6 +494,7 @@ class Interpreter(PhysicsVisitor):
         guard_counter = 0  # zabezpiecz kontra nieskończonej pętli
         while self.visit(ctx.expr()):
             self.visit(ctx.block())
+            # czemu czas się zwiększa??
             self.variables["$TIME"] += 1
             guard_counter += 1
             if guard_counter > 10**6:
@@ -544,6 +545,7 @@ class Interpreter(PhysicsVisitor):
         while cmp(i, end_val):
             self.variables[var_name] = i
             self.visit(ctx.block())
+            # czemu czas się zwiększa??
             self.variables["$TIME"] += 1
             i += step_val
 
@@ -560,6 +562,7 @@ class Interpreter(PhysicsVisitor):
             self.variables[var_name] = particle
             self.symbol_table[var_name] = True
             self.visit(ctx.block())
+            # czemu czas się zwiększa??
             self.variables["$TIME"] += 1
         return None
 
@@ -662,6 +665,9 @@ class Interpreter(PhysicsVisitor):
         if ctx.getChildCount() == 2:
             op = ctx.getChild(0).getText()
             val = self.visit(ctx.unary())
+            if (isinstance(val, bool) and op!= "Not") or (not isinstance(val, bool) and op== "Not"):
+                self._error(ctx,f"Operator {op} cannot be used on variable of type {type(val)}")
+
             return {"Not": lambda x: not x, "-": lambda x: -x, "+": lambda x: +x}[op](val)
 
         return self.visit(ctx.atom())
