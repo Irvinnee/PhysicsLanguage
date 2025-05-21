@@ -27,26 +27,8 @@ obsługę definiowania i wywoływania funkcji. Funkcja powinna pozwalać na zwra
 
 
 
-funkcja1 - wywołujemy funkcje 2 w funkcji1 ale funkcja 2 jest zadeklarowana po funkcji1
-deklaracja wstępna? - słownik zapisujący nazwy wszystkich funkcji
 
-sprawdzić wywoływanie funkcji1 w funkcji2, dekularujemy funkcje1 na poczatku funkcji2?
 
-syntax error
-
-zachwoanie pamięci zmiennych w rekurencji
-
-każde wywłoanie funkcji ma swój rekord aktywacji i każde wywołanie zmiennych????
-
-rekurencja dokładnie trzeba zrobić!!
-
-działanie ze stosem
-
-fun (num a, num, a) - podwójna deklaracja
-
-repetere i ex 5 ad 1: od 5 do 1 - ma być błąd
-
-rekurencja niebezpośrdnia i pośrednia (od razu w funkcji tej i w funkcji innej)
 
 nihil mumus test 5(bumerus i):
 

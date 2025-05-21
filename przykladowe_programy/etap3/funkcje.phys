@@ -8,9 +8,9 @@ int func factorial(int x):
 
     => x
 
-%int s = 5
-%print(factorial(s))
-%print(s)
+int s = 5
+print(factorial(s))
+print(s)
 
 int func factorial2(int x):
     if(x==0 Or x==1):
@@ -33,8 +33,9 @@ func foo(int x):
 %print(11111111111111111111)
 
 float func f2(float a,float b):
-    %float func test(float a,float b):
-    %    => a+b
+    float func test(float a,float b):
+        => a+b
+    int a = 5
 
     if(False):
         => test(a,b)
@@ -42,9 +43,9 @@ float func f2(float a,float b):
         => 2
 
 
-print(f2(1,2))
-print(f2(1,2))
-print(test(1,2))
+%print(f2(1,2))
+%print(f2(1,2))
+%print(test(1,2))
 
 
-print(f2(3.5, 5))
+%print(f2(3.5, 5))

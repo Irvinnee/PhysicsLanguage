@@ -1,0 +1,25 @@
+%for int i(5,1,1):
+%    print(i)
+
+
+
+int func factorial2(int x):
+    print(b)
+    int a = 1
+    if(x==0 Or x==1):
+        print(a)
+        => 1
+
+    => x*factorial3(x-1)
+
+
+int func factorial3(int x):
+    if(x==0 Or x==1):
+        print(a)
+        => 1
+
+    => x*factorial2(x-1)
+
+int b =333
+print(factorial3(5))
+%print(a)
