@@ -434,6 +434,9 @@ class Interpreter(PhysicsVisitor):
         # ───────────────────────────────────────────────
         saved_vars = self.variables
         self.variables = saved_vars.copy()
+        saved_functions = self.functions
+        self.functions = saved_functions.copy()
+
         for (p_name, p_type), arg in zip(expected_params, args_casted):   # ➍
             self.variables[p_name]    = arg
             self.symbol_table[p_name] = p_type
@@ -452,6 +455,7 @@ class Interpreter(PhysicsVisitor):
                 value = self.return_value
         finally:
             self.variables = saved_vars
+            self.functions = saved_functions
             self.in_function = False
             self.return_value = None
 
@@ -506,6 +510,7 @@ class Interpreter(PhysicsVisitor):
             self.visit(ctx.block(n_blocks - 1))
         return None
 
+    #TODO: po co ziększa się czas
     def visitWhileStmt(self, ctx):
         guard_counter = 0  # zabezpiecz kontra nieskończonej pętli
         while self.visit(ctx.expr()):
@@ -555,7 +560,9 @@ class Interpreter(PhysicsVisitor):
                 self._error(ctx,
                     f"For-loop variable '{var_name}' must be int or float, not {declared_type}")
 
-        # —— normalna pętla ——    
+        # —— normalna pętla ——
+        #TODO: po co i
+        # TODO: po co ziększa się czas
         i   = start_val
         cmp = (lambda a, b: a <= b) if step_val >= 0 else (lambda a, b: a >= b)
         while cmp(i, end_val):
@@ -566,7 +573,7 @@ class Interpreter(PhysicsVisitor):
             self.variables["$TIME"] += 1
             i += step_val
 
-
+    #TODO: po co ziększa się czas
     def visitForeachStmt(self, ctx):
         var_name = ctx.ID(0).getText()
         system_name = ctx.ID(1).getText()
@@ -592,7 +599,10 @@ class Interpreter(PhysicsVisitor):
         return self.return_value
 
     def visitPrintStmt(self, ctx):
-        print(self.visit(ctx.expr()))
+        val = self.visit(ctx.expr())
+        if val is None:
+            self._error(ctx, "Invalid use of void expression")
+        print(val)
         return None
 
     # ————————————————————————————————————————————————————————————————
