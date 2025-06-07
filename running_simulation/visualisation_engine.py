@@ -114,19 +114,19 @@ class Graphics:
 
 
     # Funkcja do rysowania estetycznego suwaka
-    def draw_slider(self, slider_rect, value):
-        start_color = (0, 0, 255)
-        end_color = (255, 0, 0)
-        color = tuple([
-            min(255, max(0, int(start_color[i] + (end_color[i] - start_color[i]) * (value / slider_rect.width))))
-            for i in range(3)
-        ])
-
-        pygame.draw.rect(self.screen, (150, 150, 150), slider_rect)
-        handle_width = 20
-        handle_x = int(slider_rect.left + value - handle_width / 2)
-        handle_rect = pygame.Rect(handle_x, slider_rect.top - 5, handle_width, slider_rect.height + 10)
-        pygame.draw.rect(self.screen, color, handle_rect, border_radius=4)
+    # def draw_slider(self, slider_rect, value):
+    #     start_color = (0, 0, 255)
+    #     end_color = (255, 0, 0)
+    #     color = tuple([
+    #         min(255, max(0, int(start_color[i] + (end_color[i] - start_color[i]) * (value / slider_rect.width))))
+    #         for i in range(3)
+    #     ])
+    #
+    #     pygame.draw.rect(self.screen, (150, 150, 150), slider_rect)
+    #     handle_width = 20
+    #     handle_x = int(slider_rect.left + value - handle_width / 2)
+    #     handle_rect = pygame.Rect(handle_x, slider_rect.top - 5, handle_width, slider_rect.height + 10)
+    #     pygame.draw.rect(self.screen, color, handle_rect, border_radius=4)
 
     # Inicjalizacja Pygame
     def run_simulation(self):
@@ -188,11 +188,13 @@ class Graphics:
             delta_time = current_time - prev_time
             prev_time = current_time
 
+
             with self.time_lock:
                 if is_playing:
                     self.system.step(delta_time)
 
             self.screen.fill((245, 245, 220))  # tło
+            self.draw_axes()
 
 
             img = play_img if not is_playing else pause_img
