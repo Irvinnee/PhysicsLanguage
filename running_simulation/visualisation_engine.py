@@ -1,5 +1,7 @@
 import threading
 from os import environ
+from platform import system
+
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import math
@@ -20,6 +22,7 @@ class Graphics:
     time_lock = threading.Lock()
     sim_time = 0.0
     stop_event: threading.Event
+    system: Optional[System] = None
 
     camera_angle = [0, 0]
     camera_pos = [0, 0, -5]
@@ -27,12 +30,12 @@ class Graphics:
     screen = None
 
 
-    def __init__(self, particles, stop_event: threading.Event):
-        # self.data_lock = data_lock
+
+    def __init__(self, particles, stop_event: threading.Event, system: System):
         self.particles = particles
         self.stop_event = stop_event
-        # self.sim_time = sim_time
-        # self.time_lock = time_lock
+        self.system = system
+
 
 
     def project_to_2d(self, x, y, z, camera_pos, camera_angle, fov=60, width=800, height=600):  # Zmniejszenie FOV
@@ -71,7 +74,7 @@ class Graphics:
             with self.time_lock:
                 t = self.sim_time
 
-            simulated_pos = p.position_at_time(t)
+            simulated_pos = p.position
 
 
             x, y = self.project_to_2d(simulated_pos[0], simulated_pos[1], simulated_pos[2], self.camera_pos,self.camera_angle)
@@ -132,18 +135,25 @@ class Graphics:
         pygame.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("3D Particle Viewer")
+        font = pygame.font.SysFont("Arial", 22, bold=True)
 
-        # Inicjalizacja suwaka
-        slider_rect = pygame.Rect(50, self.HEIGHT - 50, 700, 20)
-        slider_value = 0  # Inicjalna wartość suwaka (czas)
+        # Wczytaj grafiki
+        play_img = pygame.image.load("running_simulation/assets/play.png")
+        pause_img = pygame.image.load("running_simulation/assets/pause.png")
 
-        previous_slider_value = slider_value
+        # Skaluj do wielkości przycisku
+        icon_size = 40
+        play_img = pygame.transform.smoothscale(play_img, (icon_size, icon_size))
+        pause_img = pygame.transform.smoothscale(pause_img, (icon_size, icon_size))
+
+        button_radius = 25
+        button_center = (50 + button_radius, self.HEIGHT - 50 + button_radius // 2)
+        is_playing = False
 
         running = True
         start_time = time.time()
         prev_time = start_time
 
-        # Pętla główna
         while running and not self.stop_event.is_set():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -152,45 +162,48 @@ class Graphics:
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mx, my = pygame.mouse.get_pos()
-                    closest = None
-                    closest_dist = 20
-                    for p in self.particles.values():
-                        sim_pos = p.position_at_time(self.sim_time)
-                        px, py = self.project_to_2d(*sim_pos, self.camera_pos, self.camera_angle)
-                        dist = math.hypot(mx - px, my - py)
-                        if dist < closest_dist:
-                            closest = p
-                            closest_dist = dist
-                    if closest:
-                        print(f"Particle info: mass={closest.mass}, pos={closest.position}, vel={closest.velocity}")
 
-                elif event.type == pygame.MOUSEMOTION:
-                    if slider_rect.collidepoint(event.pos):
-                        slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
-                        slider_value = max(0, min(1, slider_value))  # Ograniczamy do zakresu [0, 1]
+                    # Obsługa kliknięcia przycisku ▶ / ⏸
+                    dx = mx - button_center[0]
+                    dy = my - button_center[1]
+                    if dx * dx + dy * dy <= button_radius * button_radius:
+                        is_playing = not is_playing
+                    else:
+                        # Sprawdź kliknięcie na cząstce
+                        closest = None
+                        closest_dist = 20
+                        for p in self.particles.values():
+                            sim_pos = p.position_at_time(self.sim_time)
+                            px, py = self.project_to_2d(*sim_pos, self.camera_pos, self.camera_angle)
+                            dist = math.hypot(mx - px, my - py)
+                            if dist < closest_dist:
+                                closest = p
+                                closest_dist = dist
+                        if closest:
+                            print(f"Particle info: mass={closest.mass}, pos={closest.position}, vel={closest.velocity}")
 
             self.handle_camera_movement()
 
             current_time = time.time()
-            delta_time = current_time - prev_time  # Czas od ostatniej klatki
+            delta_time = current_time - prev_time
             prev_time = current_time
 
-            # Jeśli suwak się zmienia, aktualizujemy stan cząsteczek
-            if slider_value != previous_slider_value:
-                previous_slider_value = slider_value
-
             with self.time_lock:
-                self.sim_time = slider_value
+                if is_playing:
+                    self.system.step(delta_time)
 
-            # Aktualizujemy pozycje cząsteczek na podstawie prędkości i upływającego czasu
-            self.screen.fill((245, 245, 220))  # Tło
+            self.screen.fill((245, 245, 220))  # tło
+
+
+            img = play_img if not is_playing else pause_img
+            img_rect = img.get_rect(center=button_center)
+            self.screen.blit(img, img_rect)
+
             with self.data_lock:
                 self.draw_particles()
 
-             # Rysowanie cząsteczek
-            self.draw_slider(slider_rect, slider_value * slider_rect.width)  # Rysowanie suwaka
-            pygame.display.flip()  # Aktualizowanie okna
-            # print(self.camera_pos,"   a", self.camera_angle)
-            pygame.time.Clock().tick(60)  # Ograniczenie liczby klatek na sekundę
+            pygame.display.flip()
+            pygame.time.Clock().tick(60)
 
         pygame.quit()
+

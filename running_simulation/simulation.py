@@ -53,7 +53,7 @@ class Simulation:
         self.stop_event = threading.Event()
 
         # self.graphics_engine = Graphics(self.particles_data, self.data_lock, self.time, self.time_lock)
-        self.graphics_engine = Graphics(self.particles_data, self.stop_event)
+        self.graphics_engine = Graphics(self.system.particles, self.stop_event, self.system)
 
         engine_thread = threading.Thread(target=self.simulation_engine)
 

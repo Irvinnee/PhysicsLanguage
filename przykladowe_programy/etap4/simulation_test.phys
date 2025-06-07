@@ -1,5 +1,5 @@
 $TIME = 10
-$DELTA = 0.1
+$DELTA = 0.01
 
 particle p1:
     mass = 1

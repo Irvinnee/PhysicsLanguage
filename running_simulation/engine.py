@@ -25,17 +25,31 @@ class Particle(SimObject):
         mass: float = 1.0,
         position: Optional[Vector] = None,
         velocity: Optional[Vector] = None,
-        electric_charge: float = 0.0,          # ← nowy parametr
+        electric_charge: float = 0.0,
     ) -> None:
-        self.mass: float      = float(mass)
+        self.mass: float = float(mass)
         self.system: Optional[System] = None
         self.position: Vector = position or [0.0, 0.0, 0.0]
         self.velocity: Vector = velocity or [0.0, 0.0, 0.0]
+        self.acceleration: Vector = [0.0, 0.0, 0.0]
         self.electric_charge: float = float(electric_charge)
+
 
 
     def position_at_time(self, t: float) -> List[float]:
         return [self.position[i] + self.velocity[i] * t for i in range(3)]
+
+    def apply_force(self, force: Vector):
+        for i in range(3):
+            self.acceleration[i] += force[i] / self.mass
+
+    def update(self, dt: float):
+        for i in range(3):
+            self.velocity[i] += self.acceleration[i] * dt
+            self.position[i] += self.velocity[i] * dt
+            self.acceleration[i] = 0.0  # resetuj przyspieszenie po każdej klatce
+
+
 
 
 class Field(SimObject):
@@ -131,10 +145,7 @@ class System:
                     law.fn(obj, self, dt)
 
         for p in self.particles.values():
-            p.position[0] += p.velocity[0] * dt
-            p.position[1] += p.velocity[1] * dt
-            p.position[2] += p.velocity[2] * dt
-            # print(f" krok {self.time:.1f}, pozycja: {p.position}, prędkość: {p.velocity}")
+            p.update(dt)
 
         for sub in self.subsystems.values():
             sub.step(dt)
