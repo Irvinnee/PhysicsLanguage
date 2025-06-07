@@ -86,3 +86,13 @@ class SymbolCollector(PhysicsListener):
 
     def exitLawDecl(self, ctx):
         self.scope_stack.pop()
+
+    def enterParticleDecl(self, ctx):
+        name = ctx.ID().getText()
+
+        if name in self.symbol_table:
+            self.errors.append(f"Line {ctx.start.line}: Redeclaration of variable '{name}'")
+            return
+
+        self.symbol_table[name] = "particle"
+

@@ -1,0 +1,4 @@
+particle p1:
+    mass = 1
+    pos = [0, 0, 0]
+    vel = [1, 0, 0]

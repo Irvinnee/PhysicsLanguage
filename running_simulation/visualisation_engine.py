@@ -68,11 +68,18 @@ class Graphics:
     def draw_particles(self):
         for p in self.particles.values():
 
-            x, y = self.project_to_2d(p.position[0], p.position[1], p.position[2], self.camera_pos, self.camera_angle)
+            with self.time_lock:
+                t = self.sim_time
+
+            simulated_pos = p.position_at_time(t)
+
+
+            x, y = self.project_to_2d(simulated_pos[0], simulated_pos[1], simulated_pos[2], self.camera_pos,self.camera_angle)
             radius = max(int(p.mass * 5), 5)  # Zwiększenie rozmiaru cząsteczek
             if p not in self.colors.keys():
                 self.colors[p] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
             pygame.draw.circle(self.screen, self.colors[p], (int(x), int(y)), radius)
+
 
     def handle_camera_movement(self):
         keys = pygame.key.get_pressed()
@@ -142,7 +149,22 @@ class Graphics:
                 if event.type == pygame.QUIT:
                     running = False
                     self.stop_event.set()
-                if event.type == pygame.MOUSEMOTION:
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mx, my = pygame.mouse.get_pos()
+                    closest = None
+                    closest_dist = 20
+                    for p in self.particles.values():
+                        sim_pos = p.position_at_time(self.sim_time)
+                        px, py = self.project_to_2d(*sim_pos, self.camera_pos, self.camera_angle)
+                        dist = math.hypot(mx - px, my - py)
+                        if dist < closest_dist:
+                            closest = p
+                            closest_dist = dist
+                    if closest:
+                        print(f"Particle info: mass={closest.mass}, pos={closest.position}, vel={closest.velocity}")
+
+                elif event.type == pygame.MOUSEMOTION:
                     if slider_rect.collidepoint(event.pos):
                         slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
                         slider_value = max(0, min(1, slider_value))  # Ograniczamy do zakresu [0, 1]

@@ -33,6 +33,11 @@ class Particle(SimObject):
         self.velocity: Vector = velocity or [0.0, 0.0, 0.0]
         self.electric_charge: float = float(electric_charge)
 
+
+    def position_at_time(self, t: float) -> List[float]:
+        return [self.position[i] + self.velocity[i] * t for i in range(3)]
+
+
 class Field(SimObject):
     def __init__(
         self,

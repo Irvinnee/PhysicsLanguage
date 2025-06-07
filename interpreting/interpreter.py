@@ -44,7 +44,8 @@ class Interpreter(PhysicsVisitor):
         # flaga „czy jesteśmy wewnątrz funkcji” i ewent. wynik return
         self.in_function: bool = False
         self.return_value = None
-
+        self.current_particle: Optional[str] = None
+        self.current_system: Optional[System] = None
 
     # ————————————————————————————————————————————————————————————————
     # Pomocnicze narzędzia raportowania błędów
@@ -157,46 +158,62 @@ class Interpreter(PhysicsVisitor):
         if isinstance(target_ctx, PhysicsParser.VarTargetContext):
             name = target_ctx.getText()
 
-            # Specjalne zmienne czasu / deltą.
+            # Przypisanie do particles w systemie
+            if self.current_system and name == "particles":
+                system = self.variables[self.current_system]
+                if not isinstance(value, list):
+                    self._error(ctx, f"'particles' must be a list")
+                for item in value:
+                    if isinstance(item, str):
+                        if item not in self.variables or not isinstance(self.variables[item], Particle):
+                            self._error(ctx, f"'{item}' is not a defined Particle")
+                        particle = self.variables[item]
+                    elif isinstance(item, Particle):
+                        particle = item
+                    else:
+                        self._error(ctx, f"Invalid item in particle list: {item}")
+                    system.add_particle(item if isinstance(item, str) else "", particle)
+                return None
+
+            # Przypisanie do atrybutu cząstki
+            if self.current_particle:
+                particle = self.variables[self.current_particle]
+                if name == "pos":
+                    name = "position"
+                elif name == "vel":
+                    name = "velocity"
+                setattr(particle, name, value)
+                return None
+
+            # Specjalne zmienne globalne
             if name in ("$TIME", "$DELTA"):
                 if not isinstance(value, (int, float)):
                     self.errorWrongType(type(value), (float, int), name, ctx)
                 self.variables[name] = value
                 return None
 
-            # Sprawdź istnienie deklaracji.
+            # Sprawdzenie, czy zmienna była zadeklarowana
             if name not in self.symbol_table:
                 self._error(ctx, f"Assignment to undeclared variable '{name}'")
 
-            # Zabroń rzutowania bool → float / int.
             declared_type = self.symbol_table[name]
-            # if declared_type in ("float", "int") and isinstance(value, bool):
-            #     self.errorWrongType(type(value), declared_type, name, ctx)
-            #
+
             if declared_type == "bool" and not isinstance(value, bool):
                 self.errorWrongType(type(value).__name__, "bool", name, ctx)
 
-            # Zabroń rzutowania bool → float / int.
             if isinstance(value, bool) and declared_type in ("float", "int"):
-                self.errorWrongType(type(value), declared_type, name, ctx)
+                self.errorWrongType(type(value).__name__, declared_type, name, ctx)
 
-            # Automatyczne int → float
             try:
                 if declared_type == "int" and isinstance(value, float):
-                   casted_val = round(value)
+                    casted_val = round(value)
                 elif declared_type == "float" and isinstance(value, int):
                     casted_val = float(value)
                 else:
                     casted_val = value
-
                 self.variables[name] = casted_val
             except (ValueError, TypeError):
-               self.errorWrongType(type(value), declared_type, name, ctx)
-            # Sprawdź typ przez isinstance (typ prymitywny) lub dowolny dla True.
-            # if declared_type is True or isinstance(value, getattr(builtins, declared_type, object)):
-            #     self.variables[name] = value
-            # else:
-            #     self.errorWrongType(type(value), declared_type, name, ctx)
+                self.errorWrongType(type(value).__name__, declared_type, name, ctx)
 
         elif isinstance(target_ctx, PhysicsParser.AttrTargetContext):
             obj, attr, index = self.visit(target_ctx)
@@ -204,6 +221,7 @@ class Interpreter(PhysicsVisitor):
                 getattr(obj, attr)[index] = value
             else:
                 setattr(obj, attr, value)
+
         return None
 
     # ————————————————————————————————————————————————————————————————
@@ -301,11 +319,9 @@ class Interpreter(PhysicsVisitor):
     def visitSystemDecl(self, ctx):
         name = ctx.ID().getText()
 
-        # ───── redeklaracja tylko, gdy obiekt już istnieje ─────
         if name in self.variables:
             self._error(ctx, f"Redeclaration of variable '{name}'")
 
-        # wpis z SymbolCollector-a jest OK, o ile ma typ "system"
         if name in self.symbol_table and self.symbol_table[name] != "system":
             self._error(
                 ctx,
@@ -313,21 +329,18 @@ class Interpreter(PhysicsVisitor):
                 f"(was {self.symbol_table[name]})"
             )
 
-        # jeśli wpisu w symbol_table nie było (mało prawdopodobne),
-        # dopisz go teraz
         self.symbol_table[name] = "system"
-
 
         system = System(name)
         self.variables[name] = system
 
-        # Obsługa zagnieżdżeń – pamiętaj poprzedni aktywny system
-        prev_active = self.variables.get("$SYSTEM")
-        self.variables["$SYSTEM"] = system
+
+        prev_active = self.current_system
+        self.current_system = system
 
         self.visit(ctx.block())
 
-        self.variables["$SYSTEM"] = prev_active
+        self.current_system = prev_active
         return None
 
     # ————————————————————————————————————————————————————————————————
@@ -850,3 +863,40 @@ class Interpreter(PhysicsVisitor):
 
         # Normalne wywołanie funkcji
         return self._call(func_name, args, ctx)
+
+    # ————————————————————————————————————————————————————————————————
+    # Particle
+    # ————————————————————————————————————————————————————————————————
+
+    def visitParticleDecl(self, ctx):
+        name = ctx.ID().getText()
+
+        if name in self.variables:
+            self._error(ctx, f"Variable '{name}' already declared")
+
+        particle = Particle()
+        self.variables[name] = particle
+
+        self.current_particle = name
+        for stmt in ctx.block().statement():
+            self.visit(stmt)
+        self.current_particle = None
+
+    def visitSystemDecl(self, ctx):
+        name = ctx.ID().getText()
+
+        if name in self.variables:
+            self._error(ctx, f"Variable '{name}' already declared")
+
+        system = System(name)
+        self.variables[name] = system
+
+        self.current_system = name
+
+        for stmt in ctx.block().statement():
+            self.visit(stmt)
+
+        self.current_system = None
+
+
+
