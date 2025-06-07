@@ -44,6 +44,11 @@ class PhysicsVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by PhysicsParser#particleDecl.
+    def visitParticleDecl(self, ctx:PhysicsParser.ParticleDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by PhysicsParser#lawAssignStmt.
     def visitLawAssignStmt(self, ctx:PhysicsParser.LawAssignStmtContext):
         return self.visitChildren(ctx)

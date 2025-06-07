@@ -71,6 +71,15 @@ class PhysicsListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by PhysicsParser#particleDecl.
+    def enterParticleDecl(self, ctx:PhysicsParser.ParticleDeclContext):
+        pass
+
+    # Exit a parse tree produced by PhysicsParser#particleDecl.
+    def exitParticleDecl(self, ctx:PhysicsParser.ParticleDeclContext):
+        pass
+
+
     # Enter a parse tree produced by PhysicsParser#lawAssignStmt.
     def enterLawAssignStmt(self, ctx:PhysicsParser.LawAssignStmtContext):
         pass
