@@ -4,7 +4,7 @@ tokens { INDENT, DEDENT }
 
 @lexer::header{
 from antlr_denter.DenterHelper import DenterHelper
-from PhysicsParser import PhysicsParser
+from grammar.PhysicsParser import PhysicsParser
 }
 @lexer::members {
 class MyCoolDenter(DenterHelper):
@@ -33,6 +33,7 @@ statement
     | attrAssignStmt
     | callStmt
     | lawDecl
+    | particleDecl
     | systemDecl
     | lawAssignStmt 
     | funcDecl
@@ -53,6 +54,10 @@ target
 
 lawDecl     : 'law' ID '(' paramList? ')' ':'
                block;
+
+particleDecl
+    : 'particle' ID ':' block
+    ;
 
 lawAssignStmt : '<' dottedID '&' ID '>' NL ;
 attrAssignStmt

@@ -1,0 +1,25 @@
+$TIME = 10
+$DELTA = 0.1
+
+p1 = 0
+p2 = 0
+p3 = 0
+
+particle p1
+    mass = 1
+    pos = [0, 0, 0]
+    vel = [0.1, 0, 0]
+
+particle p2
+    mass = 1
+    pos = [1, 0, 0]
+    vel = [0, 0.1, 0]
+
+particle p3
+    mass = 1
+    pos = [-1, 0, 0]
+    vel = [0, 0, 0.1]
+
+system uk
+    particles = [p1, p2, p3]
+
