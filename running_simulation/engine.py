@@ -49,7 +49,8 @@ class Particle(SimObject):
             self.position[i] += self.velocity[i] * dt
             self.acceleration[i] = 0.0  # resetuj przyspieszenie po każdej klatce
 
-
+    def move_to_time(self, t):
+        self.position = [self.position[i] + self.velocity[i] * t for i in range(3)]
 
 
 class Field(SimObject):

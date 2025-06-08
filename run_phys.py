@@ -9,8 +9,9 @@ from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
 from grammar.ScopeAndVisitor import PhysicsVisitor2
-from running_simulation.laws import gravity_law
-from running_simulation.engine import Law
+
+
+from running_simulation.vpython_test.simulation_vpython import run_3d_visualization
 
 
 
@@ -61,14 +62,14 @@ def run_phys_file(path, sim=False):
     simulate = Simulation()
     dummy = System("global")
 
-    dummy.register_law(Law(fn=gravity_law, scope="global", target="particle"))
+
 
     for name, value in interpreter.variables.items():
         if isinstance(value, Particle):
             dummy.add_particle(name, value)
 
     if sim:
-        simulate.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
+        run_3d_visualization(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
 
 
 if __name__ == "__main__":
