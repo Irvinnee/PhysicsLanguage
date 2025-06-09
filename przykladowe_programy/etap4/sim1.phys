@@ -11,3 +11,6 @@ law move(particle p):
     p->position = p->position + p->velocity
 
 <moving & move>
+
+
+

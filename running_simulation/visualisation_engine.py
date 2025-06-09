@@ -33,7 +33,7 @@ class Graphics:
         self.dragging_slider = False
         self.dragging_camera = False
         self.last_mouse_pos = None
-        self.camera_angle = [35, -135]
+        self.camera_angle = [-40, 45]
         self.camera_pos = [50, 50, -50]
         self.light_pos = [0, 100, -100]
 
@@ -289,4 +289,6 @@ class Graphics:
             # print(self.camera_pos,"   a", self.camera_angle)
             pygame.time.Clock().tick(60)  # Ograniczenie liczby klatek na sekundę
 
+
+        print(self.camera_angle)
         pygame.quit()

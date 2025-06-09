@@ -107,7 +107,7 @@ if __name__ == "__main__":
         full_path = os.path.join(base_dir, phys_file) if not os.path.isabs(phys_file) else phys_file
         run_phys_file(full_path, sim=simulation)
     else:
-        files = sorted(glob.glob(os.path.join(base_dir, "przykladowe_programy/etap3", "*.phys")), key=os.path.getmtime, reverse=True)
+        files = sorted(glob.glob(os.path.join(base_dir, "przykladowe_programy/etap4", "*.phys")), key=os.path.getmtime, reverse=True)
         if not files:
             print("Nie znaleziono plików .phys.")
             exit(1)
