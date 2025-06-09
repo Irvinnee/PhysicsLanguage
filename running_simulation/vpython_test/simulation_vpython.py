@@ -26,18 +26,26 @@ def run_3d_visualization(system: System, duration: float, delta: float):
 
     draw_axes()
 
-    # Tworzenie kul dla każdej cząstki
+    # Tworzenie kul reprezentujących cząstki
     vparticles = {}
     for particle in system.particles.values():
         color_choice = vector.random()
         vparticles[particle] = sphere(pos=vector(*particle.position), radius=0.1, color=color_choice)
 
-    # GUI
+    # Zmienne kontrolne
     t = 0.0
     playing = False
 
+    # Interfejs tekstowy czasu
+    scene.append_to_caption("\n")
     time_display = wtext(text=f"Symulacja czasu: t = {t:.2f}\n")
 
+    # Pole do wpisywania kroku symulacji
+    scene.append_to_caption(" Krok (s): ")
+    step_input = winput(text=f"{delta:.2f}", width=60)
+    scene.append_to_caption("\n")
+
+    # Funkcja aktualizująca pozycje cząstek
     def update_particles():
         for particle in system.particles.values():
             particle.move_to_time(t)
@@ -45,29 +53,47 @@ def run_3d_visualization(system: System, duration: float, delta: float):
             vsphere.pos = vector(*particle.position)
         time_display.text = f"Symulacja czasu: t = {t:.2f}\n"
 
+    # Obsługa przycisków
+    def on_play():
+        nonlocal playing
+        playing = True
 
+    def on_pause():
+        nonlocal playing
+        playing = False
 
-
-    def on_slider_change():
+    def on_step_forward():
         nonlocal t
-        t = time_slider.value
+        try:
+            step = float(step_input.text)
+        except ValueError:
+            step = delta
+        t = min(t + step, duration)
         update_particles()
 
-    def on_toggle():
-        nonlocal playing
-        playing = not playing
-        toggle_button.text = "⏸️" if playing else "▶️"
+    def on_step_back():
+        nonlocal t
+        try:
+            step = float(step_input.text)
+        except ValueError:
+            step = delta
+        t = max(t - step, 0.0)
+        update_particles()
 
-    toggle_button = button(text="▶️", bind=on_toggle)
-    scene.append_to_caption("  ")
+    # Przyciski sterujące
+    button(text="⏮️", bind=on_step_back)
+    scene.append_to_caption(" ")
+    button(text="▶️ Play", bind=on_play)
+    scene.append_to_caption(" ")
+    button(text="⏸️ Pause", bind=on_pause)
+    scene.append_to_caption(" ")
+    button(text="⏭️", bind=on_step_forward)
+    scene.append_to_caption("\n\n")
 
-    # Suwak czasu
-    time_slider = slider(min=0, max=duration, value=0, step=delta, length=600, bind=lambda s: on_slider_change())
-
-
+    # Początkowa aktualizacja
     update_particles()
 
-    # Główna pętla odtwarzająca
+    # Główna pętla symulacji
     while True:
         rate(60)
         if playing:
@@ -75,7 +101,4 @@ def run_3d_visualization(system: System, duration: float, delta: float):
             if t > duration:
                 t = duration
                 playing = False
-                toggle_button.text = "▶️"
-            time_slider.value = t
-            scene.caption = f"Symulacja czasu: t = {t:.2f}"
             update_particles()

@@ -11,11 +11,6 @@ from running_simulation.simulation import Simulation
 from grammar.ScopeAndVisitor import PhysicsVisitor2
 
 
-from running_simulation.vpython_test.simulation_vpython import run_3d_visualization
-
-
-
-
 def run_phys_file(path, sim=False):
     with open(path, encoding="utf-8") as f:
         code = f.read()
@@ -62,15 +57,12 @@ def run_phys_file(path, sim=False):
     simulate = Simulation()
     dummy = System("global")
 
-
-
     for name, value in interpreter.variables.items():
         if isinstance(value, Particle):
             dummy.add_particle(name, value)
 
     if sim:
-        run_3d_visualization(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
-
+        simulate.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
 
 if __name__ == "__main__":
     import glob

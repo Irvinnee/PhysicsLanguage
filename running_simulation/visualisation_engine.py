@@ -1,7 +1,5 @@
 import threading
 from os import environ
-from platform import system
-
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import math
@@ -22,21 +20,22 @@ class Graphics:
     time_lock = threading.Lock()
     sim_time = 0.0
     stop_event: threading.Event
-    system: Optional[System] = None
 
-    camera_angle = [0, 0]
-    camera_pos = [0, 0, -5]
+
+
     WIDTH, HEIGHT = 800, 600
     screen = None
 
-
-
-    def __init__(self, particles, stop_event: threading.Event, system: System):
+    def __init__(self, particles, stop_event: threading.Event, system):
         self.particles = particles
         self.stop_event = stop_event
-        self.system = system
-
-
+        self.system = system  # zapamiętaj system, jeśli potrzebujesz
+        self.dragging_slider = False
+        self.dragging_camera = False
+        self.last_mouse_pos = None
+        self.camera_angle = [35, -135]
+        self.camera_pos = [50, 50, -50]
+        self.light_pos = [100, 100, -100]
 
     def project_to_2d(self, x, y, z, camera_pos, camera_angle, fov=60, width=800, height=600):  # Zmniejszenie FOV
         pitch = camera_angle[0]
@@ -66,27 +65,23 @@ class Graphics:
         x_2d = (x_rot / (z_rot * scale * aspect_ratio)) * (width / 2)
         y_2d = (-y_rot / (z_rot * scale)) * (height / 2)
 
+
         return x_2d + width / 2, y_2d + height / 2
 
     def draw_particles(self):
         for p in self.particles.values():
+            x, y = self.project_to_2d(p.position[0], p.position[1], p.position[2], self.camera_pos, self.camera_angle)
+            radius = max(int(p.mass * 5), 5)
 
-            with self.time_lock:
-                t = self.sim_time
-
-            simulated_pos = p.position
-
-
-            x, y = self.project_to_2d(simulated_pos[0], simulated_pos[1], simulated_pos[2], self.camera_pos,self.camera_angle)
-            radius = max(int(p.mass * 5), 5)  # Zwiększenie rozmiaru cząsteczek
-            if p not in self.colors.keys():
+            if p not in self.colors:
                 self.colors[p] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            pygame.draw.circle(self.screen, self.colors[p], (int(x), int(y)), radius)
 
+
+            pygame.draw.circle(self.screen, self.colors[p], (int(x), int(y)), radius)
 
     def handle_camera_movement(self):
         keys = pygame.key.get_pressed()
-        move_speed = 0.1
+        move_speed = 1
         angle_speed = 1.5
 
         if keys[pygame.K_UP]:
@@ -111,22 +106,65 @@ class Graphics:
         if keys[pygame.K_d]:
             self.camera_angle[1] += angle_speed
 
+        if self.camera_angle[1] > 180:
+            self.camera_angle[1] -= 360
+        elif self.camera_angle[1] < -180:
+            self.camera_angle[1] += 360
+
 
 
     # Funkcja do rysowania estetycznego suwaka
-    # def draw_slider(self, slider_rect, value):
-    #     start_color = (0, 0, 255)
-    #     end_color = (255, 0, 0)
-    #     color = tuple([
-    #         min(255, max(0, int(start_color[i] + (end_color[i] - start_color[i]) * (value / slider_rect.width))))
-    #         for i in range(3)
-    #     ])
-    #
-    #     pygame.draw.rect(self.screen, (150, 150, 150), slider_rect)
-    #     handle_width = 20
-    #     handle_x = int(slider_rect.left + value - handle_width / 2)
-    #     handle_rect = pygame.Rect(handle_x, slider_rect.top - 5, handle_width, slider_rect.height + 10)
-    #     pygame.draw.rect(self.screen, color, handle_rect, border_radius=4)
+    def draw_slider(self, slider_rect, value):
+        start_color = (0, 0, 255)
+        end_color = (255, 0, 0)
+        color = tuple([
+            min(255, max(0, int(start_color[i] + (end_color[i] - start_color[i]) * (value / slider_rect.width))))
+            for i in range(3)
+        ])
+
+        pygame.draw.rect(self.screen, (150, 150, 150), slider_rect)
+        handle_width = 20
+        handle_x = int(slider_rect.left + value - handle_width / 2)
+        handle_rect = pygame.Rect(handle_x, slider_rect.top - 5, handle_width, slider_rect.height + 10)
+        pygame.draw.rect(self.screen, color, handle_rect, border_radius=4)
+
+    def draw_axes(self):
+        axis_length = 50.0
+        origin = (0, 0, 0)
+
+        axes = {
+            'X': ((axis_length, 0, 0), (255, 0, 0)),  # Red
+            'Y': ((0, axis_length, 0), (0, 255, 0)),  # Green
+            'Z': ((0, 0, -axis_length), (0, 0, 255))  # Blue
+        }
+
+        font = pygame.font.SysFont("Arial", 16, bold=True)
+
+        for label, (endpoint, color) in axes.items():
+            start_2d = self.project_to_2d(*origin, self.camera_pos, self.camera_angle)
+            end_2d = self.project_to_2d(*endpoint, self.camera_pos, self.camera_angle)
+
+            pygame.draw.line(self.screen, color, start_2d, end_2d, 3)
+
+            # Draw arrowhead
+            dx = end_2d[0] - start_2d[0]
+            dy = end_2d[1] - start_2d[1]
+            length = math.hypot(dx, dy)
+            if length > 0:
+                ux, uy = dx / length, dy / length
+                perp = (-uy, ux)
+
+                tip = (end_2d[0], end_2d[1])
+                left = (tip[0] - ux * 10 + perp[0] * 5, tip[1] - uy * 10 + perp[1] * 5)
+                right = (tip[0] - ux * 10 - perp[0] * 5, tip[1] - uy * 10 - perp[1] * 5)
+
+                pygame.draw.polygon(self.screen, color, [tip, left, right])
+
+            # Draw label
+            label_surface = font.render(label, True, color)
+            self.screen.blit(label_surface, (end_2d[0] + 5, end_2d[1] + 5))
+
+
 
     # Inicjalizacja Pygame
     def run_simulation(self):
@@ -135,25 +173,18 @@ class Graphics:
         pygame.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("3D Particle Viewer")
-        font = pygame.font.SysFont("Arial", 22, bold=True)
 
-        # Wczytaj grafiki
-        play_img = pygame.image.load("running_simulation/assets/play.png")
-        pause_img = pygame.image.load("running_simulation/assets/pause.png")
+        # Inicjalizacja suwaka
+        slider_rect = pygame.Rect(50, self.HEIGHT - 50, 700, 20)
+        slider_value = 0  # Inicjalna wartość suwaka (czas)
 
-        # Skaluj do wielkości przycisku
-        icon_size = 40
-        play_img = pygame.transform.smoothscale(play_img, (icon_size, icon_size))
-        pause_img = pygame.transform.smoothscale(pause_img, (icon_size, icon_size))
-
-        button_radius = 25
-        button_center = (50 + button_radius, self.HEIGHT - 50 + button_radius // 2)
-        is_playing = False
+        previous_slider_value = slider_value
 
         running = True
         start_time = time.time()
         prev_time = start_time
 
+        # Pętla główna
         while running and not self.stop_event.is_set():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -161,51 +192,64 @@ class Graphics:
                     self.stop_event.set()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mx, my = pygame.mouse.get_pos()
+                    if event.button == 1:  # lewy przycisk myszy
+                        if slider_rect.collidepoint(event.pos):
+                            self.dragging_slider = True
+                        else:
+                            self.dragging_camera = True
+                            self.last_mouse_pos = event.pos
 
-                    # Obsługa kliknięcia przycisku ▶ / ⏸
-                    dx = mx - button_center[0]
-                    dy = my - button_center[1]
-                    if dx * dx + dy * dy <= button_radius * button_radius:
-                        is_playing = not is_playing
-                    else:
-                        # Sprawdź kliknięcie na cząstce
-                        closest = None
-                        closest_dist = 20
-                        for p in self.particles.values():
-                            sim_pos = p.position_at_time(self.sim_time)
-                            px, py = self.project_to_2d(*sim_pos, self.camera_pos, self.camera_angle)
-                            dist = math.hypot(mx - px, my - py)
-                            if dist < closest_dist:
-                                closest = p
-                                closest_dist = dist
-                        if closest:
-                            print(f"Particle info: mass={closest.mass}, pos={closest.position}, vel={closest.velocity}")
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        self.dragging_slider = False
+                        self.dragging_camera = False
+                        self.last_mouse_pos = None
+
+                elif event.type == pygame.MOUSEWHEEL:
+                    self.camera_pos[2] += -event.y * 5  # przesuń kamerę wzdłuż osi Z
+
+
+                elif event.type == pygame.MOUSEMOTION:
+                    if self.dragging_slider:
+                        if slider_rect.collidepoint(event.pos):  # aktualizuj tylko jeśli nadal nad suwakiem
+                            slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
+                            slider_value = max(0, min(1, slider_value))  # zakres [0, 1]
+
+
+                    elif self.dragging_camera:
+                        x, y = event.pos
+                        last_x, last_y = self.last_mouse_pos
+                        dx = x - last_x
+                        dy = y - last_y
+                        self.last_mouse_pos = event.pos
+
+                        self.camera_angle[1] += dx * 0.2  # yaw
+                        self.camera_angle[0] += dy * 0.2  # pitch
+                        self.camera_angle[0] = max(-89, min(89, self.camera_angle[0]))  # ograniczenie pitch
 
             self.handle_camera_movement()
 
             current_time = time.time()
-            delta_time = current_time - prev_time
+            delta_time = current_time - prev_time  # Czas od ostatniej klatki
             prev_time = current_time
 
+            # Jeśli suwak się zmienia, aktualizujemy stan cząsteczek
+            if slider_value != previous_slider_value:
+                previous_slider_value = slider_value
 
             with self.time_lock:
-                if is_playing:
-                    self.system.step(delta_time)
+                self.sim_time = slider_value
 
-            self.screen.fill((245, 245, 220))  # tło
-            self.draw_axes()
-
-
-            img = play_img if not is_playing else pause_img
-            img_rect = img.get_rect(center=button_center)
-            self.screen.blit(img, img_rect)
-
+            # Aktualizujemy pozycje cząsteczek na podstawie prędkości i upływającego czasu
+            self.screen.fill((245, 245, 220))  # Tło
             with self.data_lock:
+                self.draw_axes()
                 self.draw_particles()
 
-            pygame.display.flip()
-            pygame.time.Clock().tick(60)
+             # Rysowanie cząsteczek
+            self.draw_slider(slider_rect, slider_value * slider_rect.width)  # Rysowanie suwaka
+            pygame.display.flip()  # Aktualizowanie okna
+            # print(self.camera_pos,"   a", self.camera_angle)
+            pygame.time.Clock().tick(60)  # Ograniczenie liczby klatek na sekundę
 
         pygame.quit()
-

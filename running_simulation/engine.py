@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Union
 
 Vector = List[float]
-LawFn  = Callable[["SimObject", "System", float], None]
-
+LawFn = Callable[["SimObject", "System", float], None]
 
 
 class SimObject:
@@ -16,56 +15,35 @@ class SimObject:
         getattr(self, attr)[idx] = value
 
 
-
-#  Particle 
+#  Particle
 
 class Particle(SimObject):
     def __init__(
-        self,
-        mass: float = 1.0,
-        position: Optional[Vector] = None,
-        velocity: Optional[Vector] = None,
-        electric_charge: float = 0.0,
+            self,
+            mass: float = 1.0,
+            position: Optional[Vector] = None,
+            velocity: Optional[Vector] = None,
+            electric_charge: float = 0.0,  # ← nowy parametr
     ) -> None:
         self.mass: float = float(mass)
         self.system: Optional[System] = None
         self.position: Vector = position or [0.0, 0.0, 0.0]
         self.velocity: Vector = velocity or [0.0, 0.0, 0.0]
-        self.acceleration: Vector = [0.0, 0.0, 0.0]
         self.electric_charge: float = float(electric_charge)
-
-
-
-    def position_at_time(self, t: float) -> List[float]:
-        return [self.position[i] + self.velocity[i] * t for i in range(3)]
-
-    def apply_force(self, force: Vector):
-        for i in range(3):
-            self.acceleration[i] += force[i] / self.mass
-
-    def update(self, dt: float):
-        for i in range(3):
-            self.velocity[i] += self.acceleration[i] * dt
-            self.position[i] += self.velocity[i] * dt
-            self.acceleration[i] = 0.0  # resetuj przyspieszenie po każdej klatce
-
-    def move_to_time(self, t):
-        self.position = [self.position[i] + self.velocity[i] * t for i in range(3)]
 
 
 class Field(SimObject):
     def __init__(
-        self,
-        center: Optional[Vector] = None,
-        function: Optional[Callable[["Particle", "Field"], float]] = None,
-        radius: float = 1.0,
-        intensity: float = 1.0,
+            self,
+            center: Optional[Vector] = None,
+            function: Optional[Callable[["Particle", "Field"], float]] = None,
+            radius: float = 1.0,
+            intensity: float = 1.0,
     ) -> None:
-        self.center: Vector   = center or [0.0, 0.0, 0.0]   # punkt_początkowy
-        self.function = function                            # będzie można przypisać square, linear…
-        self.radius: float     = float(radius)
-        self.intensity: float  = float(intensity)
-
+        self.center: Vector = center or [0.0, 0.0, 0.0]  # punkt_początkowy
+        self.function = function  # będzie można przypisać square, linear…
+        self.radius: float = float(radius)
+        self.intensity: float = float(intensity)
 
 
 #  Field (placeholder)
@@ -77,11 +55,11 @@ class Field(SimObject):
         self.source_position: Vector = [0.0, 0.0, 0.0]
 
 
-#  Law wrapper: 
+#  Law wrapper:
 @dataclass
 class Law:
     fn: LawFn
-    scope: str = "global"     
+    scope: str = "global"
     target: str = "particle"
 
     def applies(self, name: str, obj: SimObject) -> bool:
@@ -99,15 +77,13 @@ class Law:
         return name == self.scope
 
 
-
-
 #  System
 class System:
     def __init__(self, name: str = "root") -> None:
         self.name = name
         self.time: float = 0.0
         self.particles: Dict[str, Particle] = {}
-        self.fields:    Dict[str, Field] = {}
+        self.fields: Dict[str, Field] = {}
         self.laws: List[Law] = []
         self.subsystems: Dict[str, "System"] = {}
         self.parent: Optional["System"] = None
@@ -121,18 +97,15 @@ class System:
         self.particles[name] = p
         p.system = self
 
-
     def add_field(self, name: str, f: Field):
         self.fields[name] = f
 
     def register_law(self, law: Law):
         # print(f" Law registered in system '{self.name}': scope={law.scope}")
 
-
         self.laws.append(law)
 
     def step(self, dt: float = 1.0):
-        
 
         active = self._collect_laws()
 
@@ -146,11 +119,13 @@ class System:
                     law.fn(obj, self, dt)
 
         for p in self.particles.values():
-            p.update(dt)
+            p.position[0] += p.velocity[0] * dt
+            p.position[1] += p.velocity[1] * dt
+            p.position[2] += p.velocity[2] * dt
+            # print(f" krok {self.time:.1f}, pozycja: {p.position}, prędkość: {p.velocity}")
 
         for sub in self.subsystems.values():
             sub.step(dt)
-        
 
         self.time += dt
 
