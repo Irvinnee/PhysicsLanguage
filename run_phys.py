@@ -9,6 +9,7 @@ from interpreting.interpreter import Interpreter
 from running_simulation.engine import Particle, System
 from running_simulation.simulation import Simulation
 from grammar.ScopeAndVisitor import PhysicsVisitor2
+import glob
 
 
 def run_phys_file(path, sim=False):
@@ -64,9 +65,37 @@ def run_phys_file(path, sim=False):
     if sim:
         simulate.run(dummy, interpreter.variables["$TIME"], interpreter.variables["$DELTA"])
 
+def show_gui_before_simulation(path):
+    import sys
+    from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel
+    import threading
+
+    class App(QWidget):
+        def __init__(self):
+            super().__init__()
+            self.setWindowTitle("Symulacja cząsteczek")
+            self.setGeometry(100, 100, 300, 150)
+
+            layout = QVBoxLayout()
+            self.label = QLabel(f"Plik: {path}")
+            self.button = QPushButton("Start symulacji")
+            self.button.clicked.connect(self.start_simulation)
+
+            layout.addWidget(self.label)
+            layout.addWidget(self.button)
+            self.setLayout(layout)
+
+        def start_simulation(self):
+            threading.Thread(target=lambda: run_phys_file(path, sim=False)).start()
+            self.close()
+
+    app = QApplication(sys.argv)
+    window = App()
+    window.show()
+    sys.exit(app.exec_())
+
+
 if __name__ == "__main__":
-    import glob
-    import os
 
     args = sys.argv[1:]
     simulation = "True" in args
