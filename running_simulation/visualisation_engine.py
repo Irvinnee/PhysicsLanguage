@@ -35,7 +35,8 @@ class Graphics:
         self.last_mouse_pos = None
         self.camera_angle = [35, -135]
         self.camera_pos = [50, 50, -50]
-        self.light_pos = [100, 100, -100]
+        self.light_pos = [0, 100, -100]
+
 
     def project_to_2d(self, x, y, z, camera_pos, camera_angle, fov=60, width=800, height=600):  # Zmniejszenie FOV
         pitch = camera_angle[0]
@@ -74,10 +75,47 @@ class Graphics:
             radius = max(int(p.mass * 5), 5)
 
             if p not in self.colors:
-                self.colors[p] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                self.colors[p] = (
+                    random.randint(200, 255),  # dużo czerwonego
+                    random.randint(50, 100),  # trochę zieleni
+                    random.randint(150, 255)  # fioletowy/niebieski ton
+                )
 
+            # Wektor z cząsteczki do światła
+            lx = self.light_pos[0] - p.position[0]
+            ly = self.light_pos[1] - p.position[1]
+            lz = self.light_pos[2] - p.position[2]
+            light_len = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
+            if light_len == 0:
+                light_len = 1
+            light_dir = (lx / light_len, ly / light_len, lz / light_len)
 
-            pygame.draw.circle(self.screen, self.colors[p], (int(x), int(y)), radius)
+            # Normalna cząstki (tutaj uproszczenie: kierunek do kamery)
+            nx = self.camera_pos[0] - p.position[0]
+            ny = self.camera_pos[1] - p.position[1]
+            nz = self.camera_pos[2] - p.position[2]
+            norm_len = math.sqrt(nx ** 2 + ny ** 2 + nz ** 2)
+            if norm_len == 0:
+                norm_len = 1
+            normal = (nx / norm_len, ny / norm_len, nz / norm_len)
+
+            # Iloczyn skalarny = intensywność światła
+            dot = max(0, light_dir[0] * normal[0] + light_dir[1] * normal[1] + light_dir[2] * normal[2])
+            intensity = 0.3 + 0.7 * dot  # zakres [0.3, 1.0]
+
+            # Przeskaluj kolor
+            r, g, b = self.colors[p]
+
+            def shade_component(c, intensity):
+                return int((c * intensity) + (30 * (1 - intensity)))  # cień = trochę czerni
+
+            lit_color = (
+                min(255, shade_component(r, intensity)),
+                min(255, shade_component(g, intensity)),
+                min(255, shade_component(b, intensity)),
+            )
+
+            pygame.draw.circle(self.screen, lit_color, (int(x), int(y)), radius)
 
     def handle_camera_movement(self):
         keys = pygame.key.get_pressed()
@@ -211,9 +249,8 @@ class Graphics:
 
                 elif event.type == pygame.MOUSEMOTION:
                     if self.dragging_slider:
-                        if slider_rect.collidepoint(event.pos):  # aktualizuj tylko jeśli nadal nad suwakiem
-                            slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
-                            slider_value = max(0, min(1, slider_value))  # zakres [0, 1]
+                        slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
+                        slider_value = max(0, min(1, slider_value))  # zakres [0, 1]
 
 
                     elif self.dragging_camera:

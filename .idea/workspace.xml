@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72b7543f-168d-4835-a0a6-1d0bf3508dab" name="Changes" comment="3d">
-      <change beforePath="$PROJECT_DIR$/run_phys.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_phys.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/running_simulation/engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/running_simulation/engine.py" afterDir="false" />
+    <list default="true" id="72b7543f-168d-4835-a0a6-1d0bf3508dab" name="Changes" comment="simulation axes">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/przykladowe_programy/etap4/simulation_test.phys" beforeDir="false" afterPath="$PROJECT_DIR$/przykladowe_programy/etap4/simulation_test.phys" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/running_simulation/visualisation_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/running_simulation/visualisation_engine.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,6 +114,7 @@
       <workItem from="1747764500563" duration="10920000" />
       <workItem from="1749275121213" duration="1622000" />
       <workItem from="1749304128318" duration="17992000" />
+      <workItem from="1749413983927" duration="24782000" />
     </task>
     <task id="LOCAL-00001" summary="poprawione zgodnie z dc">
       <option name="closed" value="true" />
@@ -218,7 +220,31 @@
       <option name="project" value="LOCAL" />
       <updated>1749318539034</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="3d sim cd">
+      <option name="closed" value="true" />
+      <created>1749414004122</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1749414004122</updated>
+    </task>
+    <task id="LOCAL-00015" summary="3d sim cd">
+      <option name="closed" value="true" />
+      <created>1749414020464</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1749414020464</updated>
+    </task>
+    <task id="LOCAL-00016" summary="simulation axes">
+      <option name="closed" value="true" />
+      <created>1749477167827</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1749477167827</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -245,7 +271,9 @@
     <MESSAGE value="building simulation" />
     <MESSAGE value="building simulation v2" />
     <MESSAGE value="3d" />
-    <option name="LAST_COMMIT_MESSAGE" value="3d" />
+    <MESSAGE value="3d sim cd" />
+    <MESSAGE value="simulation axes" />
+    <option name="LAST_COMMIT_MESSAGE" value="simulation axes" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/physicalLanguage$runner.coverage" NAME="runner Coverage Results" MODIFIED="1747031073067" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
