@@ -290,5 +290,4 @@ class Graphics:
             pygame.time.Clock().tick(60)  # Ograniczenie liczby klatek na sekundę
 
 
-        print(self.camera_angle)
         pygame.quit()
