@@ -38,6 +38,9 @@ class Graphics:
         self.light_pos = [-100, 100, -100]
         self.auto_rotate = False
         self.orbit_radius = 80
+        self.input_active = False
+        self.input_text = ""
+        self.input_box = pygame.Rect(600, 20, 150, 35)  # pozycja i rozmiar pola
 
     def project_to_2d(self, x, y, z, camera_pos, camera_angle, fov=60, width=800, height=600):  # Zmniejszenie FOV
         pitch = camera_angle[0]
@@ -247,25 +250,23 @@ class Graphics:
 
 
 
-    # Inicjalizacja Pygame
+
     def run_simulation(self):
         CENTER = (self.WIDTH // 2, self.HEIGHT // 2)
 
         pygame.init()
+        self.font = pygame.font.SysFont("Arial", 20, bold=True)
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("3D Particle Viewer")
 
-        # Inicjalizacja suwaka
         slider_rect = pygame.Rect(50, self.HEIGHT - 50, 700, 20)
-        slider_value = 0  # Inicjalna wartość suwaka (czas)
-
+        slider_value = 0
         previous_slider_value = slider_value
 
         running = True
         start_time = time.time()
         prev_time = start_time
 
-        # Pętla główna
         while running and not self.stop_event.is_set():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -273,18 +274,17 @@ class Graphics:
                     self.stop_event.set()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:  # lewy przycisk myszy
+                    if self.input_box.collidepoint(event.pos):
+                        self.input_active = True
+                    else:
+                        self.input_active = False
+
+                    if event.button == 1:
                         if slider_rect.collidepoint(event.pos):
                             self.dragging_slider = True
                         else:
                             self.dragging_camera = True
                             self.last_mouse_pos = event.pos
-
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r:
-                        self.auto_rotate = not self.auto_rotate
-                        print(f"Auto-rotate: {'ON' if self.auto_rotate else 'OFF'}")
-
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
@@ -293,22 +293,12 @@ class Graphics:
                         self.last_mouse_pos = None
 
                 elif event.type == pygame.MOUSEWHEEL:
-                    self.camera_pos[2] += -event.y * 5  # przesuń kamerę wzdłuż osi Z
-
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r:
-                        self.auto_rotate = not self.auto_rotate
-
+                    self.camera_pos[2] += -event.y * 5
 
                 elif event.type == pygame.MOUSEMOTION:
                     if self.dragging_slider:
                         slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
-                        slider_value = max(0, min(1, slider_value))  # zakres [0, 1]
-
-
-
-
-
+                        slider_value = max(0, min(1, slider_value))
                     elif self.dragging_camera:
                         x, y = event.pos
                         last_x, last_y = self.last_mouse_pos
@@ -316,34 +306,61 @@ class Graphics:
                         dy = y - last_y
                         self.last_mouse_pos = event.pos
 
-                        self.camera_angle[1] += dx * 0.2  # yaw
-                        self.camera_angle[0] += dy * 0.2  # pitch
-                        self.camera_angle[0] = max(-89, min(89, self.camera_angle[0]))  # ograniczenie pitch
+                        self.camera_angle[1] += dx * 0.2
+                        self.camera_angle[0] += dy * 0.2
+                        self.camera_angle[0] = max(-89, min(89, self.camera_angle[0]))
+
+                elif event.type == pygame.KEYDOWN:
+                    if self.input_active:
+                        if event.key == pygame.K_RETURN:
+                            try:
+                                entered_time = float(self.input_text.replace(",", "."))
+                                slider_value = max(0, min(1, entered_time / self.system.total_time))
+                            except:
+                                pass
+                            self.input_text = ""
+                            self.input_active = False
+                        elif event.key == pygame.K_BACKSPACE:
+                            self.input_text = self.input_text[:-1]
+                        else:
+                            if len(self.input_text) < 10:
+                                self.input_text += event.unicode
+                    else:
+                        if event.key == pygame.K_r:
+                            self.auto_rotate = not self.auto_rotate
 
             self.handle_camera_movement()
 
             current_time = time.time()
-            delta_time = current_time - prev_time  # Czas od ostatniej klatki
+            delta_time = current_time - prev_time
             prev_time = current_time
 
-            # Jeśli suwak się zmienia, aktualizujemy stan cząsteczek
             if slider_value != previous_slider_value:
                 previous_slider_value = slider_value
 
             with self.time_lock:
                 self.sim_time = slider_value
 
-            # Aktualizujemy pozycje cząsteczek na podstawie prędkości i upływającego czasu
-            self.screen.fill((160, 160, 160))  # Tło: stalowoszare
+            self.screen.fill((160, 160, 160))
             with self.data_lock:
                 self.draw_axes()
                 self.draw_particles()
 
-             # Rysowanie cząsteczek
-            self.draw_slider(slider_rect, slider_value * slider_rect.width)  # Rysowanie suwaka
-            pygame.display.flip()  # Aktualizowanie okna
-            # print(self.camera_pos,"   a", self.camera_angle)
-            pygame.time.Clock().tick(60)  # Ograniczenie liczby klatek na sekundę
+            self.draw_slider(slider_rect, slider_value * slider_rect.width)
 
+            pygame.draw.rect(self.screen, (255, 255, 255), self.input_box)
+            pygame.draw.rect(self.screen, (0, 0, 0), self.input_box, 2)
+
+            if self.input_active:
+                display_text = self.input_text
+            else:
+                display_text = "" if self.input_text else "Go to t..."
+
+            color = (0, 0, 0) if self.input_active or self.input_text else (100, 100, 100)
+            text_surface = self.font.render(display_text, True, color)
+            self.screen.blit(text_surface, (self.input_box.x + 5, self.input_box.y + 5))
+
+            pygame.display.flip()
+            pygame.time.Clock().tick(60)
 
         pygame.quit()

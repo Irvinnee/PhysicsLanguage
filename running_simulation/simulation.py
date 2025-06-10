@@ -20,6 +20,13 @@ class Simulation:
     # data_lock = threading.Lock()
     # time_lock = threading.Lock()
 
+    def __init__(self, particles, delta_time):
+        import copy
+        self.particles = particles  # Dict[str, Particle]
+        self.initial_state = copy.deepcopy(particles)
+        self.delta_time = delta_time
+        self.time = 0.0
+
     # Silnik symulacji
     def simulation_engine(self):
         while not self.stop_event.is_set():
@@ -67,3 +74,23 @@ class Simulation:
         # # Czekanie na zakończenie wątków
         engine_thread.join(5)
         # graphics_thread.join()
+
+
+        def reset(self):
+            import copy
+            self.particles = copy.deepcopy(self.initial_state)
+            self.time = 0.0
+
+        def step(self):
+            # tutaj krok symulacji
+            for p in self.particles.values():
+                p.position += p.velocity * self.delta_time
+                # itd...
+            self.time += self.delta_time
+
+        def simulate_to_time(self, target_time: float):
+            self.reset()
+            steps = int(target_time / self.delta_time)
+            for _ in range(steps):
+                self.step()
+
