@@ -9,12 +9,8 @@ import time
 import random
 
 
-# def  save_particle_state(particles):
-#     return [copy.deepcopy(p) for p in particles]
-
-
 class Graphics:
-    particles : Dict[str, Particle] #with przy każdym zyskaniu, referencja do sim
+    particles : Dict[str, Particle]
     colors : Dict[Particle, tuple] = {}
     data_lock = threading.Lock()
     time_lock = threading.Lock()
@@ -295,20 +291,25 @@ class Graphics:
                 elif event.type == pygame.MOUSEWHEEL:
                     self.camera_pos[2] += -event.y * 5
 
-                elif event.type == pygame.MOUSEMOTION:
-                    if self.dragging_slider:
-                        slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
-                        slider_value = max(0, min(1, slider_value))
-                    elif self.dragging_camera:
-                        x, y = event.pos
-                        last_x, last_y = self.last_mouse_pos
-                        dx = x - last_x
-                        dy = y - last_y
-                        self.last_mouse_pos = event.pos
+                elif self.dragging_camera:
+                    x, y = event.pos
+                    last_x, last_y = self.last_mouse_pos
+                    dx = x - last_x
+                    dy = y - last_y
+                    self.last_mouse_pos = event.pos
 
-                        self.camera_angle[1] += dx * 0.2
-                        self.camera_angle[0] += dy * 0.2
-                        self.camera_angle[0] = max(-89, min(89, self.camera_angle[0]))
+                    self.camera_angle[1] += dx * 0.3
+                    self.camera_angle[0] -= dy * 0.3
+                    self.camera_angle[0] = max(-89, min(89, self.camera_angle[0]))
+
+                    # Oblicz nową pozycję kamery na sferze
+                    pitch_rad = math.radians(self.camera_angle[0])
+                    yaw_rad = math.radians(self.camera_angle[1])
+
+                    self.camera_pos[0] = math.cos(pitch_rad) * math.sin(yaw_rad) * self.orbit_radius
+                    self.camera_pos[1] = math.sin(pitch_rad) * self.orbit_radius
+                    self.camera_pos[2] = math.cos(pitch_rad) * math.cos(yaw_rad) * self.orbit_radius
+
 
                 elif event.type == pygame.KEYDOWN:
                     if self.input_active:
@@ -328,6 +329,11 @@ class Graphics:
                     else:
                         if event.key == pygame.K_r:
                             self.auto_rotate = not self.auto_rotate
+
+                elif self.dragging_slider and pygame.mouse.get_pressed()[0]:
+                    mouse_x, _ = pygame.mouse.get_pos()
+                    slider_value = (mouse_x - slider_rect.left) / slider_rect.width
+                    slider_value = max(0, min(1, slider_value))
 
             self.handle_camera_movement()
 
