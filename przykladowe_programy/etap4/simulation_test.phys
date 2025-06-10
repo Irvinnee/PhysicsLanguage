@@ -16,5 +16,41 @@ particle p3:
     pos = [0, -4, 5]
     vel = [2, 1, 4]
 
+particle p4:
+    mass = 2
+    pos = [10, 10, -10]
+    vel = [-1, -1, 0]
+
+particle p5:
+    mass = 0.5
+    pos = [-10, -10, 10]
+    vel = [0.5, 0.5, -0.2]
+
+particle p6:
+    mass = 4
+    pos = [8, -5, 7]
+    vel = [0, 1, -1]
+
+particle p7:
+    mass = 1.5
+    pos = [-6, 6, -6]
+    vel = [1, 0, 2]
+
+particle p8:
+    mass = 2.5
+    pos = [2, 2, 2]
+    vel = [-2, -1, 0]
+
+particle p9:
+    mass = 3.5
+    pos = [-7, -3, -2]
+    vel = [1.5, 1.5, 1]
+
+particle p10:
+    mass = 1
+    pos = [0, 0, 15]
+    vel = [0, 0, -3]
+
 system uk:
-    particles = [p1, p2, p3]
+    particles = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+

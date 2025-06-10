@@ -35,8 +35,9 @@ class Graphics:
         self.last_mouse_pos = None
         self.camera_angle = [-40, 45]
         self.camera_pos = [50, 50, -50]
-        self.light_pos = [0, 100, -100]
-
+        self.light_pos = [-100, 100, -100]
+        self.auto_rotate = False
+        self.orbit_radius = 80
 
     def project_to_2d(self, x, y, z, camera_pos, camera_angle, fov=60, width=800, height=600):  # Zmniejszenie FOV
         pitch = camera_angle[0]
@@ -70,49 +71,67 @@ class Graphics:
         return x_2d + width / 2, y_2d + height / 2
 
     def draw_particles(self):
+        particles_with_depth = []
+
         for p in self.particles.values():
+            dx = p.position[0] - self.camera_pos[0]
+            dy = p.position[1] - self.camera_pos[1]
+            dz = p.position[2] - self.camera_pos[2]
+
+            pitch = math.radians(self.camera_angle[0])
+            yaw = math.radians(self.camera_angle[1])
+            cos_pitch = math.cos(pitch)
+            sin_pitch = math.sin(pitch)
+            cos_yaw = math.cos(yaw)
+            sin_yaw = math.sin(yaw)
+
+            x_rot = cos_yaw * dx + sin_yaw * dz
+            z_rot = -sin_yaw * dx + cos_yaw * dz
+            y_rot = cos_pitch * dy - sin_pitch * z_rot
+            depth = sin_pitch * dy + cos_pitch * z_rot
+
+            particles_with_depth.append((depth, p))
+
+        particles_with_depth.sort(reverse=True, key=lambda item: item[0])
+
+        for _, p in particles_with_depth:
             x, y = self.project_to_2d(p.position[0], p.position[1], p.position[2], self.camera_pos, self.camera_angle)
             radius = max(int(p.mass * 5), 5)
 
             if p not in self.colors:
                 self.colors[p] = (
-                    random.randint(200, 255),  # dużo czerwonego
-                    random.randint(50, 100),  # trochę zieleni
-                    random.randint(150, 255)  # fioletowy/niebieski ton
+                    random.randint(50, 255),
+                    random.randint(50, 255),
+                    random.randint(50, 255)
                 )
 
-            # Wektor z cząsteczki do światła
+            # Światło
             lx = self.light_pos[0] - p.position[0]
             ly = self.light_pos[1] - p.position[1]
             lz = self.light_pos[2] - p.position[2]
-            light_len = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2)
-            if light_len == 0:
-                light_len = 1
+            light_len = math.sqrt(lx ** 2 + ly ** 2 + lz ** 2) or 1
             light_dir = (lx / light_len, ly / light_len, lz / light_len)
 
-            # Normalna cząstki (tutaj uproszczenie: kierunek do kamery)
+            # Normalna (kierunek do kamery)
             nx = self.camera_pos[0] - p.position[0]
             ny = self.camera_pos[1] - p.position[1]
             nz = self.camera_pos[2] - p.position[2]
-            norm_len = math.sqrt(nx ** 2 + ny ** 2 + nz ** 2)
-            if norm_len == 0:
-                norm_len = 1
+            norm_len = math.sqrt(nx ** 2 + ny ** 2 + nz ** 2) or 1
             normal = (nx / norm_len, ny / norm_len, nz / norm_len)
 
-            # Iloczyn skalarny = intensywność światła
+            # Iloczyn skalarny = siła światła padającego na kulkę
             dot = max(0, light_dir[0] * normal[0] + light_dir[1] * normal[1] + light_dir[2] * normal[2])
-            intensity = 0.3 + 0.7 * dot  # zakres [0.3, 1.0]
+            intensity = 0.3 + 0.9 * dot  # Zakres od 0.3 (ciemno) do 1.0 (jasno)
 
-            # Przeskaluj kolor
             r, g, b = self.colors[p]
 
-            def shade_component(c, intensity):
-                return int((c * intensity) + (30 * (1 - intensity)))  # cień = trochę czerni
+            def shade(c, i):
+                return int(c * i + 30 * (1 - i))  # ciemniejszy cień bez rzucanego cienia
 
             lit_color = (
-                min(255, shade_component(r, intensity)),
-                min(255, shade_component(g, intensity)),
-                min(255, shade_component(b, intensity)),
+                min(255, shade(r, intensity)),
+                min(255, shade(g, intensity)),
+                min(255, shade(b, intensity)),
             )
 
             pygame.draw.circle(self.screen, lit_color, (int(x), int(y)), radius)
@@ -149,7 +168,16 @@ class Graphics:
         elif self.camera_angle[1] < -180:
             self.camera_angle[1] += 360
 
+        if self.auto_rotate:
+            self.camera_angle[1] += 0.2
+            if self.camera_angle[1] > 180:
+                self.camera_angle[1] -= 360
 
+            # NIE ZMIENIAMY PITCH – tylko pozycję XY w poziomie
+            angle_rad = math.radians(self.camera_angle[1])
+
+            self.camera_pos[0] = math.sin(angle_rad) * self.orbit_radius
+            self.camera_pos[2] = math.cos(angle_rad) * self.orbit_radius
 
     # Funkcja do rysowania estetycznego suwaka
     def draw_slider(self, slider_rect, value):
@@ -165,6 +193,21 @@ class Graphics:
         handle_x = int(slider_rect.left + value - handle_width / 2)
         handle_rect = pygame.Rect(handle_x, slider_rect.top - 5, handle_width, slider_rect.height + 10)
         pygame.draw.rect(self.screen, color, handle_rect, border_radius=4)
+
+    def update_camera_angle_towards_center(self):
+        dx = self.orbit_center[0] - self.camera_pos[0]
+        dy = self.orbit_center[1] - self.camera_pos[1]
+        dz = self.orbit_center[2] - self.camera_pos[2]
+
+        distance = math.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+        if distance == 0:
+            return
+
+        pitch = math.degrees(math.asin(dy / distance))
+        yaw = math.degrees(math.atan2(dx, dz))
+
+        self.camera_angle[0] = pitch
+        self.camera_angle[1] = yaw
 
     def draw_axes(self):
         axis_length = 50.0
@@ -237,6 +280,12 @@ class Graphics:
                             self.dragging_camera = True
                             self.last_mouse_pos = event.pos
 
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        self.auto_rotate = not self.auto_rotate
+                        print(f"Auto-rotate: {'ON' if self.auto_rotate else 'OFF'}")
+
+
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
                         self.dragging_slider = False
@@ -246,11 +295,18 @@ class Graphics:
                 elif event.type == pygame.MOUSEWHEEL:
                     self.camera_pos[2] += -event.y * 5  # przesuń kamerę wzdłuż osi Z
 
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        self.auto_rotate = not self.auto_rotate
+
 
                 elif event.type == pygame.MOUSEMOTION:
                     if self.dragging_slider:
                         slider_value = (event.pos[0] - slider_rect.left) / slider_rect.width
                         slider_value = max(0, min(1, slider_value))  # zakres [0, 1]
+
+
+
 
 
                     elif self.dragging_camera:
@@ -278,7 +334,7 @@ class Graphics:
                 self.sim_time = slider_value
 
             # Aktualizujemy pozycje cząsteczek na podstawie prędkości i upływającego czasu
-            self.screen.fill((245, 245, 220))  # Tło
+            self.screen.fill((160, 160, 160))  # Tło: stalowoszare
             with self.data_lock:
                 self.draw_axes()
                 self.draw_particles()
