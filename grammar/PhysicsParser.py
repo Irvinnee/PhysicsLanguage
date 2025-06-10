@@ -139,8 +139,8 @@ def serializedATN():
         354,357,1,0,0,0,355,353,1,0,0,0,355,356,1,0,0,0,356,358,1,0,0,0,
         357,355,1,0,0,0,358,359,5,4,0,0,359,63,1,0,0,0,360,390,5,49,0,0,
         361,390,5,50,0,0,362,390,5,47,0,0,363,364,5,39,0,0,364,365,5,40,
-        0,0,365,390,5,48,0,0,366,375,3,74,37,0,367,368,5,2,0,0,368,373,5,
-        48,0,0,369,370,5,3,0,0,370,371,3,44,22,0,371,372,5,4,0,0,372,374,
+        0,0,365,390,3,64,32,0,366,375,3,74,37,0,367,368,5,2,0,0,368,373,
+        5,48,0,0,369,370,5,3,0,0,370,371,3,44,22,0,371,372,5,4,0,0,372,374,
         1,0,0,0,373,369,1,0,0,0,373,374,1,0,0,0,374,376,1,0,0,0,375,367,
         1,0,0,0,375,376,1,0,0,0,376,382,1,0,0,0,377,379,5,6,0,0,378,380,
         3,66,33,0,379,378,1,0,0,0,379,380,1,0,0,0,380,381,1,0,0,0,381,383,
@@ -2740,12 +2740,16 @@ class PhysicsParser ( Parser ):
         def BOOLEAN(self):
             return self.getToken(PhysicsParser.BOOLEAN, 0)
 
-        def ID(self):
-            return self.getToken(PhysicsParser.ID, 0)
+        def atom(self):
+            return self.getTypedRuleContext(PhysicsParser.AtomContext,0)
+
 
         def dottedID(self):
             return self.getTypedRuleContext(PhysicsParser.DottedIDContext,0)
 
+
+        def ID(self):
+            return self.getToken(PhysicsParser.ID, 0)
 
         def argList(self):
             return self.getTypedRuleContext(PhysicsParser.ArgListContext,0)
@@ -2810,7 +2814,7 @@ class PhysicsParser ( Parser ):
                 self.state = 364
                 self.match(PhysicsParser.T__39)
                 self.state = 365
-                self.match(PhysicsParser.ID)
+                self.atom()
                 pass
             elif token in [46, 48]:
                 self.enterOuterAlt(localctx, 5)
