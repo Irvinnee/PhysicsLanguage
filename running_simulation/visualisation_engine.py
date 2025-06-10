@@ -317,8 +317,18 @@ class Graphics:
                         if event.key == pygame.K_RETURN:
                             try:
                                 entered_time = float(self.input_text.replace(",", "."))
-                                clamped_time = max(0.0, min(entered_time, self.system.total_time))
-                                slider_value = clamped_time / self.system.total_time
+                                current_time = self.sim_time * self.system.total_time
+
+                                # Jeśli wpisano wartość ujemną, to potraktuj ją jako przesunięcie względem aktualnego czasu
+                                if entered_time < 0 or entered_time > self.system.total_time:
+                                    target_time = current_time + entered_time
+                                else:
+                                    target_time = entered_time
+
+                                # Przytnij do zakresu [0, total_time]
+                                target_time = max(0.0, min(target_time, self.system.total_time))
+
+                                slider_value = target_time / self.system.total_time
 
                                 with self.time_lock:
                                     self.sim_time = slider_value
