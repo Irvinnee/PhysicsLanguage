@@ -10,9 +10,11 @@ if(True):
         int x = 3
         int b = y + 1
 
-        print(x)
-        print(y)
+        print(parent::parent::x)
+        print(parent::parent::y)
         print(a)
         print(b)
 
     print(x)
+
+

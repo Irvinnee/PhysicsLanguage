@@ -67,59 +67,108 @@ class Interpreter(PhysicsVisitor):
     # Metody obsługujące dostęp do innych scoperów
     # ————————————————————————————————————————————————————————————————
     def resolve_variable(self, name: str, ctx) -> Any:
-        if name in self.current_scope.variables:
-            return self.current_scope.variables[name]
-        scope = self.current_scope.lookup(name)
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.variables:
+            return current_scope.variables[name]
+        scope = current_scope.lookup(name)
         if scope is not None:
             return scope.variables[name]
         self._error(ctx, f"Undeclared variable '{name}'")
 
     def assign_variable(self, name: str, value: Any, ctx) -> None:
-        if name in self.current_scope.variables:
-            self.current_scope.variables[name] = value
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.variables:
+            current_scope.variables[name] = value
             return
-        scope = self.current_scope.lookup(name)
+        scope = current_scope.lookup(name)
         if scope is not None:
             scope.variables[name] = value
             return
         self._error(ctx, f"Undeclared variable '{name}'")
 
     def exists_variable(self, name: str, ctx) -> Any:
-        if name in self.current_scope.variables:
-            return self.current_scope.variables[name]
-        scope = self.current_scope.lookup(name)
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.variables:
+            return current_scope.variables[name]
+        scope = current_scope.lookup(name)
         if scope is not None:
             return True
         return False
 
     def resolve_function(self, name: str, ctx) -> Dict:
-        if name in self.current_scope.functions:
-            return self.current_scope.functions[name]
-        scope = self.current_scope.lookup(name)
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.functions:
+            return current_scope.functions[name]
+        scope = current_scope.lookup(name)
         if scope is not None:
             return scope.functions[name]
         self._error(ctx, f"Undeclared function '{name}'")
 
     def exists_function(self, name: str, ctx) -> bool:
-        if name in self.current_scope.functions:
-            return self.current_scope.functions[name]
-        scope = self.current_scope.lookup(name)
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.functions:
+            return current_scope.functions[name]
+        scope = current_scope.lookup(name)
         if scope is not None:
             return True
         return False
 
     def resolve_symbol(self, name: str, ctx) -> str:
-        if name in self.current_scope.symbol_table:
-            return self.current_scope.symbol_table[name]
-        scope = self.current_scope.lookup(name)
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.symbol_table:
+            return current_scope.symbol_table[name]
+        scope = current_scope.lookup(name)
         if scope is not None:
             return scope.symbol_table[name]
         self._error(ctx, f"Undeclared symbol '{name}'")
 
     def exists_symbol(self, name: str, ctx) -> Any:
-        if name in self.current_scope.symbol_table:
-            return self.current_scope.symbol_table[name]
-        scope = self.current_scope.lookup(name)
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.symbol_table:
+            return current_scope.symbol_table[name]
+        scope = current_scope.lookup(name)
         if scope is not None:
             return True
         return False
