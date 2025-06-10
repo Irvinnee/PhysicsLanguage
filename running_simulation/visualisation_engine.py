@@ -279,9 +279,13 @@ class Graphics:
                     if event.button == 1:
                         if slider_rect.collidepoint(event.pos):
                             self.dragging_slider = True
+                            mouse_x, _ = event.pos
+                            slider_value = (mouse_x - slider_rect.left) / slider_rect.width
+                            slider_value = max(0, min(1, slider_value))
                         else:
                             self.dragging_camera = True
                             self.last_mouse_pos = event.pos
+
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
