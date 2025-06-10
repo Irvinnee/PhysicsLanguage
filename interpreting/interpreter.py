@@ -5,6 +5,7 @@ from typing import Any, Optional, Dict, List
 
 from grammar.PhysicsVisitor import PhysicsVisitor
 from grammar.PhysicsParser import PhysicsParser
+from interpreting.SymbolCollector import Scope
 from running_simulation.engine import Particle, Field, System, Law
 
 class Interpreter(PhysicsVisitor):
@@ -29,14 +30,16 @@ class Interpreter(PhysicsVisitor):
         functions: Optional[Dict[str, Dict]] = None,
     ) -> None:
         # Specjalne zmienne globalne
-        self.variables: Dict[str, object] = {"$TIME": 10.0, "$DELTA": 1.0}
+        # self.variables: Dict[str, object] = {"$TIME": 10.0, "$DELTA": 1.0}
+        #
+        # # Tabelę symboli i wstępnie zadeklarowane funkcje/prawa
+        # # przekazujemy z SymbolCollector (jeśli dostarczono)
+        # self.symbol_table: Dict[str, Any] = symbol_table.copy() if symbol_table else {}
+        #
+        # # słownik funkcji: nazwa → metadane
+        # self.functions: Dict[str, Dict] = functions.copy() if functions else {}
 
-        # Tabelę symboli i wstępnie zadeklarowane funkcje/prawa
-        # przekazujemy z SymbolCollector (jeśli dostarczono)
-        self.symbol_table: Dict[str, Any] = symbol_table.copy() if symbol_table else {}
-
-        # słownik funkcji: nazwa → metadane
-        self.functions: Dict[str, Dict] = functions.copy() if functions else {}
+        self.current_scope: Scope
 
         # globalne prawa fizyczne
         self.global_laws: List[Law] = []
@@ -61,7 +64,66 @@ class Interpreter(PhysicsVisitor):
 
     def errorWrongAction(self, wrong_action, type_of_variable, variable_1, variable_2, ctx):
         self._error(ctx, f"Action {wrong_action} to variable '{variable_1}' and variable '{variable_2}', cannot be done on this type {type_of_variable} of variables")
+    # ————————————————————————————————————————————————————————————————
+    # Metody obsługujące dostęp do innych scoperów
+    # ————————————————————————————————————————————————————————————————
+    def resolve_variable(self, name: str, ctx) -> Any:
+        if name in self.current_scope.variables:
+            return self.current_scope.variables[name]
+        scope = self.current_scope.lookup(name)
+        if scope and name in scope.variables:
+            return scope.variables[name]
+        self._error(ctx, f"Undeclared variable '{name}'")
 
+    def assign_variable(self, name: str, value: Any, ctx) -> None:
+        if name in self.current_scope.variables:
+            self.current_scope.variables[name] = value
+            return
+        scope = self.current_scope.lookup(name)
+        if scope and name in scope.variables:
+            scope.variables[name] = value
+            return
+        self._error(ctx, f"Undeclared variable '{name}'")
+
+    def exists_variable(self, name: str, ctx) -> Any:
+        if name in self.current_scope.variables:
+            return self.current_scope.variables[name]
+        scope = self.current_scope.lookup(name)
+        if scope and name in scope.variables:
+            return True
+        return False
+
+    def resolve_function(self, name: str, ctx) -> Dict:
+        if name in self.current_scope.functions:
+            return self.current_scope.functions[name]
+        scope = self.current_scope.lookup(name)
+        if scope and name in scope.functions:
+            return scope.functions[name]
+        self._error(ctx, f"Undeclared function '{name}'")
+
+    def exists_function(self, name: str, ctx) -> bool:
+        if name in self.current_scope.functions:
+            return self.current_scope.functions[name]
+        scope = self.current_scope.lookup(name)
+        if scope and name in scope.functions:
+            return True
+        return False
+
+    def resolve_symbol(self, name: str, ctx) -> str:
+        if name in self.current_scope.symbol_table:
+            return self.current_scope.symbol_table[name]
+        scope = self.current_scope.lookup(name)
+        if scope and name in scope.symbol_table:
+            return scope.symbol_table[name]
+        self._error(ctx, f"Undeclared symbol '{name}'")
+
+    def exists_symbol(self, name: str, ctx) -> Any:
+        if name in self.current_scope.symbol_table:
+            return self.current_scope.symbol_table[name]
+        scope = self.current_scope.lookup(name)
+        if scope is not None:
+            return True
+        return False
     # ————————————————————————————————————————————————————————————————
     # Dwupassowe przetwarzanie programu – pass #1 kolekcjonuje wszystkie
     # deklaracje funkcji/praw, pass #2 wykonuje kod.
@@ -81,14 +143,14 @@ class Interpreter(PhysicsVisitor):
 
         # ───── redeklaracja *tylko* gdy obiekt już istnieje ─────
         # ─ redeklaracja tylko w GLOBALU ────────────────────────────────
-        if not self.in_function and name in self.variables:
-            self._error(ctx, f"Redeclaration of variable '{name}'")
+        # if not self.in_function and name in self.current_scope.variables:
+        #     self._error(ctx, f"Redeclaration of variable '{name}'")
         # ----------------------------------------------------------------
 
 
         # jeżeli SymbolCollector wpisał już typ – sprawdź zgodność
-        if name in self.symbol_table:            # pierwszy raz „na serio”
-            prev = self.symbol_table[name]
+        if name in self.current_scope.symbol_table:            # pierwszy raz „na serio”
+            prev = self.current_scope.symbol_table[name]
             if prev not in (True, typ):          # True == brak jawnego typu
                 self._error(
                     ctx,
@@ -96,18 +158,18 @@ class Interpreter(PhysicsVisitor):
                     f"(previous '{prev}', now '{typ}')"
                 )
         else:
-            self.symbol_table[name] = typ if typ else True
+            self.current_scope.symbol_table[name] = typ if typ else True
         # ─────────────────────────────────────────────────────────
 
         # Przygotuj wartość domyślną / obiekt
         if typ == "particle":
-            self.variables[name] = Particle()
+            self.current_scope.variables[name] = Particle()
         elif typ == "field":
-            self.variables[name] = Field()
+            self.current_scope.variables[name] = Field()
         elif typ == "system":
-            self.variables[name] = System(name)
+            self.current_scope.variables[name] = System(name)
         else:
-            self.variables[name] = None
+            self.current_scope.variables[name] = None
 
         # (reszta metody – inicjalizacja wyrażeniem, rejestracja w $SYSTEM – bez zmian)
 
@@ -132,18 +194,18 @@ class Interpreter(PhysicsVisitor):
                     casted_val = float(val)
                 else:
                     casted_val = val
-                
-                self.variables[name] = casted_val
+
+                self.current_scope.variables[name] = casted_val
             except (ValueError, TypeError):
                 self.errorWrongType(type(val), typ, name, ctx)
 
         # Automatyczna rejestracja cząstek/pól w bieżącym systemie
-        if "$SYSTEM" in self.variables and isinstance(self.variables["$SYSTEM"], System):
-            system = self.variables["$SYSTEM"]
+        if "$SYSTEM" in self.current_scope.variables and isinstance(self.current_scope.variables["$SYSTEM"], System):
+            system = self.current_scope.variables["$SYSTEM"]
             if typ == "particle":
-                system.add_particle(name, self.variables[name])
+                system.add_particle(name, self.current_scope.variables[name])
             elif typ == "field":
-                system.add_field(name, self.variables[name])
+                system.add_field(name, self.current_scope.variables[name])
 
         return None
 
@@ -158,16 +220,18 @@ class Interpreter(PhysicsVisitor):
         if isinstance(target_ctx, PhysicsParser.VarTargetContext):
             name = target_ctx.getText()
 
+            # if()
+
             # Przypisanie do particles w systemie
             if self.current_system and name == "particles":
-                system = self.variables[self.current_system]
+                system = self.current_scope.variables[self.current_system]
                 if not isinstance(value, list):
                     self._error(ctx, f"'particles' must be a list")
                 for item in value:
                     if isinstance(item, str):
-                        if item not in self.variables or not isinstance(self.variables[item], Particle):
+                        if item not in self.current_scope.variables or not isinstance(self.current_scope.variables[item], Particle):
                             self._error(ctx, f"'{item}' is not a defined Particle")
-                        particle = self.variables[item]
+                        particle = self.current_scope.variables[item]
                     elif isinstance(item, Particle):
                         particle = item
                     else:
@@ -177,7 +241,7 @@ class Interpreter(PhysicsVisitor):
 
             # Przypisanie do atrybutu cząstki
             if self.current_particle:
-                particle = self.variables[self.current_particle]
+                particle = self.current_scope.variables[self.current_particle]
                 if name == "pos":
                     name = "position"
                 elif name == "vel":
@@ -189,14 +253,17 @@ class Interpreter(PhysicsVisitor):
             if name in ("$TIME", "$DELTA"):
                 if not isinstance(value, (int, float)):
                     self.errorWrongType(type(value), (float, int), name, ctx)
-                self.variables[name] = value
+                self.current_scope.variables[name] = value
                 return None
 
             # Sprawdzenie, czy zmienna była zadeklarowana
-            if name not in self.symbol_table:
+            # if name not in self.current_scope.symbol_table:
+            #     self._error(ctx, f"Assignment to undeclared variable '{name}'")
+
+            if not self.exists_symbol(name, ctx):
                 self._error(ctx, f"Assignment to undeclared variable '{name}'")
 
-            declared_type = self.symbol_table[name]
+            declared_type = self.resolve_symbol(name, ctx)
 
             if declared_type == "bool" and not isinstance(value, bool):
                 self.errorWrongType(type(value).__name__, "bool", name, ctx)
@@ -211,7 +278,8 @@ class Interpreter(PhysicsVisitor):
                     casted_val = float(value)
                 else:
                     casted_val = value
-                self.variables[name] = casted_val
+                # self.current_scope.variables[name] = casted_val
+                self.assign_variable(name, casted_val, ctx)
             except (ValueError, TypeError):
                 self.errorWrongType(type(value).__name__, declared_type, name, ctx)
 
@@ -246,11 +314,11 @@ class Interpreter(PhysicsVisitor):
             self._error(ctx, f"Duplicate parameter name '{dup}' in function '{name}'")
 
         # 3. redeklaracja funkcji?
-        if name in self.functions and self.functions[name].get("defined", False):
+        if name in self.current_scope.functions and self.current_scope.functions[name].get("defined", False):
             self._error(ctx, f"Redeclaration of function '{name}'")
 
         # 4. zapisz metadane
-        self.functions[name] = {
+        self.current_scope.functions[name] = {
         "ret"   : ret_type,          # ◆  NOWE POLE
         "params": params,
         "expr"  : ctx.expr()  if ctx.expr()  else None,
@@ -278,10 +346,10 @@ class Interpreter(PhysicsVisitor):
             dup = next(n for n in names_only if names_only.count(n) > 1)
             self._error(ctx, f"Duplicate parameter name '{dup}' in law '{name}'")
 
-        if name in self.functions and self.functions[name].get("defined", False):
+        if name in self.current_scope.functions and self.current_scope.functions[name].get("defined", False):
             self._error(ctx, f"Redeclaration of law '{name}'")
 
-        self.functions[name] = {
+        self.current_scope.functions[name] = {
             "params": params,                           # ← lista krotek
             "expr"  : None,
             "block" : ctx.block(),
@@ -293,16 +361,19 @@ class Interpreter(PhysicsVisitor):
     # Prawa przypisywane do systemów / cząstek
     # ————————————————————————————————————————————————————————————————
 
+# TODO: zmienic żeby prawa były globalne?
     def visitLawAssignStmt(self, ctx):
         target_name = ctx.dottedID().getText()
         law_name = ctx.ID().getText()
 
-        if law_name not in self.functions:
+        # if law_name not in self.current_scope.functions:
+        if self.exists_function(law_name):
             self._error(ctx, f"Law '{law_name}' not defined")
-        law_meta = self.functions[law_name]
+        # law_meta = self.current_scope.functions[law_name]
+        law_meta = self.resolve_function(law_name)
 
         fn = self._wrap_fn(law_meta)
-        target_obj = self.variables.get(target_name)
+        target_obj = self.current_scope.variables.get(target_name)
 
         if isinstance(target_obj, System):
             target_obj.register_law(Law(fn=fn, scope=target_name, target="particle"))
@@ -319,20 +390,20 @@ class Interpreter(PhysicsVisitor):
     def visitSystemDecl(self, ctx):
         name = ctx.ID().getText()
 
-        if name in self.variables:
+        if name in self.current_scope.variables:
             self._error(ctx, f"Redeclaration of variable '{name}'")
 
-        if name in self.symbol_table and self.symbol_table[name] != "system":
+        if name in self.current_scope.symbol_table and self.current_scope.symbol_table[name] != "system":
             self._error(
                 ctx,
                 f"Redeclaration of variable '{name}' as system "
-                f"(was {self.symbol_table[name]})"
+                f"(was {self.current_scope.symbol_table[name]})"
             )
 
-        self.symbol_table[name] = "system"
+        self.current_scope.symbol_table[name] = "system"
 
         system = System(name)
-        self.variables[name] = system
+        self.current_scope.variables[name] = system
 
 
         prev_active = self.current_system
@@ -350,26 +421,26 @@ class Interpreter(PhysicsVisitor):
     def _wrap_fn(self, meta):
         def fn(obj, system, dt):
             # zablokuj rekurencję field->function
-            saved_current = self.variables.get("$CURRENT_FN")
+            saved_current = self.current_scope.variables.get("$CURRENT_FN")
             if saved_current == meta:
                 raise Exception("Illegal recursion: field->function cannot call itself")
-            self.variables["$CURRENT_FN"] = meta
+            self.current_scope.variables["$CURRENT_FN"] = meta
 
             # ─── przygotuj lokalny kontekst ───
-            saved_vars = self.variables
-            self.variables = saved_vars.copy()
+            saved_vars = self.current_scope.variables
+            self.current_scope.variables = saved_vars.copy()
 
             # META['params'] to lista [(nazwa, typ), …]
             if meta["params"]:
                 param_name = meta["params"][0][0]   # <-- tylko nazwa!
-                self.variables[param_name] = obj
+                self.current_scope.variables[param_name] = obj
 
             # wykonaj blok prawa
             self.visit(meta["block"])
 
             # przywróć stare zmienne
-            self.variables = saved_vars
-            self.variables["$CURRENT_FN"] = saved_current
+            self.current_scope.variables = saved_vars
+            self.current_scope.variables["$CURRENT_FN"] = saved_current
         return fn
 
 
@@ -382,10 +453,12 @@ class Interpreter(PhysicsVisitor):
         # ───────────────────────────────────────────────
         # 0.  czy funkcja istnieje?
         # ───────────────────────────────────────────────
-        if name not in self.functions:
+        # if name not in self.current_scope.functions:
+        if not self.exists_function(name, call_ctx):
             self._error(call_ctx, f"Unknown function '{name}'")
 
-        sig              = self.functions[name]
+        # sig              = self.current_scope.functions[name]
+        sig = self.resolve_function(name, call_ctx)
         expected_params  = sig["params"]        # [(nazwa, typ), …]
         ret_type         = sig.get("ret", "void")   # ◀─ NOWE
 
@@ -440,19 +513,19 @@ class Interpreter(PhysicsVisitor):
                     f"got {type(arg).__name__}"
                 )
 
-            args_casted.append(arg)  
+            args_casted.append(arg)
 
         # ───────────────────────────────────────────────
         # 3.  rekord aktywacji
         # ───────────────────────────────────────────────
-        saved_vars = self.variables
-        self.variables = saved_vars.copy()
-        saved_functions = self.functions
-        self.functions = saved_functions.copy()
+        saved_vars = self.current_scope.variables
+        self.current_scope.variables = saved_vars.copy()
+        saved_functions = self.current_scope.functions
+        self.current_scope.functions = saved_functions.copy()
 
         for (p_name, p_type), arg in zip(expected_params, args_casted):   # ➍
-            self.variables[p_name]    = arg
-            self.symbol_table[p_name] = p_type
+            self.current_scope.variables[p_name]    = arg
+            self.current_scope.symbol_table[p_name] = p_type
 
         # ───────────────────────────────────────────────
         # 4.  wykonaj ciało
@@ -467,8 +540,8 @@ class Interpreter(PhysicsVisitor):
                 self.visit(sig["block"])
                 value = self.return_value
         finally:
-            self.variables = saved_vars
-            self.functions = saved_functions
+            self.current_scope.variables = saved_vars
+            self.current_scope.functions = saved_functions
             self.in_function = False
             self.return_value = None
 
@@ -501,10 +574,15 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def visitBlock(self, ctx):
+        self.current_scope = self.current_scope.get_next_child()
+
         for st in ctx.statement():
             self.visit(st)
             if self.in_function and self.return_value is not None:
                 break
+
+        self.current_scope = self.current_scope.get_parent()
+
         return None
 
     def visitIfStmt(self, ctx):
@@ -529,7 +607,7 @@ class Interpreter(PhysicsVisitor):
         while self.visit(ctx.expr()):
             self.visit(ctx.block())
             # czemu czas się zwiększa??
-            self.variables["$TIME"] += 1
+            self.current_scope.variables["$TIME"] += 1
             guard_counter += 1
             if guard_counter > 10**6:
                 self._error(ctx, "Potential infinite while‑loop detected – breaking execution")
@@ -553,22 +631,22 @@ class Interpreter(PhysicsVisitor):
             if decl_type not in ("int", "float"):
                 self._error(ctx,
                     f"For-loop variable '{var_name}' must be int or float, not {decl_type}")
-            if var_name in self.symbol_table:
+            if var_name in self.current_scope.symbol_table:
                 self._error(ctx,
                     f"Redeclaration of variable '{var_name}' in for-loop header")
-            self.symbol_table[var_name] = decl_type
+            self.current_scope.symbol_table[var_name] = decl_type
             # możesz dać wartość startową, ale nie jest to konieczne
-            self.variables[var_name] = start_val if decl_type == "float" else int(start_val)
+            self.current_scope.variables[var_name] = start_val if decl_type == "float" else int(start_val)
 
         # ─────────────────────────────────────────────────────────
         # 2) Brak typu w nagłówku → zmienna MUSI istnieć
         #    i być int/float
         # ─────────────────────────────────────────────────────────
         else:
-            if var_name not in self.symbol_table:
+            if var_name not in self.current_scope.symbol_table:
                 self._error(ctx,
                     f"Variable '{var_name}' used in for-loop was not declared earlier")
-            declared_type = self.symbol_table[var_name]
+            declared_type = self.current_scope.symbol_table[var_name]
             if declared_type not in ("int", "float"):
                 self._error(ctx,
                     f"For-loop variable '{var_name}' must be int or float, not {declared_type}")
@@ -579,11 +657,11 @@ class Interpreter(PhysicsVisitor):
         i   = start_val
         cmp = (lambda a, b: a <= b) if step_val >= 0 else (lambda a, b: a >= b)
         while cmp(i, end_val):
-            self.variables[var_name] = i
+            self.current_scope.variables[var_name] = i
             self.visit(ctx.block())
-            i = self.variables[var_name]
+            i = self.current_scope.variables[var_name]
             # czemu czas się zwiększa??
-            self.variables["$TIME"] += 1
+            self.current_scope.variables["$TIME"] += 1
             i += step_val
 
     #TODO: po co ziększa się czas
@@ -591,16 +669,16 @@ class Interpreter(PhysicsVisitor):
         var_name = ctx.ID(0).getText()
         system_name = ctx.ID(1).getText()
 
-        system_obj = self.variables.get(system_name)
+        system_obj = self.current_scope.variables.get(system_name)
         if not isinstance(system_obj, System):
             self._error(ctx, f"'{system_name}' is not a system in foreach loop")
 
         for _, particle in system_obj.particles.items():
-            self.variables[var_name] = particle
-            self.symbol_table[var_name] = True
+            self.current_scope.variables[var_name] = particle
+            self.current_scope.symbol_table[var_name] = True
             self.visit(ctx.block())
             # czemu czas się zwiększa??
-            self.variables["$TIME"] += 1
+            self.current_scope.variables["$TIME"] += 1
         return None
 
     # ————————————————————————————————————————————————————————————————
@@ -698,7 +776,7 @@ class Interpreter(PhysicsVisitor):
         if ctx.getChildCount() == 3 and ctx.getChild(1).getText() == '?':
             obj_name = ctx.dottedID().getText()
             attr_name = ctx.ID().getText()
-            obj = self.variables[obj_name]
+            obj = self.current_scope.variables[obj_name]
             return hasattr(obj, attr_name)
 
         # Unary plus/minus, not
@@ -747,7 +825,7 @@ class Interpreter(PhysicsVisitor):
             # b) wywołanie atrybutu-funkcji:  g->function(...)
             obj_part, rest = text.split("->", 1)         # 'g'  , 'function(…'
             attr_name      = rest.split("(", 1)[0]       # 'function'
-            obj            = self.variables[obj_part]
+            obj            = self.current_scope.variables[obj_part]
 
             fn = getattr(obj, attr_name)
             if not callable(fn):
@@ -760,7 +838,7 @@ class Interpreter(PhysicsVisitor):
         # Dostęp do atrybutu / elementu
         if "->" in text:
             obj_name, rest = text.split("->", 1)
-            obj = self.variables[obj_name]
+            obj = self.current_scope.variables[obj_name]
             if "[" in rest:
                 attr, idx_txt = rest[:-1].split("[")
                 return getattr(obj, attr)[int(idx_txt)]
@@ -768,18 +846,22 @@ class Interpreter(PhysicsVisitor):
 
         # Zmienna zwykła
         # Zmienna zwykła
-        if text in self.symbol_table:
-            if text not in self.variables or self.variables[text] is None:
+        # if text in self.current_scope.symbol_table:
+        if self.exists_symbol(text, ctx):
+            # if text not in self.current_scope.variables or self.current_scope.variables[text] is None:
+            if not self.exists_variable(text, ctx) or self.resolve_variable(text, ctx) is None:
                 self._error(ctx, f"Use of uninitialized variable '{text}'")
-            return self.variables[text]
+            # return self.current_scope.variables[text]
+            return self.resolve_variable(text, ctx)
 
         # ─── te dwa bloki muszą być w tym samym „poziomie” co powyższy ───
         # Specjalne zmienne z prefiksem $
-        if text.startswith("$") and text in self.variables:
-            return self.variables[text]
+        # if text.startswith("$") and text in self.current_scope.variables:
+        #     return self.current_scope.variables[text]
 
         # nazwa *zdefiniowanej* funkcji bez nawiasów → zwracamy callable
-        if text in self.functions:
+        # if text in self.current_scope.functions:
+        if self.exists_function(text, ctx):
             def free_fn(*args):
                 return self._call(text, list(args), ctx)   # ctx zdefiniowane wyżej
             return free_fn
@@ -796,14 +878,14 @@ class Interpreter(PhysicsVisitor):
     def visitAttrTarget(self, ctx):
         obj_name = ctx.dottedID().getText()
         attr_name = ctx.ID().getText()
-        obj = self.variables[obj_name]
+        obj = self.current_scope.variables[obj_name]
         index = self.visit(ctx.expr()) if ctx.expr() else None
         return obj, attr_name, index
 
     def visitAttrAssignStmt(self, ctx):
         obj_name = ctx.dottedID().getText()
         attr_name = ctx.ID().getText()
-        obj = self.variables[obj_name]
+        obj = self.current_scope.variables[obj_name]
         value = self.visit(ctx.expr()) if ctx.expr() else 0.0
         setattr(obj, attr_name, value)
         return None
@@ -841,12 +923,12 @@ class Interpreter(PhysicsVisitor):
                 for _ in range(steps):
                     obj.laws += self.global_laws
                     obj.step(dt)
-                    self.variables["$TIME"] = obj.time
+                    self.current_scope.variables["$TIME"] = obj.time
                 return None
 
             if isinstance(obj, Particle):
                 # Znajdź nazwę zmiennej tej cząstki.
-                name = next((vn for vn, vo in self.variables.items() if vo is obj), None)
+                name = next((vn for vn, vo in self.current_scope.variables.items() if vo is obj), None)
                 if name is None:
                     self._error(ctx, "Particle reference not found in variables table")
 
@@ -856,7 +938,7 @@ class Interpreter(PhysicsVisitor):
                             law.fn(obj, None, dt)
                     for i in range(3):
                         obj.position[i] += obj.velocity[i] * dt
-                    self.variables["$TIME"] += dt
+                    self.current_scope.variables["$TIME"] += dt
                 return None
 
             self._error(ctx, "First argument of 'run' must be system or particle")
@@ -871,11 +953,11 @@ class Interpreter(PhysicsVisitor):
     def visitParticleDecl(self, ctx):
         name = ctx.ID().getText()
 
-        if name in self.variables:
+        if name in self.current_scope.variables:
             self._error(ctx, f"Variable '{name}' already declared")
 
         particle = Particle()
-        self.variables[name] = particle
+        self.current_scope.variables[name] = particle
 
         self.current_particle = name
         for stmt in ctx.block().statement():
@@ -885,11 +967,11 @@ class Interpreter(PhysicsVisitor):
     def visitSystemDecl(self, ctx):
         name = ctx.ID().getText()
 
-        if name in self.variables:
+        if name in self.current_scope.variables:
             self._error(ctx, f"Variable '{name}' already declared")
 
         system = System(name)
-        self.variables[name] = system
+        self.current_scope.variables[name] = system
 
         self.current_system = name
 

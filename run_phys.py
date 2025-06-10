@@ -53,15 +53,16 @@ def run_phys_file(path, sim=False):
 
     # Pass 2: interpretacja
     interpreter = Interpreter()
-    interpreter.symbol_table = collector.symbol_table
+    interpreter.current_scope = collector.root_scope
+    # interpreter.symbol_table = collector.symbol_table
     interpreter.visit(tree)
 
     # Zbieranie cząstek do systemu
     dummy = System("global")
-    delta = interpreter.variables.get("$DELTA", 1.0)
-    time_limit = interpreter.variables.get("$TIME", 10.0)
+    delta = interpreter.current_scope.variables.get("$DELTA", 1.0)
+    time_limit = interpreter.current_scope.variables.get("$TIME", 10.0)
     dummy.total_time = time_limit
-    for name, value in interpreter.variables.items():
+    for name, value in interpreter.current_scope.variables.items():
         if isinstance(value, Particle):
             dummy.add_particle(name, value)
 
