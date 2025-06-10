@@ -1,0 +1,15 @@
+int x = 1
+int y = 101
+%float x = 4
+if(True):
+    int x = 2
+    int a = y
+
+    if(True):
+        int x = 3
+        int b = y + 1
+
+        print(parent::x)
+        print(y)
+        print(a)
+        print(b)
