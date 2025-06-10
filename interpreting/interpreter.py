@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import builtins
 from typing import Any, Optional, Dict, List
 
 from grammar.PhysicsVisitor import PhysicsVisitor
@@ -71,7 +70,7 @@ class Interpreter(PhysicsVisitor):
         if name in self.current_scope.variables:
             return self.current_scope.variables[name]
         scope = self.current_scope.lookup(name)
-        if scope and name in scope.variables:
+        if scope is not None:
             return scope.variables[name]
         self._error(ctx, f"Undeclared variable '{name}'")
 
@@ -80,7 +79,7 @@ class Interpreter(PhysicsVisitor):
             self.current_scope.variables[name] = value
             return
         scope = self.current_scope.lookup(name)
-        if scope and name in scope.variables:
+        if scope is not None:
             scope.variables[name] = value
             return
         self._error(ctx, f"Undeclared variable '{name}'")
@@ -89,7 +88,7 @@ class Interpreter(PhysicsVisitor):
         if name in self.current_scope.variables:
             return self.current_scope.variables[name]
         scope = self.current_scope.lookup(name)
-        if scope and name in scope.variables:
+        if scope is not None:
             return True
         return False
 
@@ -97,7 +96,7 @@ class Interpreter(PhysicsVisitor):
         if name in self.current_scope.functions:
             return self.current_scope.functions[name]
         scope = self.current_scope.lookup(name)
-        if scope and name in scope.functions:
+        if scope is not None:
             return scope.functions[name]
         self._error(ctx, f"Undeclared function '{name}'")
 
@@ -105,7 +104,7 @@ class Interpreter(PhysicsVisitor):
         if name in self.current_scope.functions:
             return self.current_scope.functions[name]
         scope = self.current_scope.lookup(name)
-        if scope and name in scope.functions:
+        if scope is not None:
             return True
         return False
 
@@ -113,7 +112,7 @@ class Interpreter(PhysicsVisitor):
         if name in self.current_scope.symbol_table:
             return self.current_scope.symbol_table[name]
         scope = self.current_scope.lookup(name)
-        if scope and name in scope.symbol_table:
+        if scope is not None:
             return scope.symbol_table[name]
         self._error(ctx, f"Undeclared symbol '{name}'")
 
@@ -367,10 +366,10 @@ class Interpreter(PhysicsVisitor):
         law_name = ctx.ID().getText()
 
         # if law_name not in self.current_scope.functions:
-        if self.exists_function(law_name):
+        if not self.exists_function(law_name, ctx):
             self._error(ctx, f"Law '{law_name}' not defined")
         # law_meta = self.current_scope.functions[law_name]
-        law_meta = self.resolve_function(law_name)
+        law_meta = self.resolve_function(law_name, ctx)
 
         fn = self._wrap_fn(law_meta)
         target_obj = self.current_scope.variables.get(target_name)
@@ -841,7 +840,10 @@ class Interpreter(PhysicsVisitor):
             obj = self.current_scope.variables[obj_name]
             if "[" in rest:
                 attr, idx_txt = rest[:-1].split("[")
-                return getattr(obj, attr)[int(idx_txt)]
+                try:
+                    return getattr(obj, attr)[int(idx_txt)]
+                finally:
+                    self._error(ctx, f'Attribute {attr} doesn\'t exist for object {obj_name}')
             return getattr(obj, rest)
 
         # Zmienna zwykła

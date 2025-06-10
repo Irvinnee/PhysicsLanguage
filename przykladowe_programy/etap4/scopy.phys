@@ -16,6 +16,3 @@ if(True):
         print(b)
 
     print(x)
-
-particle a
-print(a->position[0])
