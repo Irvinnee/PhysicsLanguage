@@ -4,12 +4,18 @@ int y = 101
 if(True):
     int x = 2
     int a = y
+    print(x)
 
     if(True):
         int x = 3
         int b = y + 1
 
-        print(parent::x)
+        print(x)
         print(y)
         print(a)
         print(b)
+
+    print(x)
+
+particle a
+print(a->position[0])
