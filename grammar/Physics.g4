@@ -153,4 +153,5 @@ WS              : [ \t\f]+ -> skip;
 NL: ('\r'? '\n' ' '*);
 
 
-dottedID    : ID ('.' ID)* ;
+dottedID    : ID ('.' ID)* |
+               'parent::' dottedID;
