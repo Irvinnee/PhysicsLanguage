@@ -18,6 +18,7 @@ class Simulation:
         self.initial_state = copy.deepcopy(particles)
         self.delta_time = delta_time
         self.time = 0.0
+        self.total_time = 10.0
 
     # Silnik symulacji
     def simulation_engine(self):

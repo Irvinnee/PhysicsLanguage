@@ -58,12 +58,14 @@ def run_phys_file(path, sim=False):
 
     # Zbieranie cząstek do systemu
     dummy = System("global")
+    delta = interpreter.variables.get("$DELTA", 1.0)
+    time_limit = interpreter.variables.get("$TIME", 10.0)
+    dummy.total_time = time_limit
     for name, value in interpreter.variables.items():
         if isinstance(value, Particle):
             dummy.add_particle(name, value)
 
-    delta = interpreter.variables.get("$DELTA", 1.0)
-    time_limit = interpreter.variables.get("$TIME", 10.0)
+
     simulate = Simulation(list(dummy.particles.values()), delta)
     simulate.global_laws = interpreter.global_laws
 

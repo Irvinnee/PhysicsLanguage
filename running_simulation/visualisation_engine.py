@@ -36,7 +36,8 @@ class Graphics:
         self.orbit_radius = 80
         self.input_active = False
         self.input_text = ""
-        self.input_box = pygame.Rect(600, 20, 150, 35)  # pozycja i rozmiar pola
+        self.input_box = pygame.Rect(600, 20, 150, 35)
+        self.time_limit = system.total_time
 
     def project_to_2d(self, x, y, z, camera_pos, camera_angle, fov=60, width=800, height=600):  # Zmniejszenie FOV
         pitch = camera_angle[0]
@@ -316,7 +317,14 @@ class Graphics:
                         if event.key == pygame.K_RETURN:
                             try:
                                 entered_time = float(self.input_text.replace(",", "."))
-                                slider_value = max(0, min(1, entered_time / self.system.total_time))
+                                clamped_time = max(0.0, min(entered_time, self.system.total_time))
+                                slider_value = clamped_time / self.system.total_time
+
+                                with self.time_lock:
+                                    self.sim_time = slider_value
+
+                                previous_slider_value = slider_value
+
                             except:
                                 pass
                             self.input_text = ""
