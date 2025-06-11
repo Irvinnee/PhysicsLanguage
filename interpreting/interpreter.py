@@ -224,6 +224,10 @@ class Interpreter(PhysicsVisitor):
 
     def visitAssignStmt(self, ctx):
         value = self.visit(ctx.expr())
+        if isinstance(value, str):
+            if value in self.current_scope.functions:
+                value = self.current_scope.functions[value]
+        
         target_ctx = ctx.target()
 
         if isinstance(target_ctx, PhysicsParser.VarTargetContext):
@@ -887,24 +891,17 @@ class Interpreter(PhysicsVisitor):
         # Zmienna zwykła
         # Zmienna zwykła
         # if text in self.current_scope.symbol_table:
-        if self.exists_symbol(text, ctx):
-            # if text not in self.current_scope.variables or self.current_scope.variables[text] is None:
-            if not self.exists_variable(text, ctx) or self.resolve_variable(text, ctx) is None:
-                self._error(ctx, f"Use of uninitialized variable '{text}'")
-            # return self.current_scope.variables[text]
-            return self.resolve_variable(text, ctx)
-
-        # ─── te dwa bloki muszą być w tym samym „poziomie” co powyższy ───
-        # Specjalne zmienne z prefiksem $
-        # if text.startswith("$") and text in self.current_scope.variables:
-        #     return self.current_scope.variables[text]
-
-        # nazwa *zdefiniowanej* funkcji bez nawiasów → zwracamy callable
-        # if text in self.current_scope.functions:
         if self.exists_function(text, ctx):
             def free_fn(*args):
-                return self._call(text, list(args), ctx)   # ctx zdefiniowane wyżej
+                return self._call(text, list(args), ctx)
             return free_fn
+
+
+        if self.exists_symbol(text, ctx):
+            if (not self.exists_variable(text, ctx) or
+                    self.resolve_variable(text, ctx) is None):
+                self._error(ctx, f"Use of uninitialized variable '{text}'")
+            return self.resolve_variable(text, ctx)
         # ──────────────────────────────────────────────────────────────────
 
         self._error(ctx, f"Use of undeclared variable '{text}'")

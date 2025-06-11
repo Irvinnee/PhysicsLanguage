@@ -38,21 +38,13 @@ class Field(SimObject):
             center: Optional[Vector] = None,
             function: Optional[Callable[["Particle", "Field"], float]] = None,
             radius: float = 1.0,
-            intensity: float = 1.0,
     ) -> None:
         self.center: Vector = center or [0.0, 0.0, 0.0]  # punkt_początkowy
         self.function = function  # będzie można przypisać square, linear…
         self.radius: float = float(radius)
-        self.intensity: float = float(intensity)
 
 
 #  Field (placeholder)
-
-class Field(SimObject):
-    def __init__(self) -> None:
-        self.radius: float = 1.0
-        self.intensity: Union[float, Callable[[float], float]] = 1.0
-        self.source_position: Vector = [0.0, 0.0, 0.0]
 
 
 #  Law wrapper:
