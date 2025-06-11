@@ -1,4 +1,15 @@
-particle p1:
-    mass = 1
-    pos = [0, 0, 0]
-    vel = [1, 0, 0]
+$TIME = 100
+
+system spr:
+    particle m
+
+    m->position = [5, 0, 0]
+    m->velocity = [0, 0, 0]
+    m->k = 0.2
+
+    law spring_force(particle p):
+        force = -p->k * p->position
+        p->velocity = p->velocity + force
+        p->position = p->position + p->velocity
+
+<spr.m & spring_force>

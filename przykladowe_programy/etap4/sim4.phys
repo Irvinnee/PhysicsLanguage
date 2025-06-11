@@ -1,0 +1,22 @@
+$TIME = 100
+
+law spring_force(particle p):
+    force = [-p->k * p->position[0], 0, 0]
+    p->velocity = p->velocity + force
+    p->position = p->position + p->velocity
+
+system spr:
+    particle m1
+    particle m2
+
+    m1->position = [5, 0, 0]
+    m1->velocity = [0, 0, 0]
+    m1->k = 0.2
+
+    m2->position = [-5, 0, 0]
+    m2->velocity = [0, 0, 0]
+    m2->k = 0.1
+
+<m1 & spring_force>
+<m2 & spring_force>
+
