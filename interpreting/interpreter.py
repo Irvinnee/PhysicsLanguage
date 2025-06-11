@@ -549,6 +549,11 @@ class Interpreter(PhysicsVisitor):
                 self.visit(sig["block"])
                 value = self.return_value
         finally:
+
+            for var in saved_vars.keys():
+                if var in self.current_scope.variables.keys():
+                    saved_vars[var] = self.current_scope.variables[var]
+
             self.current_scope.variables = saved_vars
             self.current_scope.functions = saved_functions
             self.in_function = False
@@ -571,6 +576,9 @@ class Interpreter(PhysicsVisitor):
         # auto-rzutowanie int → float przy zwracaniu
         if ret_type == "float" and isinstance(value, int):
             value = float(value)
+
+        if ret_type == "int" and isinstance(value, float):
+            value = round(value)
 
         if not isinstance(value, TYPE_MAP[ret_type]):
             self._error(call_ctx,
@@ -616,7 +624,7 @@ class Interpreter(PhysicsVisitor):
         while self.visit(ctx.expr()):
             self.visit(ctx.block())
             # czemu czas się zwiększa??
-            self.current_scope.variables["$TIME"] += 1
+            # self.current_scope.variables["$TIME"] += 1
             guard_counter += 1
             if guard_counter > 10**6:
                 self._error(ctx, "Potential infinite while‑loop detected – breaking execution")
