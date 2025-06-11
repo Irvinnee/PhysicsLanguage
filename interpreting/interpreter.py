@@ -878,10 +878,13 @@ class Interpreter(PhysicsVisitor):
             if "[" in rest:
                 attr, idx_txt = rest[:-1].split("[")
                 try:
-                    s = getattr(obj, attr)[int(idx_txt)]
-                    return s
-                except AttributeError:
-                    self._error(ctx, f'Attribute {attr} doesn\'t exist for object {obj_name}')
+                    try:
+                        s = getattr(obj, attr)[int(idx_txt)]
+                        return s
+                    except AttributeError:
+                        self._error(ctx, f'Attribute {attr} doesn\'t exist for object {obj_name}')
+                except IndexError:
+                    self._error(ctx, f'Attribute {attr} index is out of range for object {obj_name}')
             return getattr(obj, rest)
 
         # Zmienna zwykła
