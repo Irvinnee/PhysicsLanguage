@@ -827,6 +827,12 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def visitAtom(self, ctx):
+        if ctx.getChildCount() == 4 and ctx.getChild(0).getText() == "(" and ctx.getChild(
+                2).getText() == ")" and ctx.getChild(1).getText() in ("int", "float", "bool"):
+            type_text = ctx.getChild(1).getText()
+            value = self.visit(ctx.getChild(3))
+            return self._cast_value(value, type_text)
+
         if ctx.INT():
             return int(ctx.INT().getText())
         if ctx.FLOAT():
@@ -1015,4 +1021,25 @@ class Interpreter(PhysicsVisitor):
 
         self.current_system = None
 
+    def _cast_value(self, value, target_type: str):
+        if target_type == "int":
+            if isinstance(value, bool):
+                return int(value)
+            elif isinstance(value, (int, float)):
+                return round(value)
+            self._error(None, f"Cannot cast type {type(value).name} to int")
 
+        elif target_type == "float":
+            if isinstance(value, bool):
+                return float(value)
+            elif isinstance(value, (int, float)):
+                return float(value)
+            self._error(None, f"Cannot cast type {type(value).name} to float")
+
+        elif target_type == "bool":
+            if isinstance(value, (int, float)):
+                return value != 0
+            self._error(None, f"Cannot cast type {type(value).name} to bool")
+
+        else:
+            self._error(None, f"Unknown cast type '{target_type}'")

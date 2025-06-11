@@ -16,6 +16,7 @@ m1->position = [5, 0, 0]
 m1->velocity = [0, 0, 0]
 m1->k = 0.2
 
+
 print(m1->position)
 
 m2->position = [-5, 0, 0]

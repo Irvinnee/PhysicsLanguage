@@ -1,0 +1,65 @@
+% AUTOMATYCZNE: int → float
+int i1 = 4
+float f1 = i1
+print(f1)   % oczekiwane: 4.0
+
+% AUTOMATYCZNE: float → int (poprawne tylko przez cast)
+float f2 = 5.4
+int i2 = (int)f2
+print(i2)   % oczekiwane: 5
+
+float f3 = 5.6
+int i3 = (int)f3
+print(i3)   % oczekiwane: 6
+
+% Nie ma się wywalać
+int i_invalid = f3   % ← powinien być błąd, zakomentowane, bo interpreter by przerwał
+
+% JAWNA: bool → int
+bool b1 = True
+int i4 = (int)b1
+print(i4)   % oczekiwane: 1
+
+bool b2 = False
+int i5 = (int)b2
+print(i5)   % oczekiwane: 0
+
+% JAWNA: bool → float
+float f4 = (float)True
+float f5 = (float)False
+print(f4)   % oczekiwane: 1.0
+print(f5)   % oczekiwane: 0.0
+
+% JAWNA: int → bool
+int i6 = 0
+int i7 = 2
+bool b3 = (bool)i6
+bool b4 = (bool)i7
+print(b3)   % oczekiwane: False
+print(b4)   % oczekiwane: True
+
+% JAWNA: float → bool
+float f6 = 0.0
+float f7 = 0.01
+bool b5 = (bool)f6
+bool b6 = (bool)f7
+print(b5)   % oczekiwane: False
+print(b6)   % oczekiwane: True
+
+% DODATKOWY TEST: mieszane wyrażenia z castami
+float result = (float)((int)4.6) + (float)True + 0.4
+print(result)   % oczekiwane: 5.0 + 1.0 + 0.4 = 6.4
+
+% DODATKOWY TEST: if z rzutowaniem
+if ((bool)1):
+    print(42)   % oczekiwane: 42
+
+if ((bool)0):
+    print(999)  % nie powinno się wykonać
+
+% DODATKOWY TEST: przypisanie przez funkcję
+float func getNumber() => 7.3
+float f8 = getNumber()
+int i8 = (int)getNumber()
+print(f8)   % oczekiwane: 7.3
+print(i8)   % oczekiwane: 7
