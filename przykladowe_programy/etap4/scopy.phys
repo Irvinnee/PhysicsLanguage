@@ -11,8 +11,10 @@ if(True):
         int b = y + 1
 
         print(parent::parent::x)
-        print(y)
+        print(parent::parent::y)
         print(a)
         print(b)
 
     print(x)
+
+
