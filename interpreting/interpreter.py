@@ -260,9 +260,11 @@ class Interpreter(PhysicsVisitor):
 
             # Specjalne zmienne globalne
             if name in ("$TIME", "$DELTA"):
-                if not isinstance(value, (int, float)):
+                # if not isinstance(value, (int, float)):
+                if (not isinstance(value, float) and not isinstance(value, int)) or isinstance(value, bool):
                     self.errorWrongType(type(value), (float, int), name, ctx)
-                self.current_scope.variables[name] = value
+                # self.current_scope.variables[name] = value
+                self.assign_variable(name, float(value), ctx)
                 return None
 
             # Sprawdzenie, czy zmienna była zadeklarowana
@@ -551,7 +553,8 @@ class Interpreter(PhysicsVisitor):
         finally:
 
             for var in saved_vars.keys():
-                if var in self.current_scope.variables.keys():
+                param_keys= [i[0] for i in expected_params]
+                if var in self.current_scope.variables.keys() and var not in param_keys:
                     saved_vars[var] = self.current_scope.variables[var]
 
             self.current_scope.variables = saved_vars

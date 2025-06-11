@@ -53,6 +53,8 @@ def run_phys_file(path, sim=False):
 
     # Pass 2: interpretacja
     interpreter = Interpreter()
+    # to naprawia TIME i DELTA
+    collector.root_scope.symbol_table = collector.symbol_table
     interpreter.current_scope = collector.root_scope
     # interpreter.symbol_table = collector.symbol_table
     interpreter.visit(tree)
