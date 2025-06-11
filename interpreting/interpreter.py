@@ -666,12 +666,17 @@ class Interpreter(PhysicsVisitor):
         i   = start_val
         cmp = (lambda a, b: a <= b) if step_val >= 0 else (lambda a, b: a >= b)
         while cmp(i, end_val):
-            self.current_scope.variables[var_name] = i
+            self.assign_variable(var_name, i, ctx)
             self.visit(ctx.block())
-            i = self.current_scope.variables[var_name]
-            # czemu czas się zwiększa??
-            self.current_scope.variables["$TIME"] += 1
+            i = self.resolve_variable(var_name, ctx)
             i += step_val
+
+            # self.current_scope.variables[var_name] = i
+            # self.visit(ctx.block())
+            # i = self.current_scope.variables[var_name]
+            # # czemu czas się zwiększa??
+            # self.current_scope.variables["$TIME"] += 1
+            # i += step_val
 
     #TODO: po co ziększa się czas
     def visitForeachStmt(self, ctx):
