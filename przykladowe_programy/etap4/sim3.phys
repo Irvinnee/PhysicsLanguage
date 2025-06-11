@@ -1,58 +1,68 @@
-$TIME = 10
-$DELTA = 0.01
+law move(particle p):
+    p->position = p->position + 10
 
-% ta składnia już nie działa
-
-particle p1:
-    mass = 3
-    pos = [5, 0, -5]
-    vel = [5, 3, 2]
-
-particle p2:
-    mass = 1
-    pos = [-4, 3, 2]
-    vel = [1, 3, 0]
-
-particle p3:
-    mass = 2
-    pos = [0, -4, 5]
-    vel = [2, 1, 4]
-
-particle p4:
-    mass = 2
-    pos = [10, 10, -10]
-    vel = [-1, -1, 0]
-
-particle p5:
-    mass = 0.5
-    pos = [-10, -10, 10]
-    vel = [0.5, 0.5, -0.2]
-
-particle p6:
-    mass = 4
-    pos = [8, -5, 7]
-    vel = [0, 1, -1]
-
-particle p7:
-    mass = 1.5
-    pos = [-6, 6, -6]
-    vel = [1, 0, 2]
-
-particle p8:
-    mass = 2.5
-    pos = [2, 2, 2]
-    vel = [-2, -1, 0]
-
-particle p9:
-    mass = 3.5
-    pos = [-7, -3, -2]
-    vel = [1.5, 1.5, 1]
-
-particle p10:
-    mass = 1
-    pos = [0, 0, 15]
-    vel = [0, 0, -3]
+$TIME = 50
 
 system uk:
-    particles = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+    particle p1
+    particle p2
+    particle p3
+    particle p4
+    particle p5
+    particle p6
+    particle p7
+    particle p8
+    particle p9
+    particle p10
+
+    p1->mass = 3
+    p1->position = [5, 0, -5]
+    p1->velocity = [5, 3, 2]
+
+    p2->mass = 1
+    p2->position = [-4, 3, 2]
+    p2->velocity = [1, 3, 0]
+
+    p3->mass = 2
+    p3->position = [0, -4, 5]
+    p3->velocity = [2, 1, 4]
+
+    p4->mass = 2
+    p4->position = [10, 10, -10]
+    p4->velocity = [-1, -1, 0]
+
+    p5->mass = 0.5
+    p5->position = [-10, -10, 10]
+    p5->velocity = [0.5, 0.5, -0.2]
+
+    p6->mass = 4
+    p6->position = [8, -5, 7]
+    p6->velocity = [0, 1, -1]
+
+    p7->mass = 1.5
+    p7->position = [-6, 6, -6]
+    p7->velocity = [1, 0, 2]
+
+    p8->mass = 2.5
+    p8->position = [2, 2, 2]
+    p8->velocity = [-2, -1, 0]
+
+    p9->mass = 3.5
+    p9->position = [-7, -3, -2]
+    p9->velocity = [1.5, 1.5, 1]
+
+    p10->mass = 1
+    p10->position = [0, 0, 15]
+    p10->velocity = [0, 0, -3]
+
+<p1 & move>
+<p2 & move>
+<p3 & move>
+<p4 & move>
+<p5 & move>
+<p6 & move>
+<p7 & move>
+<p8 & move>
+<p9 & move>
+<p10 & move>
 

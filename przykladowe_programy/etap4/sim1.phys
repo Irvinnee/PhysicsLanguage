@@ -2,12 +2,14 @@
 law move(particle p):
     p->position = p->position + 10
 
+$TIME = 50
+
 system test:
     particle moving
     particle still
 
     moving->position = [0, 0, 0]
-    %moving->velocity = [10, 0, 0]
+    moving->velocity = [10, 2, 10]
 
 
     still->position = [0, 1, 0]
