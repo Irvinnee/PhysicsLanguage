@@ -64,8 +64,15 @@ attrAssignStmt
     : dottedID '<-' ID ('=' expr)? NL
     ;
 callStmt
-    : dottedID '(' argList? ')' NL      #call
+    : (dottedID ('->' ID ('[' expr ']')?)?)
+      '(' argList? ')' NL?   #call 
     ;
+
+
+
+
+
+
 
 systemDecl
     : 'system' ID ':' block

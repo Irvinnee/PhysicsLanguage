@@ -1,0 +1,42 @@
+func pole_przyciągające(particle p, field f):
+    float dx0 = f->center[0] - p->position[0]
+    float dx1 = f->center[1] - p->position[1]
+    float dx2 = f->center[2] - p->position[2]
+    float dist_sq = dx0*dx0 + dx1*dx1 + dx2*dx2
+    bool  poza    = dist_sq > f->radius * f->radius
+    if (poza):
+        p->force = [0.0, 0.0, 0.0]
+    else:
+        float strength = 5.0 * p->mass / (dist_sq + 1.0)
+        float fx = strength * dx0
+        float fy = strength * dx1
+        float fz = strength * dx2
+        p->force = [fx, fy, fz]
+
+law pole_force(particle p):
+    f->function (p, f)
+    float fx = p->force[0]
+    float fy = p->force[1]
+    float fz = p->force[2]
+    if (p->mass != 0.0):
+        float ax = fx / p->mass
+        float ay = fy / p->mass
+        float az = fz / p->mass
+        p->velocity = [p->velocity[0] + ax, p->velocity[1] + ay, p->velocity[2] + az]
+        p->position = [p->position[0] + p->velocity[0], p->position[1] + p->velocity[1], p->position[2] + p->velocity[2]]
+
+particle p
+field    f
+
+f->center   = [0.0, 0.0, 0.0]
+f->radius   = 10.0
+f->function = pole_przyciągające
+
+p->position = [5.0, 0.0, 0.0]
+p->velocity = [0.0, 0.0, 0.0]
+p->mass     = 1.0
+p->force    = [0.0, 0.0, 0.0]
+
+<p & pole_force>
+
+print(p->position[0])

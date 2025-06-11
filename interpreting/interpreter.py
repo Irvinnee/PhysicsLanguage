@@ -882,10 +882,13 @@ class Interpreter(PhysicsVisitor):
             if "[" in rest:
                 attr, idx_txt = rest[:-1].split("[")
                 try:
-                    s = getattr(obj, attr)[int(idx_txt)]
-                    return s
-                except AttributeError:
-                    self._error(ctx, f'Attribute {attr} doesn\'t exist for object {obj_name}')
+                    try:
+                        s = getattr(obj, attr)[int(idx_txt)]
+                        return s
+                    except AttributeError:
+                        self._error(ctx, f'Attribute {attr} doesn\'t exist for object {obj_name}')
+                except IndexError:
+                    self._error(ctx, f'Attribute {attr} index is out of range for object {obj_name}')
             return getattr(obj, rest)
 
         # Zmienna zwykła
@@ -946,17 +949,51 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def visitCall(self, ctx):
-        func_name = ctx.dottedID().getText()
+
+
+
+        # ────────────────────────────────────────────────────────────────
+        # 0. Zidentyfikuj, czy w nagłówku występuje '-> function'
+        #    head = 'fieldName'  lub  'fieldName->function'
+        # ────────────────────────────────────────────────────────────────
+        head = ctx.getChild(0).getText()                # pierwszy identyfikator
+        has_arrow = ctx.getChild(1).getText() == '->'   # True, jeśli '->' zaraz za ID
+        if has_arrow:
+            attr_name = ctx.getChild(2).getText()       # token po '->'
+            head += '->' + attr_name
+
+        # ────────────────────────────────────────────────────────────────
+        # 1. Zbierz argumenty
+        # ────────────────────────────────────────────────────────────────
         args = [self.visit(a) for a in ctx.argList().expr()] if ctx.argList() else []
 
-        if func_name == "run":
+        # ────────────────────────────────────────────────────────────────
+        # 2. Wywołanie  fieldVar->function(...)
+        # ────────────────────────────────────────────────────────────────
+        if has_arrow and attr_name == 'function':
+            obj_name = ctx.getChild(0).getText()        # nazwa pola
+            obj = self.resolve_variable(obj_name, ctx)  # musi być Field
+            if not isinstance(obj, Field):
+                self._error(ctx, f"'{obj_name}' is not a field")
+
+            fn = getattr(obj, 'function', None)
+            if not callable(fn):
+                self._error(ctx, f"Attribute 'function' of field '{obj_name}' is not callable")
+
+            return fn(*args)                            # ← faktyczne wywołanie
+
+        # ────────────────────────────────────────────────────────────────
+        # 3. Specjalna funkcja  run(...)
+        # ────────────────────────────────────────────────────────────────
+        if head == 'run':
             if len(args) not in (2, 3):
                 self._error(ctx, "Function 'run' expects 2 or 3 arguments")
 
             obj, steps, *rest = args
-            dt = float(rest[0]) if rest else 1.0
+            dt    = float(rest[0]) if rest else 1.0
             steps = int(steps)
 
+            # 3a.  run(system, …)
             if isinstance(obj, System):
                 for _ in range(steps):
                     obj.laws += self.global_laws
@@ -964,12 +1001,11 @@ class Interpreter(PhysicsVisitor):
                     self.current_scope.variables["$TIME"] = obj.time
                 return None
 
+            # 3b.  run(particle, …)
             if isinstance(obj, Particle):
-                # Znajdź nazwę zmiennej tej cząstki.
-                name = next((vn for vn, vo in self.current_scope.variables.items() if vo is obj), None)
+                name = next((n for n, o in self.current_scope.variables.items() if o is obj), None)
                 if name is None:
                     self._error(ctx, "Particle reference not found in variables table")
-
                 for _ in range(steps):
                     for law in self.global_laws:
                         if law.applies(name, obj):
@@ -981,8 +1017,10 @@ class Interpreter(PhysicsVisitor):
 
             self._error(ctx, "First argument of 'run' must be system or particle")
 
-        # Normalne wywołanie funkcji
-        return self._call(func_name, args, ctx)
+        # ────────────────────────────────────────────────────────────────
+        # 4. Zwykła globalna funkcja DSL  foo(...)
+        # ────────────────────────────────────────────────────────────────
+        return self._call(head, args, ctx)
 
     # ————————————————————————————————————————————————————————————————
     # Particle
