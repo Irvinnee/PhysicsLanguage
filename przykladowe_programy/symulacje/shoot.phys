@@ -1,0 +1,26 @@
+$TIME = 100
+
+law shoot(particle p):
+    float vx = p->velocity[0]
+    float x = p->position[0] + vx
+
+    p->position = [x, 0, 0]
+
+system space:
+    particle b
+    b->velocity = [1 * 0.5, 0, 0]
+
+    particle b2
+    b2->velocity = [2 * 0.5, 0, 0]
+
+    particle b3
+    b3->velocity = [3 * 0.5, 0, 0]
+
+    particle b4
+    b4->velocity = [4 * 0.5, 0, 0]
+
+
+    <b & shoot>
+    <b2 & shoot>
+    <b3 & shoot>
+    <b4 & shoot>

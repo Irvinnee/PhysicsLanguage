@@ -1,0 +1,32 @@
+$TIME = 100
+
+law spring_force(particle p):
+    float fx = -p->k * p->position[0]
+    float fy = 0
+    float fz = 0
+
+    float vx = p->velocity[0] + fx
+    float vy = p->velocity[1] + fy
+    float vz = p->velocity[2] + fz
+
+    float x = p->position[0] + vx
+    float y = p->position[1] + vy
+    float z = p->position[2] + vz
+
+    p->velocity = [vx, vy, vz]
+    p->position = [x, y, z]
+
+system spr:
+    particle m1
+    particle m2
+
+    m1->position = [5, 0, 0]
+    m1->velocity = [0, 0, 0]
+    m1->k = 0.2
+
+    m2->position = [-5, 0, 0]
+    m2->velocity = [0, 0, 0]
+    m2->k = 0.1
+
+    <m1 & spring_force>
+    <m2 & spring_force>
