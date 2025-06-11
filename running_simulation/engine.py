@@ -118,10 +118,10 @@ class System:
                 if law.applies(name, obj):
                     law.fn(obj, self, dt)
 
-        for p in self.particles.values():
-            p.position[0] += p.velocity[0] * dt
-            p.position[1] += p.velocity[1] * dt
-            p.position[2] += p.velocity[2] * dt
+        # for p in self.particles.values():
+        #     p.position[0] += p.velocity[0] * dt
+        #     p.position[1] += p.velocity[1] * dt
+        #     p.position[2] += p.velocity[2] * dt
             # print(f" krok {self.time:.1f}, pozycja: {p.position}, prędkość: {p.velocity}")
 
         for sub in self.subsystems.values():

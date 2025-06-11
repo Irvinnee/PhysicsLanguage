@@ -447,7 +447,11 @@ class Interpreter(PhysicsVisitor):
                 self.current_scope.variables[param_name] = obj
 
             # wykonaj blok prawa
+            if self.current_scope.next_child_index < len(self.current_scope.children):
+                self.current_scope.children[self.current_scope.next_child_index].symbol_table = {}
             self.visit(meta["block"])
+
+            saved_vars[param_name] = self.current_scope.variables[param_name]
 
             # przywróć stare zmienne
             self.current_scope.variables = saved_vars
@@ -863,12 +867,14 @@ class Interpreter(PhysicsVisitor):
         # Dostęp do atrybutu / elementu
         if "->" in text:
             obj_name, rest = text.split("->", 1)
-            obj = self.current_scope.variables[obj_name]
+            # obj = self.current_scope.variables[obj_name]
+            obj = self.resolve_variable(obj_name, ctx)
             if "[" in rest:
                 attr, idx_txt = rest[:-1].split("[")
                 try:
-                    return getattr(obj, attr)[int(idx_txt)]
-                finally:
+                    s = getattr(obj, attr)[int(idx_txt)]
+                    return s
+                except AttributeError:
                     self._error(ctx, f'Attribute {attr} doesn\'t exist for object {obj_name}')
             return getattr(obj, rest)
 
@@ -906,7 +912,8 @@ class Interpreter(PhysicsVisitor):
     def visitAttrTarget(self, ctx):
         obj_name = ctx.dottedID().getText()
         attr_name = ctx.ID().getText()
-        obj = self.current_scope.variables[obj_name]
+        # obj = self.current_scope.variables[obj_name]
+        obj = self.resolve_variable(obj_name, ctx)
         index = self.visit(ctx.expr()) if ctx.expr() else None
         return obj, attr_name, index
 

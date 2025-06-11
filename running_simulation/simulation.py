@@ -1,4 +1,5 @@
 import threading
+from os import system
 from time import sleep
 
 from running_simulation.engine import System
@@ -61,9 +62,10 @@ class Simulation:
         self.time = 0.0
 
     def step(self):
-        for p in self.particles:
-            for i in range(3):
-                p.position[i] += p.velocity[i] * self.delta_time
+        # for p in self.particles:
+        #     for i in range(3):
+        #         p.position[i] += p.velocity[i] * self.delta_time
+        system.step(self.delta_time)
         self.time += self.delta_time
 
     def simulate_to_time(self, target_time: float):

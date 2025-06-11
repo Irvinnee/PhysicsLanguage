@@ -1,13 +1,15 @@
 import sys
 import os
 import glob
+from dataclasses import fields
+
 from antlr4 import *
 from grammar.PhysicsLexer import PhysicsLexer
 from grammar.PhysicsParser import PhysicsParser
 from interpreting.error_listener import ThrowingErrorListener
 from interpreting.SymbolCollector import SymbolCollector
 from interpreting.interpreter import Interpreter
-from running_simulation.engine import Particle, System
+from running_simulation.engine import Particle, System, Law, Field
 from running_simulation.simulation import Simulation
 
 def run_phys_file(path, sim=False):
@@ -67,18 +69,24 @@ def run_phys_file(path, sim=False):
     for name, value in interpreter.current_scope.variables.items():
         if isinstance(value, Particle):
             dummy.add_particle(name, value)
-
+        if isinstance(value, Field):
+            dummy.add_field(name, value)
+    for law in interpreter.global_laws:
+        if isinstance(law, Law):
+            dummy.register_law(law)
 
     simulate = Simulation(list(dummy.particles.values()), delta)
     simulate.global_laws = interpreter.global_laws
 
-    if sim:
+    # TODO: do zmiany warunek
+    if not sim:
         simulate.run(dummy, time_limit, delta)
     else:
         simulate.simulate_to_time(time_limit)
-        print("Pozycje po symulacji:")
-        for p in simulate.particles:
-            print(p.position)
+        if len(simulate.particles) != 0:
+            print("Pozycje po symulacji:")
+            for p in simulate.particles:
+                print(p.position)
 
 if __name__ == "__main__":
     args = sys.argv[1:]
