@@ -1,0 +1,33 @@
+int func factorial(int x):
+    if(x>1):
+        => factorial(x-1)* x
+    else:
+        => 1
+
+
+int func fact2(int x):
+    int p = 1
+
+    for int i(2,x,1):
+        p = p*i
+
+    => p
+
+int ala = 1
+
+int func foo(int n):
+    int x = n
+    ala = ala + 1
+    print(n>=2)
+    print(n)
+    print(x)
+    print(ala)
+    print(-2)
+    if(n>=2):
+        foo(n-1)
+    print(x)
+    print(ala)
+    print(-1)
+    => 0
+
+foo(2)

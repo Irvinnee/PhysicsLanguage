@@ -1,0 +1,13 @@
+int a = 1
+
+func f1():
+    int b = 3
+
+    print(a)
+
+if (true):
+    int a =2
+    func f2()
+        1()
+
+2()

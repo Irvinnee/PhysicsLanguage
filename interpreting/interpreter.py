@@ -66,173 +66,113 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
     # Metody obsługujące dostęp do innych scoperów
     # ————————————————————————————————————————————————————————————————
-
-    # def resolve_variable(self, name: str, ctx) -> Any:
-    #     current_scope = self.current_scope
-    #     while name.startswith("parent::"):
-    #         name = name[8:]
-    #         current_scope = current_scope.get_parent()
-    #         if current_scope is None:
-    #             self._error(ctx, f"You went out of global scope, too many parent:: statements")
-    #
-    #     if name in current_scope.variables:
-    #         return current_scope.variables[name]
-    #     scope = current_scope.lookup(name)
-    #     if scope is not None:
-    #         return scope.variables[name]
-    #     self._error(ctx, f"Undeclared variable '{name}'")
-
-    # def assign_variable(self, name: str, value: Any, ctx) -> None:
-    #     current_scope = self.current_scope
-    #     while name.startswith("parent::"):
-    #         name = name[8:]
-    #         current_scope = current_scope.get_parent()
-    #         if current_scope is None:
-    #             self._error(ctx, f"You went out of global scope, too many parent:: statements")
-    #
-    #     if name in current_scope.variables:
-    #         current_scope.variables[name] = value
-    #         return
-    #     scope = current_scope.lookup(name)
-    #     if scope is not None:
-    #         scope.variables[name] = value
-    #         return
-    #     self._error(ctx, f"Undeclared variable '{name}'")
-
-    def _strip_parent(self, name: str, start_scope: Scope, ctx):
-        scope = start_scope
+    def resolve_variable(self, name: str, ctx) -> Any:
+        current_scope = self.current_scope
         while name.startswith("parent::"):
-            name = name[8:]                    # usuń jeden prefiks
-            scope = scope.parent
+            name = name[8:]
+            scope = scope.get_parent()
             if scope is None:
-                self._error(ctx, "Too many parent:: ‒ you left global scope")
-        return name, scope
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
 
-    def exists_function(self, name: str, ctx) -> bool:
-        name, scope = self._strip_parent(name, self.current_scope, ctx)
-        while scope:
-            if name in scope.functions:
-                return True
-            scope = scope.parent
+        if name in current_scope.variables:
+            return current_scope.variables[name]
+        scope = current_scope.lookup(name)
+        if scope is not None:
+            return scope.variables[name]
+        self._error(ctx, f"Undeclared variable '{name}'")
+
+    def assign_variable(self, name: str, value: Any, ctx) -> None:
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.variables:
+            current_scope.variables[name] = value
+            return
+        scope = current_scope.lookup(name)
+        if scope is not None:
+            scope.variables[name] = value
+            return
+        self._error(ctx, f"Undeclared variable '{name}'")
+
+    def exists_variable(self, name: str, ctx) -> Any:
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.variables:
+            return current_scope.variables[name]
+        scope = current_scope.lookup(name)
+        if scope is not None:
+            return True
         return False
 
     def resolve_function(self, name: str, ctx) -> Dict:
-        name, scope = self._strip_parent(name, self.current_scope, ctx)
-        while scope:
-            if name in scope.functions:
-                return scope.functions[name]
-            scope = scope.parent
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.functions:
+            return current_scope.functions[name]
+        scope = current_scope.lookup(name)
+        if scope is not None:
+            return scope.functions[name]
         self._error(ctx, f"Undeclared function '{name}'")
 
-    # ---------   VARIABLES   ---------
-    def exists_variable(self, name: str, ctx) -> bool:
-        name, scope = self._strip_parent(name, self.current_scope, ctx)
-        while scope:
-            if name in scope.variables:
-                return True
-            scope = scope.parent
-        return False
+    def exists_function(self, name: str, ctx) -> bool:
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
 
-    def resolve_variable(self, name: str, ctx):
-        name, scope = self._strip_parent(name, self.current_scope, ctx)
-        while scope:
-            if name in scope.variables:
-                return scope.variables[name]
-            scope = scope.parent
-        self._error(ctx, f"Undeclared variable '{name}'")
-
-    # ---------   SYMBOLS (typy)   ---------
-    def exists_symbol(self, name: str, ctx) -> bool:
-        name, scope = self._strip_parent(name, self.current_scope, ctx)
-        while scope:
-            if name in scope.symbol_table:
-                return True
-            scope = scope.parent
+        if name in current_scope.functions:
+            return current_scope.functions[name]
+        scope = current_scope.lookup(name)
+        if scope is not None:
+            return True
         return False
 
     def resolve_symbol(self, name: str, ctx) -> str:
-        name, scope = self._strip_parent(name, self.current_scope, ctx)
-        while scope:
-            if name in scope.symbol_table:
-                return scope.symbol_table[name]
-            scope = scope.parent
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
+
+        if name in current_scope.symbol_table:
+            return current_scope.symbol_table[name]
+        scope = current_scope.lookup(name)
+        if scope is not None:
+            return scope.symbol_table[name]
         self._error(ctx, f"Undeclared symbol '{name}'")
 
-    # def exists_variable(self, name: str, ctx) -> Any:
-    #     current_scope = self.current_scope
-    #     while name.startswith("parent::"):
-    #         name = name[8:]
-    #         current_scope = current_scope.get_parent()
-    #         if current_scope is None:
-    #             self._error(ctx, f"You went out of global scope, too many parent:: statements")
-    #
-    #     if name in current_scope.variables:
-    #         return current_scope.variables[name]
-    #     scope = current_scope.lookup(name)
-    #     if scope is not None:
-    #         return True
-    #     return False
+    def exists_symbol(self, name: str, ctx) -> Any:
+        current_scope = self.current_scope
+        while name.startswith("parent::"):
+            name = name[8:]
+            current_scope = current_scope.get_parent()
+            if current_scope is None:
+                self._error(ctx, f"You went out of global scope, too many parent:: statements")
 
-    # def resolve_function(self, name: str, ctx) -> Dict:
-    #     current_scope = self.current_scope
-    #     while name.startswith("parent::"):
-    #         name = name[8:]
-    #         current_scope = current_scope.get_parent()
-    #         if current_scope is None:
-    #             self._error(ctx, f"You went out of global scope, too many parent:: statements")
-    #
-    #     if name in current_scope.functions:
-    #         return current_scope.functions[name]
-    #     scope = current_scope.lookup(name)
-    #     if scope is not None:
-    #         return scope.functions[name]
-    #     self._error(ctx, f"Undeclared function '{name}'")
-
-    # def exists_function(self, name: str, ctx) -> bool:
-    #     current_scope = self.current_scope
-    #     while name.startswith("parent::"):
-    #         name = name[8:]
-    #         current_scope = current_scope.get_parent()
-    #         if current_scope is None:
-    #             self._error(ctx, f"You went out of global scope, too many parent:: statements")
-    #
-    #     if name in current_scope.functions:
-    #         return current_scope.functions[name]
-    #     scope = current_scope.lookup(name)
-    #     if scope is not None:
-    #         return True
-    #     return False
-
-    # def resolve_symbol(self, name: str, ctx) -> str:
-    #     current_scope = self.current_scope
-    #     while name.startswith("parent::"):
-    #         name = name[8:]
-    #         current_scope = current_scope.get_parent()
-    #         if current_scope is None:
-    #             self._error(ctx, f"You went out of global scope, too many parent:: statements")
-    #
-    #     if name in current_scope.symbol_table:
-    #         return current_scope.symbol_table[name]
-    #     scope = current_scope.lookup(name)
-    #     if scope is not None:
-    #         return scope.symbol_table[name]
-    #     self._error(ctx, f"Undeclared symbol '{name}'")
-
-    # def exists_symbol(self, name: str, ctx) -> Any:
-    #     current_scope = self.current_scope
-    #     while name.startswith("parent::"):
-    #         name = name[8:]
-    #         current_scope = current_scope.get_parent()
-    #         if current_scope is None:
-    #             self._error(ctx, f"You went out of global scope, too many parent:: statements")
-    #
-    #     if name in current_scope.symbol_table:
-    #         return current_scope.symbol_table[name]
-    #     scope = current_scope.lookup(name)
-    #     if scope is not None:
-    #         return True
-    #     return False
-    # # ————————————————————————————————————————————————————————————————
+        if name in current_scope.symbol_table:
+            return current_scope.symbol_table[name]
+        scope = current_scope.lookup(name)
+        if scope is not None:
+            return True
+        return False
+    # ————————————————————————————————————————————————————————————————
     # Dwupassowe przetwarzanie programu – pass #1 kolekcjonuje wszystkie
     # deklaracje funkcji/praw, pass #2 wykonuje kod.
     # ————————————————————————————————————————————————————————————————
@@ -526,36 +466,30 @@ class Interpreter(PhysicsVisitor):
     # Pomocnicze – wrapped function używana w prawach
     # ————————————————————————————————————————————————————————————————
 
-
-
     def _wrap_fn(self, meta):
         def fn(obj, system, dt):
-            # — blokada rekurencji field→function —
+            # zablokuj rekurencję field->function
             saved_current = self.current_scope.variables.get("$CURRENT_FN")
             if saved_current == meta:
                 raise Exception("Illegal recursion: field->function cannot call itself")
             self.current_scope.variables["$CURRENT_FN"] = meta
 
-            # — przygotuj pełny, lokalny kontekst —
+            # ─── przygotuj lokalny kontekst ───
             saved_vars = self.current_scope.variables
-            saved_syms = self.current_scope.symbol_table          # ⬅ NEW
-            self.current_scope.variables    = saved_vars.copy()
-            self.current_scope.symbol_table = saved_syms.copy()   # ⬅ NEW
+            self.current_scope.variables = saved_vars.copy()
 
-            # wstaw parametr-obiekt (jeśli prawo go przyjmuje)
+            # META['params'] to lista [(nazwa, typ), …]
             if meta["params"]:
-                param_name = meta["params"][0][0]
+                param_name = meta["params"][0][0]   # <-- tylko nazwa!
                 self.current_scope.variables[param_name] = obj
 
             # wykonaj blok prawa
             self.visit(meta["block"])
 
-            # — przywróć oryginalny scope —
-            self.current_scope.variables    = saved_vars
-            self.current_scope.symbol_table = saved_syms          # ⬅ NEW
+            # przywróć stare zmienne
+            self.current_scope.variables = saved_vars
             self.current_scope.variables["$CURRENT_FN"] = saved_current
         return fn
-
 
 
 
@@ -564,86 +498,122 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def _call(self, name: str, args: list, call_ctx):
+        # ───────────────────────────────────────────────
+        # 0.  czy funkcja istnieje?
+        # ───────────────────────────────────────────────
+        # if name not in self.current_scope.functions:
         if not self.exists_function(name, call_ctx):
             self._error(call_ctx, f"Unknown function '{name}'")
 
+        # sig              = self.current_scope.functions[name]
         sig = self.resolve_function(name, call_ctx)
-        expected_params = sig["params"]
-        ret_type = sig.get("ret", "void")
+        expected_params  = sig["params"]        # [(nazwa, typ), …]
+        ret_type         = sig.get("ret", "void")   # ◀─ NOWE
 
+        # Użyjemy też przy sprawdzaniu wyników
         TYPE_MAP = {
-            "int": int,
-            "float": float,
-            "bool": bool,
-            "particle": Particle,
-            "field": Field,
-            "system": System,
-            "void": type(None)
+            "int"      : int,
+            "float"    : float,
+            "bool"     : bool,
+            "particle" : Particle,
+            "field"    : Field,
+            "system"   : System,
+            "void"     : type(None)
         }
 
+        # ───────────────────────────────────────────────
+        # 1.  liczba argumentów
+        # ───────────────────────────────────────────────
         if len(args) != len(expected_params):
             self._error(call_ctx,
                 f"Function '{name}' expects {len(expected_params)} arguments, got {len(args)}")
 
-        args_casted: list[Any] = []
+        # ───────────────────────────────────────────────
+        # 2.  typy argumentów
+        # ───────────────────────────────────────────────
+        args_casted: list[Any] = []                          # ❶
         for (p_name, p_type), arg in zip(expected_params, args):
+
             exp_cls = TYPE_MAP[p_type]
 
+            # ─── ❶ blokada bool-a dla parametrów liczbowych ───
             if p_type in ("int", "float") and isinstance(arg, bool):
                 self._error(
                     call_ctx,
-                    f"In function '{name}' parameter '{p_name}' expects {p_type}, got bool"
+                    f"In function '{name}' parameter '{p_name}' expects {p_type}, "
+                    "got bool"
                 )
 
             ok = isinstance(arg, exp_cls)
-            if not ok and p_type == "float" and isinstance(arg, int) and not isinstance(arg, bool):
+
+            # auto-rzutowanie  int → float  (ale NIE bool!)
+            if (not ok
+                and p_type == "float"
+                and isinstance(arg, int)
+                and not isinstance(arg, bool)):     # <── zapobiega bool→float
                 arg = float(arg)
-                ok = True
+                ok  = True
 
             if not ok:
                 self._error(
                     call_ctx,
-                    f"In function '{name}' parameter '{p_name}' expects {p_type}, got {type(arg).__name__}"
+                    f"In function '{name}' parameter '{p_name}' expects {p_type}, "
+                    f"got {type(arg).__name__}"
                 )
 
             args_casted.append(arg)
 
-        # NOWOŚĆ: stwórz nowy scope na wywołanie funkcji
-        saved_scope = self.current_scope
-        self.current_scope = self.current_scope.get_next_child()
+        # ───────────────────────────────────────────────
+        # 3.  rekord aktywacji
+        # ───────────────────────────────────────────────
+        saved_vars = self.current_scope.variables
+        self.current_scope.variables = saved_vars.copy()
+        saved_functions = self.current_scope.functions
+        self.current_scope.functions = saved_functions.copy()
 
-        # Wprowadź parametry funkcji do nowego scope
-        for (p_name, p_type), arg in zip(expected_params, args_casted):
-            self.current_scope.variables[p_name] = arg
+        for (p_name, p_type), arg in zip(expected_params, args_casted):   # ➍
+            self.current_scope.variables[p_name]    = arg
             self.current_scope.symbol_table[p_name] = p_type
 
+        # ───────────────────────────────────────────────
+        # 4.  wykonaj ciało
+        # ───────────────────────────────────────────────
         self.in_function = True
-        self.return_value = None
+        self.return_value = None                   # <-- reset
 
         try:
-            if sig["expr"]:
-                value = self.visit(sig["expr"])
-            else:
+            if sig["expr"]:                        # forma „=> expr”
+                value = self.visit(sig["expr"])    # ①
+            else:                                  # blok z 'return'-ami
                 self.visit(sig["block"])
                 value = self.return_value
         finally:
-            self.current_scope = saved_scope
+            self.current_scope.variables = saved_vars
+            self.current_scope.functions = saved_functions
             self.in_function = False
             self.return_value = None
 
+        # ───────────────────────────────────────────────
+        # 5.  WALIDACJA  wyniku  (typ + obowiązek)
+        # ───────────────────────────────────────────────
         if ret_type == "void":
             if value is not None:
-                self._error(call_ctx, f"Function '{name}' declared void but returns a value")
-            return None
+                self._error(call_ctx,
+                    f"Function '{name}' declared void but returns a value")
+            return None                     # wszystko OK
 
+        # Funkcja z typem zwracanym MUSI zwracać wartość
         if value is None:
-            self._error(call_ctx, f"Function '{name}' must return {ret_type} but reached end without return")
+            self._error(call_ctx,
+                f"Function '{name}' must return {ret_type} but reached end without return")
 
+        # auto-rzutowanie int → float przy zwracaniu
         if ret_type == "float" and isinstance(value, int):
             value = float(value)
 
         if not isinstance(value, TYPE_MAP[ret_type]):
-            self._error(call_ctx, f"Function '{name}' should return {ret_type}, got {type(value).__name__}")
+            self._error(call_ctx,
+                f"Function '{name}' should return {ret_type}, got {type(value).__name__}")
 
         return value
 
@@ -652,15 +622,24 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def visitBlock(self, ctx):
-        self.current_scope = self.current_scope.get_next_child()
+        if not  self.in_function:
+            self.current_scope = self.current_scope.get_next_child()
 
         for st in ctx.statement():
             self.visit(st)
             if self.in_function and self.return_value is not None:
                 break
 
-        self.current_scope = self.current_scope.get_parent()
+        if not self.in_function:
+            self.current_scope = self.current_scope.get_parent()
 
+        return None
+
+    def visitFuncBlock(self, ctx):
+        for st in ctx.statement():
+            self.visit(st)
+            if self.in_function and self.return_value is not None:
+                break
         return None
 
     def visitIfStmt(self, ctx):
