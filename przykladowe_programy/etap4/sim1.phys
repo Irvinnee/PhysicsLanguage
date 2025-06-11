@@ -9,6 +9,7 @@ system test:
     moving->position = [0, 0, 0]
     %moving->velocity = [10, 0, 0]
 
+
     still->position = [0, 1, 0]
 
 

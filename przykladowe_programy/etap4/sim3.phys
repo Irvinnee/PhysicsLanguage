@@ -1,6 +1,8 @@
 $TIME = 10
 $DELTA = 0.01
 
+% ta składnia już nie działa
+
 particle p1:
     mass = 3
     pos = [5, 0, -5]

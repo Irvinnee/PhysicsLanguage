@@ -6,6 +6,7 @@ if(True):
     int a = y
     print(x)
 
+
     if(True):
         int x = 3
         int b = y + 1

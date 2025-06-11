@@ -1,0 +1,193 @@
+Co chyba działA:
+
+rekurencja niebezpośrdnia i pośrednia (od razu w funkcji tej i w funkcji innej)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+fun (num a, num, a) - podwójna deklaracja
+
+repetere i ex 5 ad 1: od 5 do 1 - ma być błąd
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+funkcja1 - wywołujemy funkcje 2 w funkcji1 ale funkcja 2 jest zadeklarowana po funkcji1
+deklaracja wstępna? - słownik zapisujący nazwy wszystkich funkcji
+
+sprawdzić wywoływanie funkcji1 w funkcji2, dekularujemy funkcje1 na poczatku funkcji2?
+
+syntax error
+
+zachwoanie pamięci zmiennych w rekurencji
+
+każde wywłoanie funkcji ma swój rekord aktywacji i każde wywołanie zmiennych????
+
+rekurencja dokładnie trzeba zrobić!!
+
+działanie ze stosem
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+float func f2(float a,float b):
+    float func test(float a,float b):
+        => a+b
+
+    if(False):
+        => test(a,b)
+    else:
+        => -test(a,b)
+
+
+print(f2(1,2))
+print(f2(1,2))
+%print(test(1,2))
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+pętla
+
+repeat as_number(a) <
+
+print(.);
+
+nie robić return zawsze
+
+sprawdzanie kolejności wywołań rekurencji przez print w ciągu fibonacciego (co wywołało dla czego
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+func test(float a,float b):
+    print(a + b)
+
+print(test(3.5, 5))
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function test (a: real, b:real):real <
+
+return a + b;
+
+>
+
+kazał zmienić na a:real, a: real i dać a+a
+
+print(”<test(5.0, 10.0)>”);
+
+
+operatory castowania?
+
+automatyczne castowanie z int na real
+
+
+boole nie castowane na floaty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function foo(c: number) <
+
+var n: number = x;
+
+if(x>0) <
+
+foo(x-1);
+
+>
+
+print(”<n>”);
+
+>
+
+foo(6)
+
+błąd wywalać jak zwraca coś co nie ma zwracać
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function factorial(x: number): number <
+
+if x== 0 or x ==1 <
+
+return 1;
+
+>
+
+return x * factorial(x-1);
+
+>
+
+print(factorial(6) ←- kazał dać na początku 5 a potem zmienić na 6
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+print(factorial(5))  ←— przypadek z 5.5 przekazanym
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+silnia iteracyjna i silnia rekurencyjna
+function factorial (x: number): number <
+
+var i: number = 1;
+
+while x> 0 <
+
+i *=x;
+
+x -=1;   ←—- mamy użyć ten ze zmiennych przekazanych do funkcji od razu
+
+>
+
+return x;
+
+>
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+int i
+for i(0, 10, 1):
+    print(i)
+    i = i + 1
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+operatory matematyczne mają brać tylko liczby
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+fory i while zmienic na to co chciał
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+zaokrąglanie przy przypisaniu float do int
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+float x = 1.5
+int i = 2
+
+print(x)
+print(i)
+
+i = x
+
+działa przypisanie a powinno się zaokrągląć
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for i(0, 10, 1):
+    print(i)
+
+nie dziala bez int!!
+
+for int i(0, 10, 3):
+    print(i)
+
+działa XDDDD
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+podstawowe operacje arytmetyczne (dodawanie, odejmowanie, mnożenie, dzielenie, nawiasowanie) na zmiennych typu numerycznego.
+
+
+porównania (==, !=) dla typu logicznego
+
+
+podstawowe operacje logiczne (and, or, not, nawiasowanie) na zmiennych logicznych oraz porównywanie zmiennych typu numerycznego (<, > , ==, !=) co w wyniku powinno dawać typ logiczny
+
+Odpowiednik instrukcji warunkowej if/else
+
+
+odpowiednik pętli for/while
+
+jeśli dwie takie same nazwy argumentów to to sprawdzać, że źle (a:real, a:real)

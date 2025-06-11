@@ -14,8 +14,10 @@ int func fact2(int x):
     => p
 
 print(factorial(3))
+print(fact2(3))
 
 int ala = 1
+
 
 
 int func foo(int n):
@@ -28,9 +30,11 @@ int func foo(int n):
     print(-2)
     if(n>=2):
         foo(n-1)
+    print(n)
     print(x)
     print(ala)
     print(-1)
     => 0
 
 foo(2)
+print(ala)

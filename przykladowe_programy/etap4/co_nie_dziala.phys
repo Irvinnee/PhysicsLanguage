@@ -1,17 +1,4 @@
-int func factorial(float x):
-    int i = 1
-    while(x>0):
-        i = i*x
-        x = x-1
-        print(i)
-        print(x)
 
-    => x
-
-print(factorial(5.5))
-
-tak to się miało wykonywać czy od razu znaleźć że zwraca zły typ i wywalić przy deklaracji?
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 $TIME >= 8  -jako licznik, delta jako delta + max time
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
