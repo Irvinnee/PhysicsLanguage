@@ -1,4 +1,4 @@
-int a = 1
+
 
 func f1():
     int b = 3
@@ -8,6 +8,6 @@ func f1():
 if (true):
     int a =2
     func f2()
-        1()
+        f1()
 
-2()
+    f2()
