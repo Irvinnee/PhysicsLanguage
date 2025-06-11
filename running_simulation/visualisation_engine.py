@@ -30,7 +30,7 @@ class Graphics:
         self.dragging_camera = False
         self.last_mouse_pos = None
         self.camera_angle = [-40, 45]
-        self.camera_pos = [50, 50, -50]
+        self.camera_pos = [20, 20, -20]
         self.light_pos = [-100, 100, -100]
         self.auto_rotate = False
         self.orbit_radius = 80
@@ -211,7 +211,7 @@ class Graphics:
         self.camera_angle[1] = yaw
 
     def draw_axes(self):
-        axis_length = 50.0
+        axis_length = 20.0
         origin = (0, 0, 0)
 
         axes = {
@@ -376,7 +376,7 @@ class Graphics:
                     self.history[sim_timestamp] = {
                         name: p.position[:] for name, p in self.particles.items()
                     }
-                    print(f"[HISTORY] Zapamiętano stan w t={sim_timestamp:.2f}s")
+                    # print(f"[HISTORY] Zapamiętano stan w t={sim_timestamp:.2f}s")
 
             if slider_value != previous_slider_value:
                 previous_slider_value = slider_value
