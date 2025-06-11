@@ -4,6 +4,7 @@ law spring_force(particle p):
     float vx = p->velocity[0] - p->k * p->position[0]
     float x = p->position[0] + vx
 
+
     p->velocity = [vx, 0, 0]
     p->position = [x, 0, 0]
 
