@@ -13,7 +13,10 @@ int func fact2(int x):
 
     => p
 
+print(factorial(3))
+
 int ala = 1
+
 
 int func foo(int n):
     int x = n
