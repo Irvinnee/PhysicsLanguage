@@ -38,6 +38,7 @@ class Graphics:
         self.input_text = ""
         self.input_box = pygame.Rect(600, 20, 150, 35)
         self.time_limit = system.total_time
+        self.history = {}
 
     def project_to_2d(self, x, y, z, camera_pos, camera_angle, fov=60, width=800, height=600):  # Zmniejszenie FOV
         pitch = camera_angle[0]
@@ -336,6 +337,12 @@ class Graphics:
 
                                 with self.time_lock:
                                     self.sim_time = slider_value
+                                    sim_timestamp = round(self.sim_time * self.system.total_time, 2)
+                                    if sim_timestamp in self.history:
+                                        with self.data_lock:
+                                            for name, pos in self.history[sim_timestamp].items():
+                                                if name in self.particles:
+                                                    self.particles[name].position = pos[:]
 
                                 previous_slider_value = slider_value
 
@@ -363,11 +370,25 @@ class Graphics:
             delta_time = current_time - prev_time
             prev_time = current_time
 
+            sim_timestamp = round(self.sim_time * self.system.total_time, 2)
+            with self.data_lock:
+                if sim_timestamp not in self.history:
+                    self.history[sim_timestamp] = {
+                        name: p.position[:] for name, p in self.particles.items()
+                    }
+                    print(f"[HISTORY] Zapamiętano stan w t={sim_timestamp:.2f}s")
+
             if slider_value != previous_slider_value:
                 previous_slider_value = slider_value
 
             with self.time_lock:
                 self.sim_time = slider_value
+                sim_timestamp = round(self.sim_time * self.system.total_time, 2)
+                if sim_timestamp in self.history:
+                    with self.data_lock:
+                        for name, pos in self.history[sim_timestamp].items():
+                            if name in self.particles:
+                                self.particles[name].position = pos[:]
 
             self.screen.fill((160, 160, 160))
             with self.data_lock:
