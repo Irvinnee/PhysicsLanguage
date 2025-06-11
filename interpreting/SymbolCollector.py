@@ -37,8 +37,20 @@ class Scope:
 
         # TODO: ew błędy poza indexem
     def get_next_child(self):
-        self.next_child_index = 0
-        return self.children[self.next_child_index - 1]
+        """
+        Zwraca kolejny (lub nowo utworzony) podrzędny scope
+        w porządku, w jakim były odwiedzane bloki / funkcje.
+        """
+        # Jeśli już istnieje dziecko o danym indeksie – zwracamy je
+        if self.next_child_index < len(self.children):
+            scope = self.children[self.next_child_index]
+        else:
+            # W czasie wykonania tworzymy brakujący, pusty scope
+            scope = Scope(parent=self, node_type="runtime", errors=self.errors)
+            self.children.append(scope)
+
+        self.next_child_index += 1
+        return scope
 
     def get_parent(self):
         return self.parent
