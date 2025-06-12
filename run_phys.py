@@ -78,15 +78,14 @@ def run_phys_file(path, sim=False):
     simulate = Simulation(list(dummy.particles.values()), delta)
     simulate.global_laws = interpreter.global_laws
 
-    # TODO: do zmiany warunek
-    if not sim:
+    if sim:
         simulate.run(dummy, time_limit, delta)
-    else:
-        simulate.simulate_to_time(time_limit)
-        if len(simulate.particles) != 0:
-            print("Pozycje po symulacji:")
-            for p in simulate.particles:
-                print(p.position)
+    # else:
+    #     simulate.simulate_to_time(time_limit)
+    #     if len(simulate.particles) != 0:
+    #         print("Pozycje po symulacji:")
+    #         for p in simulate.particles:
+    #             print(p.position)
 
 if __name__ == "__main__":
     args = sys.argv[1:]
