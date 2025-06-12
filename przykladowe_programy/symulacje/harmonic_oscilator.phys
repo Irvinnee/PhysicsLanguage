@@ -1,0 +1,43 @@
+$TIME = 150
+$DELTA = 0.02
+
+law harmonic_oscillator(particle p):
+    float k = 1.2
+    float x = p->position[0]
+    float v = p->velocity[0]
+
+    float a = -k * x / p->mass
+    float new_v = v + a * $DELTA
+    float new_x = x + new_v * $DELTA
+
+    p->velocity = [new_v, 0, 0]
+    p->position = [new_x, 0, 0]
+
+system mocny_osc:
+    particle masa
+    masa->mass = 3.0
+    masa->position = [15, 0, 0]
+    masa->velocity = [0, 0, 0]
+
+    <masa & harmonic_oscillator>
+
+law bounce(particle p):
+    float x = p->position[0]
+    float v = p->velocity[0]
+    bool right_wall = (x >= 10.0) And (v > 0)
+    bool left_wall = (x <= -10.0) And (v < 0)
+
+    if (right_wall Or left_wall):
+        v = -v
+
+    float new_x = x + v * $DELTA
+    p->velocity = [v, 0, 0]
+    p->position = [new_x, 0, 0]
+
+system odbicia:
+    particle pilka
+    pilka->mass = 1.0
+    pilka->position = [-9, 0, 0]
+    pilka->velocity = [5, 0, 0]
+
+    <pilka & bounce>
