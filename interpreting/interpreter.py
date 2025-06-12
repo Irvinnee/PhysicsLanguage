@@ -471,7 +471,7 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def _call(self, name: str, args: list, call_ctx):
-        if self.func_counter>= 43:
+        if self.func_counter>= 40:
             self._error(call_ctx, "Maximum recursion depth exceeded")
 
 
