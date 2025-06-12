@@ -188,6 +188,12 @@ class Interpreter(PhysicsVisitor):
         # Inicjalizacja ekspresją, jeśli podana.
         if ctx.expr():
             val = self.visit(ctx.expr())
+
+            if typ in ("particle", "field", "system"):
+                self._error(ctx,
+                            f"You cannot assign value to variable '{name}', "
+                            f"because its type is {typ}")
+
             if typ == "bool" and not isinstance(val, bool):
                 self._error(ctx,
                     f"Assigned type {type(val).__name__} to variable '{name}', "
