@@ -48,6 +48,9 @@ class Interpreter(PhysicsVisitor):
         self.return_value = None
         self.current_particle: Optional[str] = None
         self.current_system: Optional[System] = None
+        self.defined_in_func = {}
+        self.func_counter = 0
+        self.global_scope = None
 
     # ————————————————————————————————————————————————————————————————
     # Pomocnicze narzędzia raportowania błędów
@@ -139,7 +142,6 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def visitProg(self, ctx):
-        # Pass 1 – tylko nagłówki funkcji oraz prawa
          return self.visitChildren(ctx)
 
     # ————————————————————————————————————————————————————————————————
@@ -181,7 +183,7 @@ class Interpreter(PhysicsVisitor):
             self.current_scope.variables[name] = None
 
         # (reszta metody – inicjalizacja wyrażeniem, rejestracja w $SYSTEM – bez zmian)
-
+        self.defined_in_func[name] = self.current_scope.variables[name]
 
         # Inicjalizacja ekspresją, jeśli podana.
         if ctx.expr():
@@ -232,8 +234,6 @@ class Interpreter(PhysicsVisitor):
 
         if isinstance(target_ctx, PhysicsParser.VarTargetContext):
             name = target_ctx.getText()
-
-            # if()
 
             # Przypisanie do particles w systemie
             if self.current_system and name == "particles":
@@ -334,7 +334,7 @@ class Interpreter(PhysicsVisitor):
 
         # 4. zapisz metadane
         self.current_scope.functions[name] = {
-        "ret"   : ret_type,          # ◆  NOWE POLE
+        "ret"   : ret_type,
         "params": params,
         "expr"  : ctx.expr()  if ctx.expr()  else None,
         "block" : ctx.block() if ctx.block() else None,
@@ -365,7 +365,7 @@ class Interpreter(PhysicsVisitor):
             self._error(ctx, f"Redeclaration of law '{name}'")
 
         self.current_scope.functions[name] = {
-            "params": params,                           # ← lista krotek
+            "params": params,
             "expr"  : None,
             "block" : ctx.block(),
             "defined": True,
@@ -479,7 +479,7 @@ class Interpreter(PhysicsVisitor):
         # sig              = self.current_scope.functions[name]
         sig = self.resolve_function(name, call_ctx)
         expected_params  = sig["params"]        # [(nazwa, typ), …]
-        ret_type         = sig.get("ret", "void")   # ◀─ NOWE
+        ret_type         = sig.get("ret", "void")
 
         # Użyjemy też przy sprawdzaniu wyników
         TYPE_MAP = {
@@ -537,10 +537,18 @@ class Interpreter(PhysicsVisitor):
         # ───────────────────────────────────────────────
         # 3.  rekord aktywacji
         # ───────────────────────────────────────────────
+        if self.func_counter!= 0:
+            saved_scope = self.current_scope
+            self.current_scope = self.global_scope
+        else:
+            self.global_scope = self.current_scope
+        self.func_counter+=1
+        self.defined_in_func = {}
         saved_vars = self.current_scope.variables
         self.current_scope.variables = saved_vars.copy()
         saved_functions = self.current_scope.functions
         self.current_scope.functions = saved_functions.copy()
+        # self.current_scope = self.current_scope.get_next_child()
 
         for (p_name, p_type), arg in zip(expected_params, args_casted):   # ➍
             self.current_scope.variables[p_name]    = arg
@@ -554,21 +562,26 @@ class Interpreter(PhysicsVisitor):
 
         try:
             if sig["expr"]:                        # forma „=> expr”
-                value = self.visit(sig["expr"])    # ①
+                value = self.visit(sig["expr"])
             else:                                  # blok z 'return'-ami
                 self.visit(sig["block"])
                 value = self.return_value
         finally:
+            param_keys= [i[0] for i in expected_params]
 
             for var in saved_vars.keys():
-                param_keys= [i[0] for i in expected_params]
-                if var in self.current_scope.variables.keys() and var not in param_keys:
+                if var in self.current_scope.variables.keys() and var not in param_keys and var not in self.defined_in_func.keys():
                     saved_vars[var] = self.current_scope.variables[var]
 
             self.current_scope.variables = saved_vars
             self.current_scope.functions = saved_functions
             self.in_function = False
             self.return_value = None
+            self.func_counter-=1
+            if self.func_counter==0:
+                self.global_scope = None
+            else:
+                self.current_scope = saved_scope
 
         # ───────────────────────────────────────────────
         # 5.  WALIDACJA  wyniku  (typ + obowiązek)
