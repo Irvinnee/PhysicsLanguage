@@ -63,3 +63,13 @@ float f8 = getNumber()
 int i8 = (int)getNumber()
 print(f8)   % oczekiwane: 7.3
 print(i8)   % oczekiwane: 7
+
+int f1 = 1
+float f2 = f1
+
+bool t = (bool)f1
+print(t)
+bool t2 = (bool)(f1-1)
+print(t2)
+bool t3 = f1
+print(t3)

@@ -226,10 +226,6 @@ class Interpreter(PhysicsVisitor):
 
     def visitAssignStmt(self, ctx):
         value = self.visit(ctx.expr())
-        if isinstance(value, str):
-            if value in self.current_scope.functions:
-                value = self.current_scope.functions[value]
-        
         target_ctx = ctx.target()
 
         if isinstance(target_ctx, PhysicsParser.VarTargetContext):
@@ -907,17 +903,24 @@ class Interpreter(PhysicsVisitor):
         # Zmienna zwykła
         # Zmienna zwykła
         # if text in self.current_scope.symbol_table:
+        if self.exists_symbol(text, ctx):
+            # if text not in self.current_scope.variables or self.current_scope.variables[text] is None:
+            if not self.exists_variable(text, ctx) or self.resolve_variable(text, ctx) is None:
+                self._error(ctx, f"Use of uninitialized variable '{text}'")
+            # return self.current_scope.variables[text]
+            return self.resolve_variable(text, ctx)
+
+        # ─── te dwa bloki muszą być w tym samym „poziomie” co powyższy ───
+        # Specjalne zmienne z prefiksem $
+        # if text.startswith("$") and text in self.current_scope.variables:
+        #     return self.current_scope.variables[text]
+
+        # nazwa *zdefiniowanej* funkcji bez nawiasów → zwracamy callable
+        # if text in self.current_scope.functions:
         if self.exists_function(text, ctx):
             def free_fn(*args):
-                return self._call(text, list(args), ctx)
+                return self._call(text, list(args), ctx)   # ctx zdefiniowane wyżej
             return free_fn
-
-
-        if self.exists_symbol(text, ctx):
-            if (not self.exists_variable(text, ctx) or
-                    self.resolve_variable(text, ctx) is None):
-                self._error(ctx, f"Use of uninitialized variable '{text}'")
-            return self.resolve_variable(text, ctx)
         # ──────────────────────────────────────────────────────────────────
 
         self._error(ctx, f"Use of undeclared variable '{text}'")
@@ -962,51 +965,17 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def visitCall(self, ctx):
-
-
-
-        # ────────────────────────────────────────────────────────────────
-        # 0. Zidentyfikuj, czy w nagłówku występuje '-> function'
-        #    head = 'fieldName'  lub  'fieldName->function'
-        # ────────────────────────────────────────────────────────────────
-        head = ctx.getChild(0).getText()                # pierwszy identyfikator
-        has_arrow = ctx.getChild(1).getText() == '->'   # True, jeśli '->' zaraz za ID
-        if has_arrow:
-            attr_name = ctx.getChild(2).getText()       # token po '->'
-            head += '->' + attr_name
-
-        # ────────────────────────────────────────────────────────────────
-        # 1. Zbierz argumenty
-        # ────────────────────────────────────────────────────────────────
+        func_name = ctx.dottedID().getText()
         args = [self.visit(a) for a in ctx.argList().expr()] if ctx.argList() else []
 
-        # ────────────────────────────────────────────────────────────────
-        # 2. Wywołanie  fieldVar->function(...)
-        # ────────────────────────────────────────────────────────────────
-        if has_arrow and attr_name == 'function':
-            obj_name = ctx.getChild(0).getText()        # nazwa pola
-            obj = self.resolve_variable(obj_name, ctx)  # musi być Field
-            if not isinstance(obj, Field):
-                self._error(ctx, f"'{obj_name}' is not a field")
-
-            fn = getattr(obj, 'function', None)
-            if not callable(fn):
-                self._error(ctx, f"Attribute 'function' of field '{obj_name}' is not callable")
-
-            return fn(*args)                            # ← faktyczne wywołanie
-
-        # ────────────────────────────────────────────────────────────────
-        # 3. Specjalna funkcja  run(...)
-        # ────────────────────────────────────────────────────────────────
-        if head == 'run':
+        if func_name == "run":
             if len(args) not in (2, 3):
                 self._error(ctx, "Function 'run' expects 2 or 3 arguments")
 
             obj, steps, *rest = args
-            dt    = float(rest[0]) if rest else 1.0
+            dt = float(rest[0]) if rest else 1.0
             steps = int(steps)
 
-            # 3a.  run(system, …)
             if isinstance(obj, System):
                 for _ in range(steps):
                     obj.laws += self.global_laws
@@ -1014,11 +983,12 @@ class Interpreter(PhysicsVisitor):
                     self.current_scope.variables["$TIME"] = obj.time
                 return None
 
-            # 3b.  run(particle, …)
             if isinstance(obj, Particle):
-                name = next((n for n, o in self.current_scope.variables.items() if o is obj), None)
+                # Znajdź nazwę zmiennej tej cząstki.
+                name = next((vn for vn, vo in self.current_scope.variables.items() if vo is obj), None)
                 if name is None:
                     self._error(ctx, "Particle reference not found in variables table")
+
                 for _ in range(steps):
                     for law in self.global_laws:
                         if law.applies(name, obj):
@@ -1030,10 +1000,8 @@ class Interpreter(PhysicsVisitor):
 
             self._error(ctx, "First argument of 'run' must be system or particle")
 
-        # ────────────────────────────────────────────────────────────────
-        # 4. Zwykła globalna funkcja DSL  foo(...)
-        # ────────────────────────────────────────────────────────────────
-        return self._call(head, args, ctx)
+        # Normalne wywołanie funkcji
+        return self._call(func_name, args, ctx)
 
     # ————————————————————————————————————————————————————————————————
     # Particle
