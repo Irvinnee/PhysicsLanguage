@@ -1,7 +1,10 @@
 grammar Physics;
 
+// tokeny odpowiadające za wcięcia w kodzie
 tokens { INDENT, DEDENT }
 
+// klasy obsługujące wcięcia w kodzie
+// korzystają z bibliioteki antlr-denter
 @lexer::header{
 from antlr_denter.DenterHelper import DenterHelper
 from grammar.PhysicsParser import PhysicsParser
@@ -27,50 +30,62 @@ def nextToken(self):
 
 prog        : statement* EOF ;
 
+// ogólne wyrażenia w gramatyce
 statement
-    : declStmt
-    | assignStmt
-    | attrAssignStmt
-    | callStmt
-    | lawDecl
-    | particleDecl
-    | systemDecl
-    | lawAssignStmt 
-    | funcDecl
-    | controlStmt
-    | printStmt
-    | returnStmt
-    | emptyLine
+    : declStmt              //deklaracja zmiennej
+    | assignStmt            //przypisanie zmiennej
+    | attrAssignStmt        //przypisanie atrybutu do cząstki
+    | callStmt              //wywołanie funkcji
+    | lawDecl               //deklaracja prawa
+    | particleDecl          //deklaracja cząsteczki
+    | systemDecl            //deklaracja systemu
+    | lawAssignStmt         //przypisanie prawa do cząsteczki
+    | funcDecl              //deklaracja funkcji
+    | controlStmt           //wyrażenie kontrolne odpowiadające za pętle, wyrażenia warunkowe itp.
+    | printStmt             //funkcja print
+    | returnStmt            //zwracanie wartości
+    | emptyLine             //pusta linia
     ;
 
+//deklaracja
 declStmt    : type ID ('=' expr)? NL ;
+//przyporządkowanie
 assignStmt  : target '=' expr NL ;
 
+//"cel" przyporządkowania
 target
     : dottedID                                   #varTarget
     | dottedID '->' ID ('[' expr ']')?           #attrTarget
     ;
 
-
+//deklaracja prawa
 lawDecl     : 'law' ID '(' paramList? ')' ':'
                block;
 
+//deklaracja cząsteczki
 particleDecl
     : 'particle' ID ':' block
     ;
 
+//przyporządkowanie prawa
 lawAssignStmt : '<' dottedID '&' ID '>' NL ;
+
+//przyporządkowanie argumentu
 attrAssignStmt
     : dottedID '<-' ID ('=' expr)? NL
     ;
+
+//wywołanie funkcji
 callStmt
     : dottedID '(' argList? ')' NL      #call
     ;
 
+//deklaracja systemu
 systemDecl
     : 'system' ID ':' block
     ;
 
+//deklaracja funkcji
 funcDecl
     : returnType? 'func' ID '(' paramList? ')'
         ( '=>' expr NL
@@ -78,16 +93,19 @@ funcDecl
         )
     ;
 
-paramList   : param (',' param)* ;
-param       : type ID ;
+paramList   : param (',' param)* ;  //lista parametrów
+param       : type ID ;             //pojedynczy parametr
 
+//wyrażenia kontrolne
 controlStmt : ifStmt | whileStmt | forStmt | foreachStmt ;
 
+//wyrażenia warunkowe
 ifStmt
     : 'if' '(' expr ')' ('=>' expr NL | ':' block)
       ( 'elsif' '(' expr ')' ('=>' expr NL | ':' block) )*
       ( 'else' ('=>' expr NL | ':' block) )? ;
 
+//pętle
 whileStmt   : 'while' '(' expr ')' ':' block ;
 
 forStmt
@@ -98,29 +116,33 @@ foreachStmt
     : 'foreach' type? ID '(' ID ')' ':'
      block;
 
-printStmt   : 'print' '(' expr ')' NL ;
-returnStmt  : '=>' expr NL ;
-emptyLine   : NL ;
+printStmt   : 'print' '(' expr ')' NL ;     //funkcja print
+returnStmt  : '=>' expr NL ;                //wyrażenie zwracane
+emptyLine   : NL ;                          //pusta linia
 
-expr        : logicOr ;
+expr        : logicOr ;                     //wyrażenie
 
+
+//operatory logiczne
 logicOr     : logicAnd ( 'Or'  logicAnd )* ;
 logicAnd    : equality ( 'And' equality )* ;
 equality    : compare  ( ('=='|'!='|'>='|'<='|'>'|'<') compare )* ;
+
+//operatory matematyczne
 compare     : addSub ;
 addSub      : mulDiv  ( ('+'|'-') mulDiv)* ;
 mulDiv      : power   ( ('*'|'/'|'//') power)* ;
-power       : unary   ( '^' unary )* ;
+power       : unary   ( '^' unary )* ; //potęgowanie
 
-unary
+unary                   //pojedncze wyrażenie
     : dottedID '?' ID
-    | ('Not'|'-'|'+') unary
+    | ('Not'|'-'|'+') unary //uwzględniamy znaki przed wyrażeniem
     | atom
     ;
 
-vector      : '[' expr (',' expr)* ']' ;
+vector      : '[' expr (',' expr)* ']' ;    //tablica jednowymiarowa
 
-atom
+atom        //wartość atomiczna
     : INT
     | FLOAT
     | BOOLEAN
@@ -129,29 +151,29 @@ atom
     | vector
     | '(' expr ')' ;
 
-argList     : expr (',' expr)* ;
+argList     : expr (',' expr)* ;        //lista argumentów (np. funkcji)
 
-type        : 'particle' | 'field' | 'system'
+type        : 'particle' | 'field' | 'system'   //typ zmiennej
             | 'float' | 'int' | 'bool' ;
 
-returnType
+returnType      //typ zwracany
     : type                                             
     ;
 
-block           : INDENT statement+ DEDENT ;
+block           : INDENT statement+ DEDENT ;    //blok kodu
 
-BOOLEAN     : 'True'|'False';
+BOOLEAN     : 'True'|'False';                   //wartości logiczne
 ID : ('$'? [\p{L}_]) [\p{L}\p{N}_]* ;
 
 
-INT         : [0-9]+ ;
-FLOAT       : [0-9]+ '.' [0-9]* ;
+INT         : [0-9]+ ;                      //wartości numeryczne całkowite
+FLOAT       : [0-9]+ '.' [0-9]* ;           //wartości numeryczne zmiennoprzecikowe
 
-COMMENT         : '%' ~[\r\n]* -> skip ;
-WS              : [ \t\f]+ -> skip;
+COMMENT         : '%' ~[\r\n]* -> skip ;    //komentarze
+WS              : [ \t\f]+ -> skip;         //puste znaki
 
-NL: ('\r'? '\n' ' '*);
+NL: ('\r'? '\n' ' '*);      //new line - token potrzebny do obsługi wcięć
 
 
-dottedID    : ID ('.' ID)* |
+dottedID    : ID ('.' ID)* |                //odwołanie do identyfikatora
                'parent::' dottedID;
