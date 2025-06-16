@@ -1,12 +1,12 @@
-$TIME = 100
-$DELTA = 0.1
+$TIME = 10
+$DELTA = 0.05
 
 law damped_spring(particle p):
     float fx = -p->k * p->position[0]
     float damping = -p->b * p->velocity[0]
     float force = fx + damping
     float vx = p->velocity[0] + force
-    float x = p->position[0] + vx
+    float x = p->position[0] + vx * $DELTA
     p->velocity = [vx, 0, 0]
     p->position = [x, 0, 0]
 
@@ -15,6 +15,6 @@ system układ:
     kulka->position = [10, 0, 0]
     kulka->velocity = [0, 0, 0]
     kulka->k = 1.0
-    kulka->b = 0.1
+    kulka->b = 0.05
 
     <kulka & damped_spring>

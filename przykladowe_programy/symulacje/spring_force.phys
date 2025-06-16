@@ -9,9 +9,9 @@ law spring_force(particle p):
     float vy = p->velocity[1] + fy
     float vz = p->velocity[2] + fz
 
-    float x = p->position[0] + vx
-    float y = p->position[1] + vy
-    float z = p->position[2] + vz
+    float x = p->position[0] + vx * $DELTA
+    float y = p->position[1] + vy * $DELTA
+    float z = p->position[2] + vz * $DELTA
 
     p->velocity = [vx, vy, vz]
     p->position = [x, y, z]

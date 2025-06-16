@@ -1,4 +1,4 @@
-$TIME = 100
+$TIME = 10
 $DELTA = 0.05
 
 law elastic_collision(particle p):

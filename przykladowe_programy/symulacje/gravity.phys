@@ -24,9 +24,9 @@ law gravity_from_point(particle p):
 
 
 law move(particle p):
-    p->position[0] = p->position[0] + p->velocity[0]
-    p->position[1] = p->position[1] + p->velocity[1]
-    p->position[2] = p->position[2] + p->velocity[2]
+    p->position[0] = p->position[0] + p->velocity[0] *$DELTA
+    p->position[1] = p->position[1] + p->velocity[1] *$DELTA
+    p->position[2] = p->position[2] + p->velocity[2] *$DELTA
 
 
 system układ:
@@ -48,8 +48,7 @@ system układ:
     source_of_field->mass = 2.5
 
 
-$TIME = 10
-$DELTA = 0.1
-
+$TIME = 50
+$DELTA = 0.5
 
 

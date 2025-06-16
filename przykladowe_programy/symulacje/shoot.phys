@@ -2,7 +2,7 @@ $TIME = 100
 
 law shoot(particle p):
     float vx = p->velocity[0]
-    float x = p->position[0] + vx
+    float x = p->position[0] + vx *$DELTA
     p->position = [x, 0, 0]
 
 system space:
