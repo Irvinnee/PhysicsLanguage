@@ -7,8 +7,8 @@ law harmonic_oscillator(particle p):
     float v = p->velocity[0]
 
     float a = -k * x / p->mass
-    float new_v = v + a * $DELTA
-    float new_x = x + new_v * $DELTA
+    float new_v = v + a
+    float new_x = x + new_v
 
     p->velocity = [new_v, 0, 0]
     p->position = [new_x, 0, 0]
@@ -30,7 +30,7 @@ law bounce(particle p):
     if (right_wall Or left_wall):
         v = -v
 
-    float new_x = x + v * $DELTA
+    float new_x = x + v
     p->velocity = [v, 0, 0]
     p->position = [new_x, 0, 0]
 

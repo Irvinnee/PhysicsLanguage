@@ -23,7 +23,7 @@ law elastic_collision(particle p):
         p->velocity = [v1, 0, 0]
         q->velocity = [v2, 0, 0]
 
-    float new_x = p->position[0] + p->velocity[0] * $DELTA
+    float new_x = p->position[0] + p->velocity[0]
     p->position = [new_x, 0, 0]
 
 system zderzenie:
