@@ -68,7 +68,7 @@ particleDecl
     ;
 
 //przyporządkowanie prawa
-lawAssignStmt : '<' dottedID '&' ID '>' NL ;
+lawAssignStmt : '<' argList '&' ID '>' NL ;
 
 //przyporządkowanie argumentu
 attrAssignStmt

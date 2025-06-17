@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Union
 
 Vector = List[float]
-LawFn = Callable[["SimObject", "System", float], None]
+LawFn = Callable[["SimObject", "System", float, "Particle"], None]
 
 
 class SimObject:
@@ -53,6 +53,7 @@ class Law:
     fn: LawFn
     scope: str = "global"
     target: str = "particle"
+    name:str = ""
 
     def applies(self, name: str, obj: SimObject) -> bool:
         if self.target == "particle" and not isinstance(obj, Particle):
@@ -102,13 +103,17 @@ class System:
         active = self._collect_laws()
 
         for law in active:
-            for name, obj in sorted(self.particles.items()):
-                if law.applies(name, obj):
-                    # print(f"Sprawdzam prawo {law.fn.__name__} dla {name} (system={self.name})")
-                    law.fn(obj, self, dt)
-            for name, obj in sorted(self.fields.items()):
-                if law.applies(name, obj):
-                    law.fn(obj, self, dt)
+            # for name, obj in sorted(self.particles.items()):
+            #     if law.applies(name, list(obj)):
+            #         # print(f"Sprawdzam prawo {law.fn.__name__} dla {name} (system={self.name})")
+            #         law.fn(obj, self, dt)
+            # for name, obj in sorted(self.fields.items()):
+            #     if law.applies(name, obj):
+            #         law.fn(obj, self, dt)
+            targets = []
+            # for name in law
+            x = [self.particles[i] for i in law.scope]
+            law.fn([self.particles[i] for i in law.scope], law.name, dt)
 
         # for p in self.particles.values():
         #     p.position[0] += p.velocity[0] * dt

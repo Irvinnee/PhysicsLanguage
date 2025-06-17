@@ -1,17 +1,46 @@
-int x = 1
-int y = 100
+$TIME = 10
+$DELTA = 0.05
 
-int func foo(int n):
-    x=n
-    if(n>0):
-        foo(n-1)
+law elastic_collision(particle p, particle q):
+    float dx = q->position[0] - p->position[0]
+    float dv = q->velocity[0] - p->velocity[0]
+    float dist2 = dx * dx
+    float min_dist2 = 0.25  % czyli 0.5^2
 
-    print(n)
-    print(parent::x)
-    print(x)
-    print(True)
-    => 0
+    bool close = dist2 <= min_dist2
+    bool moving_towards = dx * dv < 0
 
-foo(6)
+    if (close ):
+        float m1 = p->mass
+        float m2 = q->mass
+        float u1 = p->velocity[0]
+        float u2 = q->velocity[0]
 
-print(x)
+        float v1 = (u1 * (m1 - m2) + 2 * m2 * u2) / (m1 + m2)
+        float v2 = (u2 * (m2 - m1) + 2 * m1 * u1) / (m1 + m2)
+
+        print(v1)
+        print(v2)
+        print(True)
+        p->velocity = [v1, 0, 0]
+        q->velocity = [v2, 0, 0]
+
+    float new_x = p->position[0] + p->velocity[0]
+    p->position = [new_x, 0, 0]
+    new_x = q->position[0] + q->velocity[0]
+    q->position = [new_x, 0, 0]
+
+system zderzenie:
+    particle a
+    particle b
+
+    a->mass = 2.0
+    b->mass = 1.0
+
+    a->position = [-5, 0, 0]
+    a->velocity = [1.0, 0, 0]
+
+    b->position = [5, 0, 0]
+    b->velocity = [-0.5, 0, 0]
+
+    <b, a & elastic_collision>

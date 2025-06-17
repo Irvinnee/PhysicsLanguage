@@ -380,7 +380,7 @@ class Interpreter(PhysicsVisitor):
 
 # TODO: zmienic żeby prawa były globalne?
     def visitLawAssignStmt(self, ctx):
-        target_name = ctx.dottedID().getText()
+        target_names = ctx.argList().getText().split(',')
         law_name = ctx.ID().getText()
 
         # if law_name not in self.current_scope.functions:
@@ -390,14 +390,18 @@ class Interpreter(PhysicsVisitor):
         law_meta = self.resolve_function(law_name, ctx)
 
         fn = self._wrap_fn(law_meta)
-        target_obj = self.current_scope.variables.get(target_name)
+        target_objs = []
+        for i in target_names:
+            target_objs.append(self.current_scope.variables.get(i))
 
-        if isinstance(target_obj, System):
-            target_obj.register_law(Law(fn=fn, scope=target_name, target="particle"))
-        elif isinstance(target_obj, Particle):
-            self.global_laws.append(Law(fn=fn, scope=target_name, target="particle"))
-        else:
-            self._error(ctx, f"Cannot assign law to object of type {type(target_obj)}")
+        # if all(isinstance(target_obj, System) for target_obj in target_objs):
+        #     target_objs[0].register_law(Law(fn=fn, scope=target_names[0], target="particle"))
+        # elif all(isinstance(target_obj, Particle) for target_obj in target_objs):
+        #     self.global_laws.append(Law(fn=fn, scope=target_names, target="particle"))
+        # else:
+        #     self._error(ctx, f"Cannot assign law to object of types {(type(target_obj)  for target_obj in target_objs)}")
+
+        self.global_laws.append(Law(fn=fn, scope=target_names, target="multiple", name = law_name))
         return None
 
     # ————————————————————————————————————————————————————————————————
@@ -436,7 +440,7 @@ class Interpreter(PhysicsVisitor):
     # ————————————————————————————————————————————————————————————————
 
     def _wrap_fn(self, meta):
-        def fn(obj, system, dt):
+        def fn(args, name, dt):
             # zablokuj rekurencję field->function
             saved_current = self.current_scope.variables.get("$CURRENT_FN")
             if saved_current == meta:
@@ -448,16 +452,71 @@ class Interpreter(PhysicsVisitor):
             self.current_scope.variables = saved_vars.copy()
 
             # META['params'] to lista [(nazwa, typ), …]
-            if meta["params"]:
-                param_name = meta["params"][0][0]   # <-- tylko nazwa!
-                self.current_scope.variables[param_name] = obj
+            # if meta["params"]:
+            #     param_name = meta["params"][0][0]   # <-- tylko nazwa!
+            #     self.current_scope.variables[param_name] = obj
+            expected_params = meta["params"]
+            TYPE_MAP = {
+                "int": int,
+                "float": float,
+                "bool": bool,
+                "particle": Particle,
+                "field": Field,
+                "system": System,
+                "void": type(None)
+            }
+
+            # ───────────────────────────────────────────────
+            # 1.  liczba argumentów
+            # ───────────────────────────────────────────────
+            if len(args) != len(expected_params):
+                self._error(meta["block"],
+                            f"Function '{name}' expects {len(expected_params)} arguments, got {len(args)}")
+
+            for param_name, obj in zip(expected_params, args):
+                self.current_scope.variables[param_name[0]] = obj
+
+            # ───────────────────────────────────────────────
+            # 2.  typy argumentów
+            # ───────────────────────────────────────────────
+            args_casted: list[Any] = []  # ❶
+            for (p_name, p_type), arg in zip(expected_params, args):
+
+                exp_cls = TYPE_MAP[p_type]
+
+                # ─── ❶ blokada bool-a dla parametrów liczbowych ───
+                if p_type in ("int", "float") and isinstance(arg, bool):
+                    self._error(
+                        meta["block"],
+                        f"In function '{name}' parameter '{p_name}' expects {p_type}, "
+                        "got bool"
+                    )
+
+                ok = isinstance(arg, exp_cls)
+
+                # auto-rzutowanie  int → float  (ale NIE bool!)
+                if (not ok
+                        and p_type == "float"
+                        and isinstance(arg, int)
+                        and not isinstance(arg, bool)):  # <── zapobiega bool→float
+                    arg = float(arg)
+                    ok = True
+
+                if not ok:
+                    self._error(
+                        meta["block"],
+                        f"In function '{name}' parameter '{p_name}' expects {p_type}, "
+                        f"got {type(arg).__name__}"
+                    )
+
+                args_casted.append(arg)
 
             # wykonaj blok prawa
             if self.current_scope.next_child_index < len(self.current_scope.children):
                 self.current_scope.children[self.current_scope.next_child_index].symbol_table = {}
             self.visit(meta["block"])
 
-            saved_vars[param_name] = self.current_scope.variables[param_name]
+            # saved_vars[param_name] = self.current_scope.variables[param_name]
 
             # przywróć stare zmienne
             self.current_scope.variables = saved_vars

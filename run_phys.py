@@ -78,7 +78,8 @@ def run_phys_file(path, sim=False):
     simulate = Simulation(list(dummy.particles.values()), delta)
     simulate.global_laws = interpreter.global_laws
 
-    if sim:
+ # TODO: chaneg!
+    if not sim:
         simulate.run(dummy, time_limit, delta)
     # else:
     #     simulate.simulate_to_time(time_limit)
