@@ -40,7 +40,7 @@ class Simulation:
                                     name: p.position[:] for name, p in self.graphics_engine.particles.items()
                                 }
                     else:
-                        pass
+                        break
                         # self.system.step(-self.delta)
                         # self.time -= self.delta_time
 
