@@ -269,6 +269,8 @@ class Interpreter(PhysicsVisitor):
                 # if not isinstance(value, (int, float)):
                 if (not isinstance(value, float) and not isinstance(value, int)) or isinstance(value, bool):
                     self.errorWrongType(type(value), (float, int), name, ctx)
+                if value<= 0:
+                    self._error(ctx, f"Value for {name} has to be positive, not {value}")
                 # self.current_scope.variables[name] = value
                 self.assign_variable(name, float(value), ctx)
                 return None

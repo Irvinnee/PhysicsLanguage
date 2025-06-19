@@ -79,7 +79,7 @@ def run_phys_file(path, sim=False):
     simulate.global_laws = interpreter.global_laws
 
  # TODO: chaneg!
-    if not sim:
+    if sim:
         simulate.run(dummy, time_limit, delta)
     # else:
     #     simulate.simulate_to_time(time_limit)

@@ -1,3 +1,4 @@
+import bisect
 import threading
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
@@ -39,6 +40,9 @@ class Graphics:
         self.input_box = pygame.Rect(600, 20, 150, 35)
         self.time_limit = system.total_time
         self.history = {}
+        self.history[0.0] = {
+                    name: p.position[:] for name, p in self.particles.items()
+                }
 
     def project_to_2d(self, x, y, z, camera_pos, camera_angle, fov=60, width=800, height=600):  # Zmniejszenie FOV
         pitch = camera_angle[0]
@@ -270,6 +274,7 @@ class Graphics:
                 if event.type == pygame.QUIT:
                     running = False
                     self.stop_event.set()
+                    break
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if self.input_box.collidepoint(event.pos):
@@ -325,8 +330,10 @@ class Graphics:
                                 current_time = self.sim_time * self.system.total_time
 
                                 # Jeśli wpisano wartość ujemną, to potraktuj ją jako przesunięcie względem aktualnego czasu
-                                if entered_time < 0 or entered_time > self.system.total_time:
+                                if entered_time < 0:
                                     target_time = current_time + entered_time
+                                elif entered_time > self.system.total_time:
+                                    target_time = self.system.total_time
                                 else:
                                     target_time = entered_time
 
@@ -337,8 +344,13 @@ class Graphics:
 
                                 with self.time_lock:
                                     self.sim_time = slider_value
-                                    sim_timestamp = round(self.sim_time * self.system.total_time, 2)
-                                    if sim_timestamp in self.history:
+                                    # sim_timestamp = round(self.sim_time * self.system.total_time, 2)
+                                    # sim_timestamp = self.history.get(self.sim_time, self.history[min(self.history.keys(), key=lambda k: abs(k-self.sim_time))])
+                                    s = bisect.bisect_left(list(self.history.keys()), self.sim_time* self.system.total_time)
+                                    if s > len(self.history.keys()) - 1:
+                                        s -= 1
+                                    sim_timestamp = list(self.history.keys())[s]
+                                    if sim_timestamp in self.history.keys():
                                         with self.data_lock:
                                             for name, pos in self.history[sim_timestamp].items():
                                                 if name in self.particles:
@@ -370,22 +382,26 @@ class Graphics:
             delta_time = current_time - prev_time
             prev_time = current_time
 
-            sim_timestamp = round(self.sim_time * self.system.total_time, 2)
-            with self.data_lock:
-                if sim_timestamp not in self.history:
-                    self.history[sim_timestamp] = {
-                        name: p.position[:] for name, p in self.particles.items()
-                    }
-                    # print(f"[HISTORY] Zapamiętano stan w t={sim_timestamp:.2f}s")
+            # sim_timestamp = round(self.sim_time * self.system.total_time, 2)
+            # with self.data_lock:
+            #     if sim_timestamp not in self.history:
+            #         self.history[sim_timestamp] = {
+            #             name: p.position[:] for name, p in self.particles.items()
+            #         }
+            #         # print(f"[HISTORY] Zapamiętano stan w t={sim_timestamp:.2f}s")
 
             if slider_value != previous_slider_value:
                 previous_slider_value = slider_value
 
-            with self.time_lock:
+            with self.time_lock and self.data_lock:
                 self.sim_time = slider_value
-                sim_timestamp = round(self.sim_time * self.system.total_time, 2)
-                if sim_timestamp in self.history:
-                    with self.data_lock:
+                # sim_timestamp = round(self.sim_time * self.system.total_time, 2)
+                s = bisect.bisect_left(list(self.history.keys()), self.sim_time* self.system.total_time)
+                if s > len(self.history.keys())-1:
+                    s-=1
+                sim_timestamp = list(self.history.keys())[s]
+                if sim_timestamp in self.history.keys():
+                    # with self.data_lock:
                         for name, pos in self.history[sim_timestamp].items():
                             if name in self.particles:
                                 self.particles[name].position = pos[:]

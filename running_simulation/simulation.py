@@ -25,14 +25,28 @@ class Simulation:
     def simulation_engine(self):
         while not self.stop_event.is_set():
             with self.graphics_engine.time_lock:
+                # print(self.time)
+                # print(self.graphics_engine.history.keys())
+
                 while abs(self.graphics_engine.sim_time * self.max_time - self.system.time) > self.delta:
                     if self.graphics_engine.sim_time * self.max_time - self.system.time > 0:
                         self.system.step(self.delta)
-                    else:
-                        self.system.step(-self.delta)
+                        self.time += self.delta_time
 
-                    with self.graphics_engine.data_lock:
-                        self.graphics_engine.particles = self.system.particles
+                        with self.graphics_engine.data_lock:
+                            self.graphics_engine.particles = self.system.particles
+                            if self.time not in self.graphics_engine.history.keys():
+                                self.graphics_engine.history[self.time] = {
+                                    name: p.position[:] for name, p in self.graphics_engine.particles.items()
+                                }
+                    else:
+                        pass
+                        # self.system.step(-self.delta)
+                        # self.time -= self.delta_time
+
+                    if  self.stop_event.is_set():
+                        break
+
 
             sleep(0.01)
 
@@ -62,6 +76,9 @@ class Simulation:
         self.time = 0.0
 
     def step(self):
+        print(self.time)
+        print(self.graphics_engine.history)
+
         # for p in self.particles:
         #     for i in range(3):
         #         p.position[i] += p.velocity[i] * self.delta_time
@@ -69,6 +86,9 @@ class Simulation:
         self.time += self.delta_time
 
     def simulate_to_time(self, target_time: float):
+        print(self.time)
+        print(self.graphics_engine.history)
+
         self.reset()
         steps = int(target_time / self.delta_time)
         for _ in range(steps):
