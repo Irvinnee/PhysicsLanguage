@@ -1,46 +1,27 @@
-$TIME = 10
+$TIME = 20
 $DELTA = 0.05
 
-law elastic_collision(particle p, particle q):
-    float dx = q->position[0] - p->position[0]
-    float dv = q->velocity[0] - p->velocity[0]
-    float dist2 = dx * dx
-    float min_dist2 = 0.25  % czyli 0.5^2
+law harmonic_oscillator(particle p):
+    float k = p->k       % stała sprężystości
+    float m = p->mass    % masa cząstki
+    float x = p->position[0]
+    float v = p->velocity[0]
 
-    bool close = dist2 <= min_dist2
-    bool moving_towards = dx * dv < 0
+    float force = -k * x
+    float a = force / m
 
-    if (close ):
-        float m1 = p->mass
-        float m2 = q->mass
-        float u1 = p->velocity[0]
-        float u2 = q->velocity[0]
+    float new_v = v + a * $DELTA
+    float new_x = x + new_v * $DELTA
 
-        float v1 = (u1 * (m1 - m2) + 2 * m2 * u2) / (m1 + m2)
-        float v2 = (u2 * (m2 - m1) + 2 * m1 * u1) / (m1 + m2)
-
-        print(v1)
-        print(v2)
-        print(True)
-        p->velocity = [v1, 0, 0]
-        q->velocity = [v2, 0, 0]
-
-    float new_x = p->position[0] + p->velocity[0]
+    p->velocity = [new_v, 0, 0]
     p->position = [new_x, 0, 0]
-    new_x = q->position[0] + q->velocity[0]
-    q->position = [new_x, 0, 0]
 
-system zderzenie:
-    particle a
-    particle b
+system oscylator:
+    particle czastka
 
-    a->mass = 2.0
-    b->mass = 1.0
+    czastka->position = [5.0, 0, 0]   % wychylenie początkowe
+    czastka->velocity = [0.0, 0, 0]   % start bez prędkości
+    czastka->k = 1.0                  % sprężystość
+    czastka->mass = 1.0              % masa
 
-    a->position = [-5, 0, 0]
-    a->velocity = [1.0, 0, 0]
-
-    b->position = [5, 0, 0]
-    b->velocity = [-0.5, 0, 0]
-
-    <b, a & elastic_collision>
+    <czastka & harmonic_oscillator>

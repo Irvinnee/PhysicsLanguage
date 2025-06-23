@@ -1,0 +1,45 @@
+$TIME = 20
+$DELTA = 0.05
+
+law harmonic_oscillator(particle p):
+    float k = p->k       % stała sprężystości
+    float m = p->mass    % masa cząstki
+    float x = p->position[0]
+    float v = p->velocity[0]
+
+    float force = -k * x
+    float a = force / m
+
+    float new_v = v + a * $DELTA
+    float new_x = x + new_v * $DELTA
+
+    p->velocity = [new_v, 0, 0]
+    p->position = [new_x, 0, 0]
+
+system oscylator:
+    particle czastka
+
+    czastka->position = [10.0, 0, 0]
+    czastka->velocity = [0.0, 0, 0]
+    czastka->k = 1.0
+    czastka->mass = 1.0
+
+    particle czastka2
+
+    czastka2->position = [7.0, 0, 0]
+    czastka2->velocity = [0.0, 0, 0]
+    czastka2->k = 1.0
+    czastka2->mass = 1.0
+
+
+    particle czastka3
+
+    czastka3->position = [3.0, 0, 0]
+    czastka3->velocity = [0.0, 0, 0]
+    czastka3->k = 1.0
+    czastka3->mass = 1.0
+
+
+    <czastka & harmonic_oscillator>
+    <czastka2 & harmonic_oscillator>
+    <czastka3 & harmonic_oscillator>

@@ -1,0 +1,51 @@
+$TIME = 70
+$DELTA = 0.01
+
+law gravity(particle p, particle q):
+    float dx = q->position[0] - p->position[0]
+    float dy = q->position[1] - p->position[1]
+    float dz = q->position[2] - p->position[2]
+
+    float r2 = dx*dx + dy*dy + dz*dz + 0.00001
+    float r = (r2)^0.5
+
+    float G = 20.0
+
+    float f = G * p->mass * q->mass / r2
+    float ax = f * dx / r / p->mass
+    float ay = f * dy / r / p->mass
+    float az = f * dz / r / p->mass
+
+    p->velocity[0] = p->velocity[0] + ax * $DELTA
+    p->velocity[1] = p->velocity[1] + ay * $DELTA
+    p->velocity[2] = p->velocity[2] + az * $DELTA
+
+    p->position[0] = p->position[0] + p->velocity[0] * $DELTA
+    p->position[1] = p->position[1] + p->velocity[1] * $DELTA
+    p->position[2] = p->position[2] + p->velocity[2] * $DELTA
+
+system orbita_trojkat:
+    particle A
+    particle B
+    particle C
+
+    A->mass = 1.0
+    B->mass = 1.0
+    C->mass = 1.0
+
+    % Wierzchołki trójkąta równobocznego
+    A->position = [10.0, 0.0, 0.0]
+    B->position = [-5.0, 8.66, 0.0]      % 8.66 ≈ 10 * sin(60°)
+    C->position = [-5.0, -8.66, 0.0]
+
+    % Prędkości dobrane do ruchu po okręgu wokół środka masy (0,0)
+    A->velocity = [0.0, 0.5, 0.0]
+    B->velocity = [-0.5, -0.5, 0.0]     % 1.73 ≈ 2 * sin(60°)
+    C->velocity = [0.5, -0.5, 0.0]
+
+    <A, B & gravity>
+    <A, C & gravity>
+    <B, A & gravity>
+    <B, C & gravity>
+    <C, A & gravity>
+    <C, B & gravity>

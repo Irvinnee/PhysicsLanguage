@@ -1,0 +1,41 @@
+$TIME = 700
+$DELTA = 0.05
+
+law gravity(particle p, particle q):
+    float dx = q->position[0] - p->position[0]
+    float dy = q->position[1] - p->position[1]
+    float dz = q->position[2] - p->position[2]
+
+    float r2 = dx*dx + dy*dy + dz*dz + 0.00001  % unikamy dzielenia przez 0
+    float r = (r2)^0.5
+
+    float G = 20.0
+
+    float force = G * p->mass * q->mass / r2
+    float ax = force * dx / r / p->mass
+    float ay = force * dy / r / p->mass
+    float az = force * dz / r / p->mass
+
+    p->velocity[0] = p->velocity[0] + ax * $DELTA
+    p->velocity[1] = p->velocity[1] + ay * $DELTA
+    p->velocity[2] = p->velocity[2] + az * $DELTA
+
+    p->position[0] = p->position[0] + p->velocity[0] * $DELTA
+    p->position[1] = p->position[1] + p->velocity[1] * $DELTA
+    p->position[2] = p->position[2] + p->velocity[2] * $DELTA
+
+system orbitalny:
+    particle A
+    particle B
+
+    A->mass = 3.0
+    B->mass = 1.0
+
+    A->position = [-2.0, 0, 0]
+    B->position = [6.0, 0, 0]
+
+    A->velocity = [0, 1.0, 0]
+    B->velocity = [0, -3.0, 0]  % większa prędkość, bo mniejsza masa
+
+    <A, B & gravity>
+    <B, A & gravity>
