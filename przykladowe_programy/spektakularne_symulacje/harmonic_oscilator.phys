@@ -1,5 +1,5 @@
 $TIME = 20
-$DELTA = 0.05
+$DELTA = 0.001
 
 law harmonic_oscillator(particle p):
     float k = p->k       % stała sprężystości

@@ -39,8 +39,8 @@ system orbita_trojkat:
     C->position = [-5.0, -8.66, 0.0]
 
     % Prędkości dobrane do ruchu po okręgu wokół środka masy (0,0)
-    A->velocity = [0.0, 0.5, 0.0]
-    B->velocity = [-0.5, -0.5, 0.0]     % 1.73 ≈ 2 * sin(60°)
+    A->velocity = [0.0, 0.5, 0.1]
+    B->velocity = [-0.5, -0.1, 0.0]     % 1.73 ≈ 2 * sin(60°)
     C->velocity = [0.5, -0.5, 0.0]
 
     <A, B & gravity>
